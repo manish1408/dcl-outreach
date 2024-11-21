@@ -1,0 +1,96 @@
+<div class="container mt-4">
+    <h2>Customer Management </h2>
+  
+    <!-- Customer Form -->
+    <form [formGroup]="customerForm" (ngSubmit)="submitCustomer()">
+      <div class="row">
+        <div class="col-md-3">
+          <input type="text" formControlName="firstName" class="form-control" placeholder="First Name" />
+        </div>
+        <div class="col-md-3">
+          <input type="text" formControlName="lastName" class="form-control" placeholder="Last Name" />
+        </div>
+        <div class="col-md-3">
+          <input type="email" formControlName="email" class="form-control" placeholder="Email" />
+        </div>
+        <div class="col-md-3">
+          <input type="text" formControlName="phone" class="form-control" placeholder="Phone" />
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-md-3">
+          <input type="text" formControlName="linkedInUrl" class="form-control" placeholder="LinkedIn URL" />
+        </div>
+        <div class="col-md-9">
+          <div class="form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" formControlName="m1" /> 
+            <label class="form-check-label">M1</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" formControlName="m2" />
+            <label class="form-check-label">M2</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" formControlName="m3" />
+            <label class="form-check-label">M3</label>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-md-9">
+          <div class="form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" formControlName="demoSent" />
+            <label class="form-check-label">Demo Sent</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" formControlName="demoCreated" />
+            <label class="form-check-label">Demo Created</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" formControlName="demoOpened" />
+            <label class="form-check-label">Demo Opened</label>
+          </div>
+        </div>
+        <div class="col-md-3 text-end">
+          <button type="submit" class="btn btn-primary">
+            {{ isEditMode ? 'Update' : 'Add' }} Customer
+          </button>
+          <button type="button" class="btn btn-secondary ms-2" (click)="resetForm()">Reset</button>
+        </div>
+      </div>
+    </form>
+  
+    <!-- Customer Table -->
+    <table class="table table-bordered table-striped mt-4">
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>LinkedIn</th>
+          <th>M1</th>
+          <th>M2</th>
+          <th>M3</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let customer of customers">
+          <td>{{ customer.firstName }}</td>
+          <td>{{ customer.lastName }}</td>
+          <td>{{ customer.email }}</td>
+          <td>{{ customer.phone }}</td>
+          <td><a [href]="customer.linkedInUrl" target="_blank">Profile</a></td>
+          <td>{{ customer.m1 ? '✔️' : '❌' }}</td>
+          <td>{{ customer.m2 ? '✔️' : '❌' }}</td>
+          <td>{{ customer.m3 ? '✔️' : '❌' }}</td>
+          <td>
+            <button class="btn btn-sm btn-warning" (click)="editCustomer(customer)">Edit</button>
+            <button class="btn btn-sm btn-danger ms-2" (click)="deleteCustomer(customer._id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
