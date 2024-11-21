@@ -11,7 +11,7 @@ export class CustomerService {
   constructor(private http: HttpClient) {}
 
   getCustomers(skip:any, limit:any): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/customers?skip=${skip}&limit=${limit}`);
+    return this.http.get<any[]>(`${this.apiUrl}/customers/?skip=${skip}&limit=${limit}`);
   }
 
   addCustomer(customer: any): Observable<any> {
