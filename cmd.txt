@@ -1,1 +1,0 @@
-ng g m dashboard --module app --route dashboard

@@ -1,0 +1,144 @@
+<div *ngIf="apiLoading" class="mt-5 d-flex justify-content-center">
+  <div class="spinner-border text-dark" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+<ng-container *ngIf="!apiLoading">
+  <div class="row">
+    <div class="col-12">
+      <h4 class="title">Interactions</h4>
+      <p class="desc">Add interaction elements of the bot</p>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-6">
+      <form [formGroup]="interactionForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label"
+            >Welcome message</label
+          >
+          <textarea
+            [ngClass]="{
+              'is-invalid': hasError('welcomeMessage')
+            }"
+            [maxlength]="600"
+            formControlName="welcomeMessage"
+            class="form-control"
+            id="exampleFormControlTextarea1"
+            rows="3"
+          ></textarea>
+          <div class="invalid-feedback">Welcome Message is required</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label"
+            >Collect User Data</label
+          >
+          <br />
+          <div
+            formArrayName="userData"
+            class="btn-group"
+            role="group"
+            aria-label="Basic checkbox toggle button group"
+          >
+            <ng-container
+              *ngFor="let control of userDataArray.controls; let i = index"
+            >
+              <input
+                type="checkbox"
+                class="btn-check"
+                [formControlName]="i"
+                id="btncheck{{ i }}"
+                autocomplete="off"
+              />
+              <label
+                class="btn rounded-pill me-2"
+                [class.btn-selected]="control.value"
+                for="btncheck{{ i }}"
+                >{{ getUserDataLabel(i) }}</label
+              >
+            </ng-container>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label"
+            >When to Ask?</label
+          >
+          <br />
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              formControlName="whenToAsk"
+              type="radio"
+              name="whenToAsk"
+              id="exampleRadios1"
+              value="after"
+              checked
+            />
+            <label class="form-check-label" for="exampleRadios1">
+              After welcome message
+            </label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              formControlName="whenToAsk"
+              type="radio"
+              name="whenToAsk"
+              id="exampleRadios2"
+              value="between"
+            />
+            <label class="form-check-label" for="exampleRadios2">
+              In between conversations
+            </label>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label"
+            >Customer Feedback</label
+          >
+          <br />
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              formControlName="feedback"
+              name="feedback"
+              type="radio"
+              id="exampleRadios3"
+              value="ask"
+            />
+            <label class="form-check-label" for="exampleRadios3">
+              Ask for feedback
+            </label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              formControlName="feedback"
+              name="feedback"
+              type="radio"
+              id="exampleRadios4"
+              value="dont ask for feedback"
+            />
+            <label class="form-check-label" for="exampleRadios4">
+              Don't ask for feedback
+            </label>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" [disabled]="loading">
+          <div
+            *ngIf="loading"
+            class="spinner-border spinner-border-sm"
+            role="status"
+          >
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          Submit
+        </button>
+      </form>
+    </div>
+    <div class="col-6"></div>
+  </div>
+</ng-container>

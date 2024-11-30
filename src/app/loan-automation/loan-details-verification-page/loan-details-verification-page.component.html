@@ -1,0 +1,120 @@
+<ng-container>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-6 col-md-9">
+        <h1 class="title main-heading mt-3">Welcome Back!</h1>
+        <h4 class="title sub-heading mt-3">Please verify your details </h4>
+        <p class="desc">
+          This Information is critical to get accurate offers from lender </p>
+      </div>
+    </div>
+    <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
+      <div class="row mt-4">
+        
+        <!-- Employment Type -->
+        <div class="col-12 col-md-6">
+          <div class="mb-3">
+            <label for="employmentType" class="form-label">Employment Type</label>
+            <select formControlName="employmentType" class="form-select" aria-label="Default select example">
+              <option value="">Select Employment Type</option>
+              <option value="salariedProfessional">Salaried Professional</option>
+              <option value="selfEmployment">Self-employed Professional</option>
+              <option value="businessProfessional">Business Professional</option>
+            </select>
+            <div *ngIf="settingsForm.get('employmentType')?.invalid && settingsForm.get('employmentType')?.touched"
+                 class="invalid-feedback">Employment Type is required</div>
+          </div>
+        </div>
+    
+        <!-- Professional Type -->
+        <div class="col-12 col-md-6">
+          <div class="mb-3">
+            <label for="professionalType" class="form-label">Profession</label>
+            <input type="text" class="form-control" formControlName="professionalType" maxlength="100"
+                   [ngClass]="{ 'is-invalid': settingsForm.get('professionalType')?.invalid && settingsForm.get('professionalType')?.touched }" />
+            <div *ngIf="settingsForm.get('professionalType')?.invalid && settingsForm.get('professionalType')?.touched"
+                 class="invalid-feedback">Professional Type is required</div>
+          </div>
+        </div>
+    
+        <!-- Professional Experience -->
+        <div class="col-12 col-md-6">
+          <div class="mb-3">
+            <label for="experience" class="form-label">Professional Experience</label>
+            <select formControlName="experience" class="form-select" aria-label="Default select example">
+              <option value="">Select Experience</option>
+              <option value="1-2 Years">1-2 Years</option>
+              <option value="3-5 Years">3-5 Years</option>
+              <option value="6-8 Years">6-8 Years</option>
+              <option value="6-8 Years">>8 Years</option>
+            </select>
+            <div *ngIf="settingsForm.get('experience')?.invalid && settingsForm.get('experience')?.touched"
+                 class="invalid-feedback">Professional Experience is required</div>
+          </div>
+        </div>
+    
+        <!-- Residence City -->
+        <div class="col-12 col-md-6">
+          <div class="mb-3">
+            <label for="city" class="form-label">Residence City</label>
+            <select formControlName="city" class="form-select" aria-label="Default select example">
+              <option value="">Select City</option>
+              <option value="Pune">Pune</option>
+              <option value="Mumbai">Mumbai</option>
+              <option value="Delhi">Delhi</option>
+            </select>
+            <div *ngIf="settingsForm.get('city')?.invalid && settingsForm.get('city')?.touched"
+                 class="invalid-feedback">Residence City is required</div>
+          </div>
+        </div>
+    
+        <!-- Gross Annual Income -->
+        <div class="col-12 col-md-6">
+          <div class="mb-3">
+            <label for="grossAnnualIncome" class="form-label">Gross Annual Income</label>
+            <input type="text" class="form-control" formControlName="grossAnnualIncome" maxlength="100"
+                   placeholder="Gross Annual Income"
+                   [ngClass]="{ 'is-invalid': settingsForm.get('grossAnnualIncome')?.invalid && settingsForm.get('grossAnnualIncome')?.touched }" />
+            <div *ngIf="settingsForm.get('grossAnnualIncome')?.invalid && settingsForm.get('grossAnnualIncome')?.touched"
+                 class="invalid-feedback">Gross Annual Income is required</div>
+          </div>
+        </div>
+    
+        <!-- Desired Loan Amount -->
+        <div class="col-12 col-md-6">
+          <div class="mb-3">
+            <label for="loanAmount" class="form-label">Desired Loan Amount</label>
+            <input type="text" class="form-control" formControlName="loanAmount" maxlength="100"
+                   placeholder="Desired Loan Amount"
+                   (keyup)="onLoanAmountChange()"
+                   [ngClass]="{ 'is-invalid': settingsForm.get('loanAmount')?.invalid && settingsForm.get('loanAmount')?.touched }" />
+            <div class="loan-text-amount">{{ loanAmountInWords }}</div>
+            <div *ngIf="settingsForm.get('loanAmount')?.invalid && settingsForm.get('loanAmount')?.touched"
+                 class="invalid-feedback">Desired Loan Amount is required</div>
+          </div>
+        </div>
+        <!-- Total EMIs You Pay Currently -->
+        <div class="col-12 col-md-6">
+          <div class="mb-3">
+            <label for="emis" class="form-label">Total EMIs You Pay Currently</label>
+            <input type="text" class="form-control" formControlName="emis" maxlength="100"
+                   placeholder="Total EMIs"
+                   [ngClass]="{ 'is-invalid': settingsForm.get('emis')?.invalid && settingsForm.get('emis')?.touched }" />
+            <div *ngIf="settingsForm.get('emis')?.invalid && settingsForm.get('emis')?.touched"
+                 class="invalid-feedback">Total EMIs is required</div>
+          </div>
+        </div>
+    
+        <!-- Form Actions -->
+        <div class="col-12 mt-4 d-flex">
+          <button type="submit" class="btn btn-primary w-20" [disabled]="loading || settingsForm.invalid">Verify</button>
+        </div>
+      </div>
+    </form>
+    
+  </div>
+</ng-container>
+
+
+

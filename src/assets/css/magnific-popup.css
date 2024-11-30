@@ -349,3 +349,17 @@ img.mfp-img {
   .mfp-container {
     padding-left: 6px;
     padding-right: 6px; } }
+
+
+.mfp-image-holder .mfp-close, .mfp-iframe-holder .mfp-close {
+  color: #FFF;
+  right: -6px;
+  width: 50px;
+  background: #1C1D20;
+  text-align: center;
+  line-height: 50px;
+  padding: 0;
+  height: 50px;
+  margin-top: -18px;
+  opacity: 1;
+}

@@ -1,0 +1,181 @@
+<div>
+  <div class="row">
+    <div class="col-8">
+      <h4 class="title">Installation</h4>
+      <p class="desc">
+        Add the following code snippet to your website’s pages:
+      </p>
+    </div>
+    <div class="col-4">
+      <div class="float-end">
+        <ul class="nav nav-pills gap-2">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Web</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Google Tag Manager</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              data-bs-toggle="dropdown"
+              href="#"
+              role="button"
+              aria-expanded="false"
+              >More</a
+            >
+            <ul class="dropdown-menu p-0">
+              <li><a class="dropdown-item" href="#">Shopify</a></li>
+              <li><a class="dropdown-item" href="#">Wordpress</a></li>
+              <li><a class="dropdown-item" href="#">joomla</a></li>
+              <li><a class="dropdown-item" href="#">iOS</a></li>
+              <li><a class="dropdown-item" href="#">Android</a></li>
+              <li><a class="dropdown-item" href="#">ionic</a></li>
+              <li><a class="dropdown-item" href="#">React</a></li>
+              <li><a class="dropdown-item" href="#">Angular</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card script-card">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between gap-4">
+            <div class="script-text">
+              <pre>{{ scriptText }}</pre>
+            </div>
+
+            <img
+              class="cursor-pointer"
+              src="assets/icons/copy.svg"
+              (click)="copyToClipboard()"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <h4 class="title">Channels</h4>
+    <p class="desc">Activate your chatbot in multiple channels</p>
+  </div>
+  <div class="row mt-4">
+    <div class="col-12 col-md-3">
+      <div class="channel-card">
+        <div class="top-section">
+          <img src="assets/icons/chrome.svg" />
+          <h2 class="title">Web</h2>
+          <p class="desc">
+            Integrating content into Chrome browsers can involve a few different
+            approaches
+          </p>
+        </div>
+        <div class="bottom-section">
+          <span class="badge text-bg-primary rounded-pill" *ngIf="channels.web"
+            >Active</span
+          >
+          <label class="switch">
+            <input type="checkbox" [(ngModel)]="channels.web" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-3">
+      <div class="channel-card">
+        <div class="top-section">
+          <img src="assets/icons/instagram.svg" />
+          <h2 class="title">Instagram</h2>
+          <p class="desc">
+            Integrating content into Chrome browsers can involve a few different
+            approaches
+          </p>
+        </div>
+        <div class="bottom-section">
+          <span
+            class="badge text-bg-primary rounded-pill"
+            *ngIf="channels.instagram"
+            >Active</span
+          >
+          <label class="switch">
+            <input type="checkbox" [(ngModel)]="channels.instagram" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-3">
+      <div class="channel-card">
+        <div class="top-section">
+          <img src="assets/icons/discord.svg" />
+          <h2 class="title">Discord</h2>
+          <p class="desc">
+            Integrating content into Chrome browsers can involve a few different
+            approaches
+          </p>
+        </div>
+        <div class="bottom-section">
+          <span
+            class="badge text-bg-primary rounded-pill"
+            *ngIf="channels.discord"
+            >Active</span
+          >
+          <label class="switch">
+            <input type="checkbox" [(ngModel)]="channels.discord" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-3">
+      <div class="channel-card">
+        <div class="top-section">
+          <img src="assets/icons/telegram.svg" />
+          <h2 class="title">Telegram</h2>
+          <p class="desc">
+            Integrating content into Chrome browsers can involve a few different
+            approaches
+          </p>
+        </div>
+        <div class="bottom-section">
+          <span
+            class="badge text-bg-primary rounded-pill"
+            *ngIf="channels.telegram"
+            >Active</span
+          >
+          <label class="switch">
+            <input type="checkbox" [(ngModel)]="channels.telegram" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-12 col-md-3">
+      <div class="channel-card">
+        <div class="top-section">
+          <img src="assets/icons/sms.svg" />
+          <h2 class="title">SMS</h2>
+          <p class="desc">
+            Integrating content into Chrome browsers can involve a few different
+            approaches
+          </p>
+        </div>
+        <div class="bottom-section">
+          <span class="badge text-bg-primary rounded-pill" *ngIf="channels.sms"
+            >Active</span
+          >
+          <label class="switch">
+            <input type="checkbox" [(ngModel)]="channels.sms" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

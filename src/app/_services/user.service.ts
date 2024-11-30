@@ -1,46 +1,44 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from './api.service';
+
 import { LocalStorageService } from './local-storage.service';
 import { Observable } from 'rxjs';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment.development';
 
 @Injectable({
-	providedIn: 'root',
+  providedIn: 'root',
 })
 export class UserService {
-	constructor(private apiService: ApiService, private localStorageService: LocalStorageService) {}
+  private _url = `${environment['APIUrl']}/users`;
+  constructor(
+    private http: HttpClient,
+private localStorageService: LocalStorageService
+  ) {}
 
-	getUserDetails(): any {
-		const result = this.localStorageService.getItem('CION-USER');
-		const user = result ? JSON.parse(result) : null;
-		return user;
-	}
+  getUserDetails(): any {
+    const result = this.localStorageService.getItem('MILO-USER');
+    const user = result ? JSON.parse(result) : null;
+    return user;
+  }
 
-	isLoggedIn(): boolean {
-		let user = this.localStorageService.getItem('CION-USER') as any;
-		if (user) {
-			return true;
-		}
-		return false;
-	}
+  isLoggedIn(): boolean {
+    let user = this.localStorageService.getItem('MILO-USER') as any;
+    if (user) {
+      return true;
+    }
+    return false;
+  }
 
-	getUser(): Promise<any> {
-		return this.apiService.get('User').toPromise();
-	}
-
-	async updateUser(user: any): Promise<any> {
-		return await this.apiService.put('User', user).toPromise();
-	}
-
-	uploadPicture(formData: FormData): Observable<any> {
-		const headers = new HttpHeaders();
-		headers.append('Content-Type', 'multipart/form-data');
-		return this.apiService.put(`User/upload-picture`, formData, { headers });
-	}
-	updateNotification(reqObj: any): Observable<any> {
-		return this.apiService.put(`User/updated-notification-settings`, reqObj);
-	}
-	getUserMembership(): Promise<any> {
-		return this.apiService.get('User/get-membership').toPromise();
-	}
+  getAllUser(accountId:string){
+    return this.http.get(`${this._url}/get-all-users?accountId=${accountId}`);
+  }
+  createUser(data: any) {
+    return this.http.post<any>(`${this._url}/create-user`, data);
+  }
+  updateUser(data: any) {
+    return this.http.put<any>(`${this._url}/update-user`, data);
+  }
+  deleteUser(userId:string) {
+    return this.http.delete<any>(`${this._url}/delete-user?userId=${userId}`);
+  }
 }

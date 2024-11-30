@@ -1,0 +1,169 @@
+// ----------------------------
+// Font Family
+// ---------------------------
+
+// colasta
+@font-face {
+    font-family: colasta;
+    src: url('../fonts/Colasta/Colasta-Bold.otf');
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: colasta;
+    src: url('../fonts/Colasta/Colasta.otf');
+    font-weight: 400;
+}
+
+// tropiline
+@font-face {
+    font-family: tropiline;
+    src: url('../fonts/tropiline/Tropiline-Regular.ttf');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: tropiline;
+    src: url('../fonts/tropiline/Tropiline-SemiBold.ttf');
+    font-weight: 600;
+}
+
+@font-face {
+    font-family: tropiline;
+    src: url('../fonts/tropiline/Tropiline-Bold.ttf');
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: tropiline;
+    src: url('../fonts/tropiline/Tropiline-Black.otf');
+    font-weight: 900;
+}
+
+// beatrice
+@font-face {
+    font-family: beatrice;
+    src: url('../fonts/beatrice/BeatriceTRIAL-Regular-BF64829e8f591fb.ttf');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: beatrice;
+    src: url('../fonts/beatrice/BeatriceTRIAL-Medium-BF64829e8f63463.ttf');
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: beatrice;
+    src: url('../fonts/beatrice/BeatriceTRIAL-Semibold-BF64829e8f17d4c.ttf');
+    font-weight: 600;
+}
+
+@font-face {
+    font-family: beatrice;
+    src: url('../fonts/beatrice/BeatriceTRIAL-Bold-BF64829e8fd7dc6.otf');
+    font-weight: 700;
+}
+
+// instrument font family styles
+@font-face {
+    font-family: instrument;
+    src: url('../fonts/Instrument-Sans/InstrumentSans-Regular.ttf');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: instrument;
+    src: url('../fonts/Instrument-Sans/InstrumentSans-Medium.ttf');
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: instrument;
+    src: url('../fonts/Instrument-Sans/InstrumentSans-SemiBold.ttf');
+    font-weight: 600;
+}
+
+@font-face {
+    font-family: instrument;
+    src: url('../fonts/Instrument-Sans/InstrumentSans-Bold.ttf');
+    font-weight: 700;
+}
+
+
+
+// instrument sans
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap');
+
+
+// pt-serif 
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+// Plus Jakarta Sans 
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+// onest 
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap');
+
+
+// PPFragment 
+@font-face {
+    font-family: PPFragment;
+    src: url('../fonts/PPFragment/PPFragment-TextRegular.otf');
+    font-weight: 400;
+}
+
+
+
+:root {
+    --font_colasta: 'colasta';
+    --font_instrument: "Instrument Sans", sans-serif;
+    --font_tropiline: "tropiline", sans-serif;
+    --font_beatrice: 'beatrice';
+    --font_pt-serif: "PT Serif", serif;
+    --font_plus-jakarta-sans: "Plus Jakarta Sans", sans-serif;
+    --font_PPFragment: 'PPFragment';
+    --font-onest: "Onest", sans-serif;
+}
+
+
+// Font Family Classes
+.font {
+    &-heading {
+        &-colasta-bold {
+            @include heading (var(--font_colasta), 700, 1);
+        }
+
+        &-instrument-bold {
+            @include heading (var(--font_instrument), 700, 1.08);
+        }
+
+        &-instrument-semibold {
+            @include heading (var(--font_instrument), 600, 1.08);
+        }
+
+        &-tropiline-regular {
+            @include heading (var(--font_tropiline), 400, 1.00);
+        }
+
+        &-tropiline-bold {
+            @include heading (var(--font_tropiline), 700, 1.08);
+        }
+
+        &-beatrice-medium {
+            @include heading (var(--font_beatrice), 500, 1.08);
+        }
+
+        &-pt-serif-regular {
+            @include heading (var(--font_pt-serif), 400, 1.16);
+        }
+
+        &-plus-jakarta-sans-medium {
+            @include heading (var(--font_plus-jakarta-sans), 500, 1.16);
+        }
+
+        &-PPFragment-TextRegular {
+            @include heading (var(--font_PPFragment), 400, 1.08);
+        }
+    }
+}

@@ -1,66 +1,51 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from './api.service';
+import { environment } from '../../environments/environment.development';
+import { HttpClient } from '@angular/common/http';
 import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthenticationService {
-  roles: string[] = [];
-  showAdmin = false;
-  showPartner = false;
-  showManagement = false;
+  private _url = `${environment['APIUrl']}/auth`;
+  constructor(
+    private http: HttpClient,
+    private localStorageService: LocalStorageService
+  ) {}
 
-  constructor(private apiService: ApiService, private localStorageService: LocalStorageService) {
+  login(data: any) {
+    return this.http.post<any>(`${this._url}/login`, data);
   }
-
-  async signUp(user: any): Promise<any> {
-    return await this.apiService
-      .post('Authentication/signup', user)
-      .toPromise();
+  createAccount(data: any) {
+    return this.http.post<any>(`${this._url}/create-account`, data);
   }
-
-  async register(user: any): Promise<any> {
-    return await this.apiService
-      .post('Authentication/register', user)
-      .toPromise();
+  onboardUser(data: any) {
+    return this.http.post<any>(`${this._url}/onboard-user`, data);
   }
-
-  async setPassword(passwordReset: any): Promise<any> {
-    return await this.apiService
-      .post('Authentication/set-password', passwordReset)
-      .toPromise();
+  validateLogin(data: any) {
+    return this.http.post<any>(`${this._url}/verify-otp`, data);
   }
-
-  async signIn(user: any): Promise<any> {
-    return await this.apiService
-      .postForm('Authentication/signin', user)
-      .toPromise();
-  }
-
-  async validate(emailAddress: string): Promise<any> {
-    return await this.apiService
-      .postForm('Authentication/validate', {
-        "value": emailAddress,
-        "mode": 'email'
-      })
-      .toPromise();
-  }
-
-
-  async forgotPassword(user: any): Promise<any> {
-    return await this.apiService
-      .post('Authentication/forget-password', user)
-      .toPromise();
-  }
-
   signOut(): void {
     sessionStorage.clear();
     localStorage.clear();
   }
-
   isAuthenticated() {
-    const token = this.localStorageService.getItem('CION-USER-TOKEN');
+    const token = this.localStorageService.getItem('MILO-USER-TOKEN');
     return !!token;
+  }
+  forgotPassword(data: any) {
+    return this.http.post<any>(`${this._url}/forgot-password`, data);
+  }
+  resetPassword(data: any) {
+    return this.http.post<any>(`${this._url}/reset-password`, data);
+  }
+  changePassword(data: any) {
+    return this.http.put<any>(`${this._url}/change-password`, data);
+  }
+  updateProfile(data: any) {
+    return this.http.put<any>(`${this._url}/update-user-profile`, data);
+  }
+  saveWidgetImage(data: any) {
+    return this.http.post<any>(`${this._url}/upload-widget-img`, data);
   }
 }

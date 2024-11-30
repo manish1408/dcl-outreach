@@ -6,37 +6,70 @@ declare var Swal: any;
   providedIn: 'root',
 })
 export class ToastService {
-  constructor() { }
+  constructor() {}
 
-  showError(message: string, duration: number = 5000, position: ToastLocation = ToastLocation.TopRight, showCloseButton: boolean = true) {
+  showError(
+    message: string,
+    duration: number = 5000,
+    position: ToastLocation = ToastLocation.TopRight,
+    showCloseButton: boolean = true
+  ) {
     if (message) {
-      Swal.fire(
-        'Error',
-        message,
-        'error'
-      )
+      Swal.fire('Error', message, 'error');
     }
   }
 
-  showInfo(message: string, duration: number = 5000, position: ToastLocation = ToastLocation.TopRight, showCloseButton: boolean = true) {
-    Swal.fire(
-      'Info',
-      message,
-      'info'
-    )
+  showInfo(
+    message: string,
+    duration: number = 5000,
+    position: ToastLocation = ToastLocation.TopRight,
+    showCloseButton: boolean = true
+  ) {
+    Swal.fire('Info', message, 'info');
   }
 
-  showSuccess(message: string, duration: number = 5000, position: ToastLocation = ToastLocation.TopRight, showCloseButton: boolean = true) {
-    Swal.fire(
-      'Success',
-      message,
-      'success'
-    )
+  showSuccess(
+    message: string,
+    duration: number = 5000,
+    position: ToastLocation = ToastLocation.TopRight,
+    showCloseButton: boolean = true
+  ) {
+    Swal.fire('Success', message, 'success');
   }
 
-  showWarning(message: string, duration: number = 5000, position: ToastLocation = ToastLocation.TopRight, showCloseButton: boolean = true) {
-    Swal.fire(message)
-
+  showWarning(
+    message: string,
+    duration: number = 5000,
+    position: ToastLocation = ToastLocation.TopRight,
+    showCloseButton: boolean = true
+  ) {
+    Swal.fire(message);
+  }
+  showConfirm(
+    title: string,
+    text: string,
+    confirmButtonText: string = 'Yes',
+    cancelButtonText: string = 'No',
+    confirmCallback?: () => void,
+    cancelCallback?: () => void
+  ) {
+    Swal.fire({
+      title: title,
+      text: text,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: confirmButtonText,
+      cancelButtonText: cancelButtonText,
+    }).then((result: any) => {
+      if (result.isConfirmed && confirmCallback) {
+        confirmCallback();
+      } else if (
+        result.dismiss === Swal.DismissReason.cancel &&
+        cancelCallback
+      ) {
+        cancelCallback();
+      }
+    });
   }
 }
 

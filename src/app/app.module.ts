@@ -1,49 +1,47 @@
-import { NgModule } from '@angular/core';
+import { NgModule, importProvidersFrom } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { ErrorService } from './_services/error.service';
-import { ErrorHandler } from '@angular/core';
-import { JwtInterceptor } from './_guards/jwt.interceptor';
-import { EventService } from './_services/event.service';
-import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { ToastrModule } from 'ngx-toastr';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { EditorModule } from '@tinymce/tinymce-angular';
-import { PdfViewerModule } from 'ng2-pdf-viewer';
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
+import { JwtInterceptor } from './_guards/jwt.interceptor';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { EventService } from './_services/event.service';
+import { SharedModule } from './shared/sharedModule';
+import { SharedPipe } from './_pipes/shared.pipe';
+import { ReactiveFormsModule } from '@angular/forms';
+// import 'event-source-polyfill';
 
 @NgModule({
-	declarations: [AppComponent],
-	imports: [
-		CommonModule,
-		ReactiveFormsModule,
-		TooltipModule.forRoot(),
-		FormsModule,
-		HttpClientModule,
-		BrowserModule,
-		NgMultiSelectDropDownModule.forRoot(),
-		ToastrModule.forRoot(), // ToastrModule added
-		EditorModule,
-		PdfViewerModule,
-		AppRoutingModule,
-	],
-	providers: [
-		HttpClientModule,
-		EventService,
-		{
-			provide: ErrorHandler,
-			useClass: ErrorService,
-		},
-		{
-			provide: HTTP_INTERCEPTORS,
-			useClass: JwtInterceptor,
-			multi: true,
-		},
-	],
-	bootstrap: [AppComponent],
+  declarations: [AppComponent],
+  imports: [
+    BrowserModule,
+    SharedModule,
+    AppRoutingModule,
+    HttpClientModule,
+    SharedPipe,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot({
+      timeOut: 5000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+    }),
+    MonacoEditorModule.forRoot(),
+    ReactiveFormsModule,
+  ],
+  providers: [
+    HttpClientModule,
+    EventService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true,
+    },
+    provideCharts(withDefaultRegisterables()),
+  ],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

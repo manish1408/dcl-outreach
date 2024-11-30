@@ -1,0 +1,242 @@
+/*  */
+:root {
+    --primary: #0F2552;
+}
+
+.wc-btn-primary {
+    background-color: var(--theme);
+    border-color: var(--theme);
+
+    &:hover {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    &.bordered {
+        border-color: var(--border);
+    }
+}
+
+.section-title {
+    font-size: 60px;
+
+    @media #{$xxl} {
+        font-size: 55px;
+    }
+
+    @media #{$lg} {
+        font-size: 40px;
+    }
+
+    @media #{$md} {
+        font-size: 35px;
+    }
+
+    @media #{$sm} {
+        font-size: 30px;
+    }
+
+    &.large {
+        font-size: 90px;
+
+        @media #{$xxl} {
+            font-size: 70px;
+        }
+
+        @media #{$lg} {
+            font-size: 60px;
+        }
+
+        @media #{$md} {
+            font-size: 40px;
+        }
+
+        @media #{$sm} {
+            font-size: 30px;
+        }
+    }
+}
+
+.font-heading-colasta-bold h1,
+.font-heading-colasta-bold h2,
+.font-heading-colasta-bold h3,
+.font-heading-colasta-bold h4,
+.font-heading-colasta-bold h5,
+.font-heading-colasta-bold h6 {
+    @media #{$md} {
+        line-height: 1.1;
+    }
+}
+
+.section-spacing {
+    padding-top: 200px;
+    padding-bottom: 200px;
+
+    @media #{$xxl} {
+        padding-top: 130px;
+        padding-bottom: 130px;
+    }
+
+    @media #{$md} {
+        padding-top: 100px;
+        padding-bottom: 100px;
+    }
+
+    @media #{$sm} {
+        padding-top: 70px;
+        padding-bottom: 70px;
+    }
+}
+
+/* hero area style  */
+
+.hero-area {
+    position: relative;
+    z-index: 1;
+    padding-top: 235px;
+    padding-bottom: 135px;
+
+    @media #{$xxl} {
+        padding-top: 175px;
+        padding-bottom: 85px;
+    }
+
+    @media #{$md} {
+        padding-top: 155px;
+
+        padding-bottom: 65px;
+    }
+
+    &:before {
+        position: absolute;
+        content: "";
+        width: 100%;
+        height: 1100px;
+        inset-inline-start: 0px;
+        top: 0px;
+        background: linear-gradient(180deg, #FBF7F4 0%, rgba(251, 247, 244, 0) 100%);
+        z-index: -1;
+    }
+
+    .section-header {
+        display: flex;
+        gap: 40px;
+
+        @media #{$sm} {
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+
+    .text-wrapper {
+        max-width: 410px;
+        margin-inline-start: auto;
+        margin-top: 132px;
+
+        @media #{$xxl} {
+            margin-top: 102px;
+        }
+
+        @media #{$lg} {
+            margin-top: 92px;
+        }
+
+        @media #{$md} {
+            max-width: 220px;
+            margin-top: 57px;
+        }
+
+        @media #{$sm} {
+            max-width: 100%;
+            margin-top: 0;
+        }
+    }
+
+    .section-title-wrapper {
+        max-width: 510px;
+
+        @media #{$xxl} {
+            max-width: 360px;
+        }
+    }
+
+    .shape {
+        margin-top: 123px;
+
+        @media #{$xxl} {
+            margin-top: 93px;
+        }
+
+        @media #{$md} {
+            margin-top: 58px;
+        }
+
+        @media #{$sm} {
+            display: none;
+        }
+
+        img {
+            @include rtl {
+                transform: rotateY(180deg);
+            }
+        }
+    }
+}
+
+/* templates area style  */
+.templates-area {
+    position: relative;
+    z-index: 1;
+
+    .btn-wrap {
+        display: flex;
+        justify-content: center;
+        margin-top: 70px;
+
+        @media #{$lg} {
+            margin-top: 40px;
+
+        }
+    }
+}
+
+.pre-made-templates {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 260px);
+    gap: 30px;
+
+    @media #{$xl} {
+        grid-template-rows: repeat(4, 200px);
+    }
+
+
+    @media #{$md} {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(8, 200px);
+
+    }
+
+    @media #{$sm} {
+        grid-template-rows: repeat(8, 150px);
+
+    }
+}
+
+.pre-template {
+
+    &:nth-child(7n+1) {
+        grid-row: span 2;
+    }
+
+    &:nth-child(7n+3) {
+        grid-row: span 2;
+    }
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 20px;
+    }
+}

@@ -1,0 +1,66 @@
+.container{
+  height: 100vh;
+}
+.imagePicker {
+  border: none;
+  height: 100px;
+}
+
+.cross-btn {
+  height: 20px;
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  color: red;
+  background: #dadada;
+  border-radius: 10px;
+  align-items: center;
+}
+
+.main-heading {
+  font-size: 34px;
+}
+
+.sub-heading {
+  font-size: 18px !important;
+}
+
+.input-with-icon {
+  padding-right: 30px;
+  background-image: url('../../../assets/icons/edit_black.svg');
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: 40px 25px;
+}
+
+.loan-text-amount {
+  font-size: 14px;
+  color: #6BE3AA;
+  margin-top: 5px;
+}
+
+.verify-image{
+  height: 250px;
+  width: 250px;
+}
+
+.loader-icon{
+  height: 50px;
+  width: 50px;
+}
+
+
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.rotate {
+  animation: rotate 5s linear infinite;
+}

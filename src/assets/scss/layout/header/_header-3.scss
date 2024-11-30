@@ -1,0 +1,17 @@
+.header-area__inner {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    position: relative;
+    border-bottom: 1px solid rgba(18, 18, 18, 0.06);
+    height: 80px;
+    margin-left: 90px;
+    justify-content: space-between;
+    max-width: 1550px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}

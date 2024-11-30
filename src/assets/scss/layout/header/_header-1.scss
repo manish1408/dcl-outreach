@@ -1,0 +1,54 @@
+.header-area {
+    &.style-1 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+
+        .header-area__inner {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            height: 90px;
+
+            &>*:first-child {
+                margin-inline-end: auto;
+            }
+        }
+
+        .main-menu li a {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .search-icon {
+            color: var(--primary);
+        }
+
+        .header__meta {
+            @media #{$xs} {
+                display: none;
+            }
+        }
+
+        .wc-btn-primary {
+            padding: 14px 25px;
+
+            @media #{$md} {
+                padding: 11px 20px;
+
+            }
+
+        }
+
+        .header__navicon {
+            img {
+                @include rtl {
+                    transform: rotateY(180deg);
+                }
+            }
+        }
+    }
+
+}

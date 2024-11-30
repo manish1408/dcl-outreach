@@ -1,0 +1,309 @@
+<div *ngIf="apiLoading" class="mt-5 d-flex justify-content-center">
+  <div class="spinner-border text-dark" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+<ng-container *ngIf="!apiLoading">
+  <div class="container  p-3">
+    <div class="row">
+      <div class="col-12 mt-3">
+        <h4 class="title">Apply for you loan (Individual Auto Loan)</h4>
+        <p class="desc">Upload this required document to get started</p>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="nav nav-tabs" id="nav-tab" role="tablist"></div>
+
+        <div class="mt-3">
+          <h4 class="title">Proof Identify</h4>
+          <form>
+
+            <div class="d-flex mt-3 d-grid gap-3">
+              <div class="col-3">
+                <div class="bg-choser">
+                  <div class="">
+                    <img class="proof-img" src="assets/icons/aadhar-card.svg" />
+                    <span class="text">Aadhar Card</span>
+                  </div>
+                  <div class="">
+                    <input class="form-check-input radio-btn" [(ngModel)]="identifyType"
+                      (click)="identifyTypeChange($event,'adharCard')" type="radio" name="identifyType"
+                      value="adharCard" id="adharCard">
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-3">
+                <div class="bg-choser">
+                  <div>
+                    <img class="proof-img" src="assets/icons/passport.svg" />
+                    <span class="text">Passport</span>
+                  </div>
+                  <div class="">
+                    <input class="form-check-input radio-btn" [(ngModel)]="identifyType"
+                      (click)="identifyTypeChange($event,'passport')" type="radio" name="identifyType" value="passport"
+                      id="passport">
+                  </div>
+                </div>
+
+              </div>
+              <div class="col-3">
+                <div class="bg-choser">
+                  <div>
+                    <img class="proof-img" src="assets/icons/detective.svg" />
+                    <span class="text">Driving License</span>
+                  </div>
+                  <div class="">
+                    <input class="form-check-input radio-btn" [(ngModel)]="identifyType"
+                      (click)="identifyTypeChange($event,'drivingLicense')" type="radio" name="identifyType"
+                      value="drivingLicense" id="drivingLicense">
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </form>
+
+        </div>
+        <div class="mt-3">
+
+          <ngx-dropzone (change)="onSelect($event,'proof identify')" class="dropzone dropzone-light bg-light-primary">
+            <ngx-dropzone-label class="dz-message needsclick">
+
+              <div *ngIf="proofOfIdentity.length < 1">
+                <img class="file-img" src="assets/icons/file-upload.svg" />
+                <h5 class="upload-title mt-2">
+                  Drag and Drop or Upload document
+                </h5>
+              </div>
+
+
+              <div *ngIf="uploadLoader" class="d-flex justify-content-center">
+                <div class="spinner-border text-dark" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+
+
+
+              <div *ngIf="proofOfIdentity.length > 0"
+                class="d-flex align-items-center justify-content-start gap-3 mt-4">
+                <div class="file-preview">
+                  {{proofOfIdentity}}
+                </div>
+              </div>
+
+
+            </ngx-dropzone-label></ngx-dropzone>
+          <div *ngIf="imgValidation" class="invalid-img">
+            Files are required
+          </div>
+          <div *ngIf="proofOfIdentity.length > 0" class="d-flex align-items-center justify-content-start gap-3 mt-4">
+            <div class="file-preview">
+              {{proofOfIdentity}}
+            </div>
+          </div>
+        </div>
+
+        <div class="nav nav-tabs mt-5" id="nav-tab" role="tablist"></div>
+
+        <div class="row mt-4">
+          <h4 class="title">Your current banking activity</h4>
+
+          <div class="col-6">
+
+            <div class="mt-3">
+              <ngx-dropzone (change)="onSelect($event,'pan card')" class="dropzone dropzone-light bg-light-primary">
+                <ngx-dropzone-label class="dz-message needsclick">
+
+                  <div *ngIf="panCardFile.length < 1">
+                    <img class="file-img" src="assets/icons/business.svg" />
+                    <h5 class="upload-title mt-2">
+                      Upload PAN card
+                    </h5>
+                  </div>
+
+                  <div *ngIf="uploadLoader" class="d-flex justify-content-center">
+                    <div class="spinner-border text-dark" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+
+                  <div *ngIf="panCardFile.length > 0"
+                    class="d-flex align-items-center justify-content-start gap-3 mt-4">
+                    <div class="file-preview">
+                      {{panCardFile}}
+                    </div>
+                  </div>
+
+
+                </ngx-dropzone-label></ngx-dropzone>
+              <div *ngIf="imgValidation" class="invalid-img">
+                Files are required
+              </div>
+
+            </div>
+          </div>
+
+          <div class="col-6">
+
+            <div class="mt-3">
+              <ngx-dropzone (change)="onFileSelected($event,'bank statement')"
+                class="dropzone dropzone-light bg-light-primary">
+                <ngx-dropzone-label class="dz-message needsclick">
+
+                  <div *ngIf="bankStatementFile.length < 1">
+                    <img class="file-img" src="assets/icons/account.svg" />
+                    <h5 class="upload-title mt-2">
+                      Upload Bank Statement
+                    </h5>
+                  </div>
+
+                  <div *ngIf="uploadLoader" class="d-flex justify-content-center">
+                    <div class="spinner-border text-dark" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+
+                  <div *ngIf="bankStatementFile.length > 0"
+                    class="d-flex align-items-center justify-content-start gap-3 mt-4">
+                    <div class="file-preview">
+                      {{bankStatementFile}}
+                    </div>
+                  </div>
+
+                </ngx-dropzone-label></ngx-dropzone>
+              <div *ngIf="imgValidation" class="invalid-img">
+                Files are required
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav nav-tabs mt-5" id="nav-tab" role="tablist"></div>
+
+        <div class="mt-3">
+          <h4 class="title">Proof Of Address</h4>
+          <form>
+
+            <div class="d-flex mt-3 d-grid gap-3">
+              <div class="col-3">
+                <div class="bg-choser">
+                  <div class="color-picker-container">
+                    <img class="proof-img" src="assets/icons/aadhar-card.svg" />
+                    <span class="text">Aadhar Card</span>
+                  </div>
+                  <div class="">
+                    <input class="form-check-input radio-btn" [(ngModel)]="addressType"
+                      (click)="addressTypeChange($event,'adharCard')" type="radio" name="addressType" value="adharCard"
+                      id="adharCard">
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-3">
+                <div class="bg-choser">
+                  <div class="color-picker-container">
+                    <img class="proof-img" src="assets/icons/passport.svg" />
+                    <span class="text">Passport</span>
+                  </div>
+                  <div class="">
+                    <input class="form-check-input radio-btn" [(ngModel)]="addressType"
+                      (click)="addressTypeChange($event,'passport')" type="radio" name="addressType" value="passport"
+                      id="passport">
+                  </div>
+                </div>
+
+              </div>
+              <div class="col-3">
+                <div class="bg-choser">
+                  <div class="color-picker-container">
+                    <img class="proof-img" src="assets/icons/energy.svg" />
+                    <span class="text">Electricity Bill</span>
+                  </div>
+                  <div class="">
+                    <input class="form-check-input radio-btn" [(ngModel)]="addressType"
+                      (click)="addressTypeChange($event,'electricityBill')" type="radio" name="addressType"
+                      value="electricityBill" id="electricityBill">
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </form>
+
+        </div>
+        <div class="mt-3">
+
+          <ngx-dropzone (change)="onSelect($event,'proof address')" class="dropzone dropzone-light bg-light-primary">
+            <ngx-dropzone-label class="dz-message needsclick">
+
+
+              <div *ngIf="proofAddressFile.length < 1">
+                <img class="file-img" src="assets/icons/file-upload.svg" />
+                <h5 class="upload-title mt-2">
+                  Upload document
+                </h5>
+              </div>
+
+              <div *ngIf="uploadLoader" class="d-flex justify-content-center">
+                <div class="spinner-border text-dark" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+
+              <div *ngIf="proofAddressFile.length > 0"
+                class="d-flex align-items-center justify-content-start gap-3 mt-4">
+                <div class="file-preview">
+                  {{panCardFile}}
+                </div>
+              </div>
+
+
+            </ngx-dropzone-label></ngx-dropzone>
+          <div *ngIf="imgValidation" class="invalid-img">
+            Files are required
+          </div>
+        </div>
+        <div class="mt-3 d-flex  flex-row justify-content-end">
+          <button type="submit" [disabled]="loading" class="btn btn-primary"  (click)="nextStep(1)">
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Verification Modal -->
+<div class="modal fade" id="verificationModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-body" *ngIf="validateAadhar">
+        <div class=" d-flex flex-column align-items-center ">
+          <img src="assets/images/Wavy_Bus.svg" class="verify-image">
+          <img src="assets/icons/loader-icon.svg" class="loader-icon rotate ">
+          <h6 class="form-label  mt-3">Please Wait While We Validate the documents </h6>
+        </div>
+      </div>
+
+      <div class="modal-body" *ngIf="!validateAadhar">
+        <div class=" d-flex flex-column align-items-center ">
+          <img src="assets/images/Wavy_Bus.svg" class="verify-image">
+          <ng-otp-input #ngOtpInput [config]="config" (onInputChange)="onOtpChange($event)" id="otp-button"
+          [formCtrl]="code"></ng-otp-input>
+          <h6 class="form-label  mt-3">Upload your aadhar OTP to validate </h6>
+        </div>
+      </div>
+
+
+      <div class="modal-footer d-flex justify-content-end">
+        <button [disabled]="loading" (click)="submitAadharOTP()"  class="btn btn-primary">
+          <span data-text="Submit">Submit</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

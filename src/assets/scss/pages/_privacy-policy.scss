@@ -1,0 +1,261 @@
+:root {
+    --primary: #0F2552;
+}
+
+.wc-btn-primary {
+    background-color: var(--theme);
+    border-color: var(--theme);
+
+    &:hover {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    &.bordered {
+        border-color: var(--border);
+    }
+}
+
+.section-title {
+    font-size: 60px;
+
+    @media #{$xxl} {
+        font-size: 55px;
+    }
+
+    @media #{$lg} {
+        font-size: 40px;
+    }
+
+    @media #{$md} {
+        font-size: 35px;
+    }
+
+    @media #{$sm} {
+        font-size: 30px;
+    }
+
+    &.large {
+        font-size: 90px;
+
+        @media #{$xxl} {
+            font-size: 70px;
+        }
+
+        @media #{$lg} {
+            font-size: 60px;
+        }
+
+        @media #{$md} {
+            font-size: 40px;
+        }
+
+        @media #{$sm} {
+            font-size: 30px;
+        }
+    }
+}
+
+.font-heading-colasta-bold h1,
+.font-heading-colasta-bold h2,
+.font-heading-colasta-bold h3,
+.font-heading-colasta-bold h4,
+.font-heading-colasta-bold h5,
+.font-heading-colasta-bold h6 {
+    @media #{$md} {
+        line-height: 1.1;
+    }
+}
+
+.section-spacing {
+    padding-top: 200px;
+    padding-bottom: 200px;
+
+    @media #{$xxl} {
+        padding-top: 130px;
+        padding-bottom: 130px;
+    }
+
+    @media #{$md} {
+        padding-top: 100px;
+        padding-bottom: 100px;
+    }
+
+    @media #{$sm} {
+        padding-top: 70px;
+        padding-bottom: 70px;
+    }
+}
+
+/* hero area style  */
+
+.hero-area {
+    position: relative;
+    z-index: 1;
+    padding-top: 235px;
+    padding-bottom: 135px;
+
+    @media #{$xxl} {
+        padding-top: 175px;
+        padding-bottom: 85px;
+    }
+
+    @media #{$md} {
+        padding-top: 155px;
+
+        padding-bottom: 65px;
+    }
+
+    &:before {
+        position: absolute;
+        content: "";
+        width: 100%;
+        height: 1100px;
+        inset-inline-start: 0px;
+        top: 0px;
+        background: linear-gradient(180deg, #FBF7F4 0%, rgba(251, 247, 244, 0) 100%);
+        z-index: -1;
+    }
+
+    .section-header {
+        display: flex;
+        gap: 40px;
+
+        @media #{$sm} {
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+
+    .text-wrapper {
+        max-width: 410px;
+        margin-inline-start: auto;
+        margin-top: 132px;
+
+        @media #{$xxl} {
+            margin-top: 102px;
+        }
+
+        @media #{$lg} {
+            margin-top: 92px;
+            max-width: 300px;
+
+        }
+
+        @media #{$md} {
+            max-width: 220px;
+            margin-top: 57px;
+        }
+
+        @media #{$sm} {
+            max-width: 100%;
+            margin-top: 0;
+        }
+    }
+
+    .section-title-wrapper {
+        max-width: 520px;
+
+        @media #{$xxl} {
+            max-width: 410px;
+        }
+    }
+
+    .shape {
+        margin-top: 123px;
+
+        @media #{$xxl} {
+            margin-top: 93px;
+        }
+
+        @media #{$md} {
+            margin-top: 58px;
+        }
+
+        @media #{$sm} {
+            display: none;
+        }
+
+        img {
+            @include rtl {
+                transform: rotateY(180deg);
+            }
+        }
+    }
+}
+
+/* policy area style  */
+.policy-area {
+    position: relative;
+    z-index: 1;
+}
+
+.policy-wrapper {
+    display: grid;
+    gap: 20px 140px;
+    grid-template-columns: 300px auto;
+
+    @media #{$xl} {
+        gap: 20px 80px;
+
+    }
+
+    @media #{$md} {
+        grid-template-columns: 100%;
+    }
+
+    .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        @media #{$md} {
+            flex-direction: row;
+            flex-wrap: nowrap;
+            overflow-x: scroll;
+            scrollbar-width: thin;
+            padding-bottom: 10px;
+        }
+    }
+
+    .nav-link {
+        width: 100%;
+        text-align: start;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--primary);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: 22px 30px;
+        white-space: nowrap;
+
+        @media #{$md} {
+            padding: 16px 24px;
+        }
+
+        &.active {
+            background-color: var(--theme);
+            border-color: transparent;
+        }
+    }
+
+    .section-title {
+        font-size: 18px;
+        line-height: 1.25;
+        margin-bottom: 21px;
+
+        &.large {
+            font-size: 24px;
+        }
+
+        &:not(:first-child) {
+            margin-top: 51px;
+        }
+    }
+
+    .text-wrapper {
+        .text:not(:last-child) {
+            margin-bottom: 23px;
+        }
+    }
+}

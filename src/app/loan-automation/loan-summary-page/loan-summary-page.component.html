@@ -1,0 +1,310 @@
+<div class="container">
+  <div class="row pt-3">
+    <div class="col-1 p-0">
+      <img src="assets/icons/data.svg" />
+    </div>
+    <div class="col-8 p-0">
+      <h4 class="title mt-3 text-primary">Auto Loan Report Summary</h4>
+      <p class="desc">
+        AI has analyzed the customer data and came to below conclusion
+      </p>
+    </div>
+  </div>
+  <div class="nav nav-tabs mt-5" id="nav-tab" role="tablist"></div>
+
+  <div class="row mt-4">
+
+    <div class="col-12 mt-4">
+      <div class="card script-card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-1">
+              <img src="assets/icons/Huge-icon.svg" alt="icon-image" class="icon-image" />
+            </div>
+            <div class="col-9">
+              <h4 class="title">Eligible for loan</h4>
+              <small>
+                AI has analyzed the customer data. The cibil score is <span class="text-success">790</span> which qualifies for a good candidate for
+                proceeding with the Loan.
+              </small>
+            </div>
+            <div class="col-2">
+              <div class="badge text-bg-primary me-1">
+                <h6 class="mt-2">Confidence &nbsp;&nbsp; 97%</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row mt-4">
+      <img src="assets/icons/focus.svg" style="height: 80px;width: 80px;" />
+      <div class="col-8 p-0">
+        <h4 class="title mt-3">Customer Identity</h4>
+        <p>Adhar card was validated from government recorded</p>
+      </div>
+    </div>
+
+
+    <div class="col-12">
+      <div class="card customer-card">
+        <div class="card-body d-flex align-items-center flex-wrap">
+          
+          <!-- Cibil Score Gauge -->
+          <div class="chart-view">
+            <ngx-gauge type="semi" [label]="'Cibil Score'" [thick]="gaugeThick" [value]="gaugevalue"
+              [thresholds]="gaugethresholds" [max]="gaugemax">
+            </ngx-gauge>
+          </div>
+    
+          <!-- Main Card Section with Aadhaar and Loan Data -->
+          <div class="d-flex align-items-center flex-column main-card">
+            
+            <!-- First Row: Aadhaar Details -->
+            <div class="d-flex align-items-center flex-row justify-content-between flex-wrap" style="width: 100%">
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Name</span>
+                <span>{{ aadhardata['Name'] }}</span>
+              </div>
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Date Of Birth</span>
+                <span>{{ panData['DOB'] }}</span>
+              </div>
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Nationality</span>
+                <span>Indian</span> <!-- Static as example -->
+              </div>
+
+             
+             
+            </div>
+    
+            <div class="d-flex align-items-center flex-row justify-content-between flex-wrap" style="width: 100%">
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Address</span>
+                <span>{{ aadhardata['Address'] }}</span>
+              </div>
+            </div>
+            <!-- Second Row: Additional Aadhaar Details -->
+            <div class="d-flex align-items-center flex-row justify-content-between flex-wrap" style="width: 100%">
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>PAN Number</span>
+                <span>{{ panData['PAN Number'] }}</span> <!-- Replace with actual PAN if available -->
+              </div>
+
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Aadhar Number</span>
+                <span>{{ aadhardata['Aadhar number'] }}</span>
+              </div>
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Age</span>
+                <span>{{ age }} years</span> <!-- Calculated Age -->
+              </div>
+              
+             
+            </div>
+    
+            <!-- Third Row: Loan Data -->
+            <div class="d-flex align-items-center flex-row justify-content-between flex-wrap" style="width: 100%">
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Employment Type</span>
+                <span>{{ loanFormData.employmentType }}</span>
+              </div>
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Experience</span>
+                <span>{{ loanFormData.experience }}</span>
+              </div>
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Gross Annual Income</span>
+                <span>₹{{ loanFormData.grossAnnualIncome | number }}</span>
+              </div>
+            </div>
+    
+            <!-- Fourth Row: Loan Amount and EMIs -->
+            <div class="d-flex align-items-center flex-row justify-content-between flex-wrap" style="width: 100%">
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Loan Amount</span>
+                <span>₹{{ loanFormData.loanAmount | number }}</span>
+              </div>
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Total EMIs</span>
+                <span>{{ loanFormData.emis }}</span>
+              </div>
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Occupation</span>
+                <span>{{ loanFormData.professionalType }}</span>
+              </div>
+            </div>
+    
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-1 p-0">
+      <img style="width: 72px;padding-top: 10px;padding-left: 10px;" src="assets/icons/account-profile.svg" />
+    </div>
+    <div class="col-8 p-0">
+      <h4 class="title mt-3">KYC</h4>
+      <p>KYC data cross referenced with government data</p>
+    </div>
+  </div>
+
+  <div class="col-12 mt-4">
+    <div class="card script-card">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <img src="assets/icons/Huge-icon_checked.svg" />
+          <div class="d-flex flex-column">
+            <span class="bold-text">Aadhar</span>
+            <span class="light-text">Verified</span>
+          </div>
+        </div>
+        <div class="d-flex align-items-center">
+          <img src="assets/icons/Huge-icon_checked.svg" />
+          <div class="d-flex flex-column">
+            <span class="bold-text">PAN</span>
+            <span class="light-text">Verified</span>
+          </div>
+        </div>
+        <div class="d-flex align-items-center">
+          <img src="assets/icons/Huge-icon_checked.svg" />
+          <div class="d-flex flex-column">
+            <span class="bold-text">Passport</span>
+            <span class="light-text">Verified</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <img src="assets/icons/finance.svg" style="height: 80px;width: 80px;" />
+    <div class="col-8 p-0">
+      <h4 class="title mt-3">Customer Finance</h4>
+      <p>AI gathered data backed by evidence</p>
+    </div>
+
+    <div class="col-12">
+      <div class="card customer-card pb-4">
+        <div class="card-body d-flex align-items-center flex-wrap">
+          <div class="d-flex align-items-center flex-column main-card">
+            <div class="d-flex align-items-center flex-row justify-content-between flex-wrap" style="width: 100%">
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Income in Last 6 months</span>
+                <span>₹{{ totalIncomeLast6Months | number: '1.2-2' }}</span>
+              </div>
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Avg. Monthly Income</span>
+                <span>₹{{ averageMonthlyIncome | number: '1.2-2' }}</span>
+              </div>
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Total EMIs</span>
+                <span>{{ loanFormData.emis | number }}</span>
+              </div>
+              <!-- <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Experience</span>
+                <span>Manish Gautam</span>
+              </div> -->
+            </div>
+            <div class="d-flex align-items-center flex-row justify-content-between flex-wrap" style="width: 100%">
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Gross Income (6 months)</span>
+                <span>₹{{ grossIncomeLast6Months | number: '1.2-2' }}</span>
+              </div>
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Debt to Equity Ratio</span>
+                <span><span class="text-warning">{{ debtToEquityRatio | number: '1.2-2' }}</span></span>
+              </div>
+              <div class="d-flex align-items-start flex-column demographics-info">
+                <span>Total Applied amount</span>
+                <span>₹{{ loanFormData.loanAmount | number: '1.2-2' }}</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div *ngIf="monthyDataLoading">
+        <div class=" d-flex flex-column align-items-center ">
+          <img src="assets/icons/loader-icon.svg" class="loader-icon rotate ">
+          <h6 class="form-label  mt-3">Please Wait </h6>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="accordion mt-4" id="transactionAccordion">
+    <div *ngFor="let monthData of monthlyData; let i = index" class="accordion-item">
+      <h2 class="accordion-header" [attr.id]="'heading' + i">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          [attr.data-bs-target]="'#collapse' + i"
+          aria-expanded="false"
+          [attr.aria-controls]="'collapse' + i"
+        >
+          <span>{{ monthData.month }} {{ monthData.year }}</span>
+          <span class="monthly-totals ms-auto">
+            <span class="text-debit">Debit: ₹{{ monthData.totalDebit | number: '1.2-2' }}</span> |
+            <span class="text-credit">Credit: ₹{{ monthData.totalCredit | number: '1.2-2' }}</span>
+          </span>
+        </button>
+      </h2>
+      <div
+        [attr.id]="'collapse' + i"
+        class="accordion-collapse collapse"
+        [attr.aria-labelledby]="'heading' + i"
+        data-bs-parent="#transactionAccordion"
+      >
+        <div class="accordion-body">
+          
+          <!-- Transaction Table -->
+          <table class="table table-bordered" style="font-size: 13px;">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Particulars</th>
+                <th>Debit</th>
+                <th>Credit</th>
+                <th>Balance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let transaction of monthData.transactions">
+                <td>{{ transaction.trans_date | date: 'dd-MM-yyyy' }}</td>
+                <td>{{ transaction.particular }}</td>
+                <td [ngStyle]="{'color': transaction.debit ? 'red' : 'inherit'}">
+                  {{ transaction.debit || '-' }}
+                </td>
+                <td [ngStyle]="{'color': transaction.credit ? 'green' : 'inherit'}">
+                  {{ transaction.credit || '-' }}
+                </td>
+                <td>{{ transaction.balance }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  
+  <div class="nav nav-tabs mt-5" id="nav-tab" role="tablist"></div>
+
+</div>

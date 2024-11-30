@@ -1,0 +1,48 @@
+<div class="container-fluid mt-5">
+  <div *ngIf="loading" class="mt-5 d-flex justify-content-center">
+    <div class="spinner-border text-dark" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  <ng-container *ngIf="!loading">
+    <div class="table-responsive" *ngIf="visitors.length >= 1">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Device</th>
+            <th scope="col">Created at</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of visitors">
+            <td>{{ a?.name }}</td>
+            <td>{{ a?.email }}</td>
+            <td>{{ a?.phone }}</td>
+            <td>{{ a?.deviceType }}</td>
+            <td>{{ a?.createdAt | date : "dd MMM yyyy" }}</td>
+            <td>
+              <img
+                src="/assets/images/icons8-eye.png"
+                src="/assets/images/icons8-trash.png"
+                class="action-icon"
+                (click)="confirmDelete(a?._id)"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div
+      *ngIf="visitors.length < 1"
+      class="alert mt-4 d-flex justify-content-center"
+      role="alert"
+    >
+      You do not have any visitors yet!
+    </div>
+  </ng-container>
+</div>

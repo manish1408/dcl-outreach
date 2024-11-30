@@ -1,0 +1,422 @@
+<div *ngIf="apiLoading" class="mt-5 d-flex justify-content-center">
+  <div class="spinner-border text-dark" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+<ng-container *ngIf="!apiLoading">
+  <div class="my__content__tab__btn">
+    <div class="row">
+      <div class="col-5">
+        <h4 class="title">Knowledge</h4>
+        <p class="desc">
+          Add the following code snippet to your website’s pages
+        </p>
+      </div>
+      <div class="col-7">
+        <button
+          *ngIf="activeTab === 'files'"
+          type="button"
+          class="btn btn-primary float-end"
+          data-bs-toggle="modal"
+          data-bs-target="#addFiles"
+        >
+          <img src="assets/icons/plus.svg" /> Add New
+        </button>
+        <button
+          *ngIf="activeTab === 'website'"
+          type="button"
+          class="btn btn-primary float-end"
+          data-bs-toggle="modal"
+          data-bs-target="#addWebsite"
+        >
+          <img src="assets/icons/plus.svg" /> Add New
+        </button>
+        <button
+          *ngIf="activeTab === 'articles'"
+          type="button"
+          class="btn btn-primary float-end"
+          data-bs-toggle="modal"
+          data-bs-target="#addArticle"
+        >
+          <img src="assets/icons/plus.svg" /> Add New
+        </button>
+      </div>
+    </div>
+
+    <nav class="mt-4">
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a
+          class="nav-link"
+          [class.active]="activeTab === 'files'"
+          (click)="setActiveTab('files')"
+          type="button"
+          role="tab"
+        >
+          Files
+        </a>
+        <a
+          class="nav-link"
+          [class.active]="activeTab === 'website'"
+          (click)="setActiveTab('website')"
+          type="button"
+          role="tab"
+        >
+          Website
+        </a>
+        <a
+          class="nav-link"
+          [class.active]="activeTab === 'articles'"
+          (click)="setActiveTab('articles')"
+          type="button"
+          role="tab"
+        >
+          Articles
+        </a>
+      </div>
+    </nav>
+  </div>
+  <div class="tab-content">
+    <div
+      class="tab-pane fade"
+      [class.show]="isActiveTab('files')"
+      [class.active]="isActiveTab('files')"
+    >
+      <div class="table-responsive" *ngIf="uploadedDocs.length >= 1">
+        <button 
+        type="button"
+          class="btn btn-primary float-start mt-3 mb-3"
+        (click)="ingestFile()">Ingest</button>
+        <table class="table mt-3">
+          <thead>
+            <tr>
+              <th scope="col">Title</th>
+              <th scope="col">Created at</th>
+              <th scope="col">Type</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let a of uploadedDocs">
+              <td>{{ a?.originalname }}</td>
+              <td>{{ a.createdAt | date : "MM-dd-yy HH:mm" }}</td>
+              <td>
+                <img
+                  *ngIf="isImageSrc(a?.fileType)"
+                  [src]="a.fileUrl"
+                  class="file-icon-img"
+                />
+                <img
+                  *ngIf="!isImageSrc(a?.fileType)"
+                  [src]="getFileIcon(a?.fileType)"
+                  class="file-icon"
+                />
+              </td>
+              <td>
+                <div
+                  class="d-flex align-items-center justify-content-start gap-2 action-wrapper"
+                >
+                  <img
+                    src="assets/icons/eye.svg"
+                    (click)="openFileLink(a?.fileUrl)"
+                    class="cursor-pointer"
+                  />
+
+                  <img
+                    src="assets/icons/trash.svg"
+                    (click)="confirmDelete(a?.fileId)"
+                    class="cursor-pointer"
+                  />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div
+        *ngIf="uploadedDocs.length < 1"
+        class="alert mt-4 d-flex justify-content-center"
+        role="alert"
+      >
+        You have not uploaded any files yet!
+      </div>
+    </div>
+    <div
+      class="tab-pane fade"
+      [class.show]="isActiveTab('website')"
+      [class.active]="isActiveTab('website')"
+    >
+      <div class="table-responsive">
+        <button type="button"
+        class="btn btn-primary float-start mt-3 mb-3" (click)="ingestWebUrl()">Ingest</button>
+        <table class="table mt-3">
+          <thead>
+            <tr>
+              <th scope="col">Title</th>
+              <th scope="col">Domain</th>
+              <th scope="col">Url</th>
+              <th scope="col">Created at</th>
+              <th scope="col">Status</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let website of WebsitesUrlList">
+              <td>{{website?.title}}</td>
+              <td>{{website?.domain}}</td>
+              <td>{{website?.url}}</td>
+              <td>{{website?.createdAt | date : "MM-dd-yy HH:mm" }}</td>
+              <td>
+                <span class="badge badge rounded-pill text-bg-warning" *ngIf="website?.status === 'pending'">Pending</span>
+                <span class="badge badge rounded-pill text-bg-success" *ngIf="website?.status === 'success'">Success</span>
+                <span class="badge badge rounded-pill text-bg-danger" *ngIf="website?.status === 'failed'">Failed</span>
+              </td>
+              <td>
+                <img src="assets/icons/eye.svg" (click)="viewUrl(website?.url)" class="cursor-pointer me-2" />
+                <img (click)="deleteWebsiteUrl(website?.id)" class="cursor-pointer me-2" src="assets/icons/trash.svg"/>
+                <img (click)="deleteWebsiteUrl(website?.id)" class="cursor-pointer me-2" src="assets/icons/setting.svg"  />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div
+      class="tab-pane fade"
+      [class.show]="isActiveTab('articles')"
+      [class.active]="isActiveTab('articles')"
+    >
+      <!-- <button
+        type="button"
+        class="btn btn-primary "
+        data-bs-toggle="modal"
+        data-bs-target="#addArticle"
+      >
+        <img src="assets/icons/plus.svg" /> Add New
+      </button> -->
+      <div class="table-responsive">
+        <button type="button"
+        class="btn btn-primary float-start mt-3 mb-3" (click)="ingestArticle()">Ingest</button>
+        <table class="table mt-3">
+          <thead>
+            <tr>
+              <th scope="col">Heading</th>
+              <th scope="col">Body</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let article of articlesList">
+              <td>{{ article.heading }}</td>
+              <td>{{ article.body }}</td>
+              <td>
+                <img
+                  src="assets/icons/eye.svg"
+                  data-bs-toggle="modal"
+                  data-bs-target="#addArticle"
+                  (click)="editArticle(article)"
+                  class="cursor-pointer me-2"
+                />
+
+                <img
+                  src="assets/icons/trash.svg"
+                  (click)="deleteArticle(article._id)"
+                  class="cursor-pointer"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<!-- Add Files Modal -->
+<div class="modal fade" id="addFiles">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Add Files</h5>
+        <i class="fa-solid fa-xmark" data-bs-dismiss="modal"></i>
+      </div>
+      <div class="modal-body">
+        <div class="mt-3">
+          <ngx-dropzone
+            (change)="onSelect($event)"
+            class="dropzone dropzone-light bg-light-primary"
+          >
+            <ngx-dropzone-label class="dz-message needsclick">
+              <img class="file-img" src="assets/icons/file-upload.svg" />
+              <h5 class="upload-title mt-2">
+                Drag your files here, or browser
+              </h5>
+              <p class="allows-text">
+                Allows JPG, PNG, PDF, XLS and TEXT. Max size 10MB
+              </p>
+            </ngx-dropzone-label></ngx-dropzone
+          >
+          <div *ngIf="imgValidation" class="invalid-img">
+            Files are required
+          </div>
+          <div
+            *ngIf="imgFiles.length > 0"
+            class="d-flex align-items-center justify-content-start gap-3 mt-4"
+          >
+            <ng-container *ngFor="let f of imgFiles">
+              <div class="file-preview">
+                <img
+                  *ngIf="isImage(f)"
+                  [src]="getImageSrc(f)"
+                  alt="Image Preview"
+                  class="img-file"
+                />
+                <img
+                  *ngIf="!isImage(f)"
+                  [src]="getFileIcon(f.type)"
+                  class="img-file"
+                />
+                <button (click)="onRemove($event, f)" class="remove-btn">
+                  <img src="assets/icons/cross-red.svg" />
+                </button>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer d-flex justify-content-end">
+        <button data-bs-dismiss="modal" class="btn btn-outline-secondary">
+          Cancel
+        </button>
+        <button
+          [disabled]="loading"
+          (click)="onSubmitImg()"
+          data-bs-dismiss="modal"
+          class="btn btn-primary"
+        >
+          <span data-text="Submit">{{
+            loading ? "Submitting..." : "Submit"
+          }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Website Modal -->
+<div class="modal fade" id="addWebsite">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form [formGroup]="websiteForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Add Website</h5>
+          <i class="fa-solid fa-xmark" data-bs-dismiss="modal"></i>
+        </div>
+        <div class="modal-body">
+          <div class="col-12">
+            <div class="mb-3">
+              <label for="title" class="form-label">Title</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Add Title of website"
+                formControlName="title"
+                [ngClass]="{ 'is-invalid': hasError('title') }"
+              />
+              <div class="invalid-feedback">Title is required</div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="websiteUrl" class="form-label">Website Url</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Add your website Url"
+                formControlName="websiteUrl"
+                [ngClass]="{ 'is-invalid': hasError('websiteUrl') }"
+              />
+              <div class="invalid-feedback">Website Url is required</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-end">
+          <button #websiteCancelButton data-bs-dismiss="modal" (click)="this.websiteForm.reset();" class="btn btn-outline-secondary">
+            Cancel
+          </button>
+          <button
+            [disabled]="loading"
+            type="submit"
+            class="btn btn-primary"
+            (click)="submitWebsiteUrl()"
+          >
+            <span data-text="Submit">{{
+              loading ? "Submitting..." : "Submit"
+            }}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Add Article Modal -->
+<div class="modal fade" id="addArticle">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form [formGroup]="articleForm" class="user-form">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Add Article</h5>
+          <i class="fa-solid fa-xmark" data-bs-dismiss="modal"></i>
+        </div>
+        <div class="modal-body">
+          <div class="form-wrapper">
+            <div
+              class="d-flex align-items-center justify-content-between gap-5 mb-5"
+            >
+              <div class="w-100">
+                <div class="input-field">
+                  <input
+                    formControlName="heading"
+                    [maxlength]="300"
+                    placeholder="Heading"
+                    class="form-control"
+                    [ngClass]="{ 'is-invalid': hasArticleError('heading') }"
+                  />
+                  <div class="invalid-feedback">Heading type is required</div>
+                </div>
+                <div class="input-field mt-4">
+                  <textarea
+                    formControlName="body"
+                    [maxlength]="600"
+                    placeholder="Body"
+                    class="form-control"
+                    [ngClass]="{ 'is-invalid': hasArticleError('body') }"
+                  ></textarea>
+                  <div class="invalid-feedback">Body type is required</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-end">
+          <button
+            data-bs-dismiss="modal"
+            #articleCloseBtn
+            class="btn btn-outline-secondary"
+            (click)="articleForm.reset(); isEditArticle = false"
+          >
+            Cancel
+          </button>
+          <button
+            [disabled]="loading"
+            type="submit"
+            class="btn btn-primary"
+            (click)="onSubmitArticle()"
+          >
+            <span data-text="Submit">{{
+              loading ? "Submitting..." : "Submit"
+            }}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,352 @@
+<div *ngIf="apiLoading" class="d-flex justify-content-center">
+  <div class="spinner-border text-dark" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<ng-container *ngIf="!apiLoading">
+  <div class="row">
+    <div class="col-8">
+      <h4 class="title">Persona</h4>
+      <p class="desc">Add persona of the bot</p>
+    </div>
+    <div class="col-4">
+      <button
+        type="submit"
+        class="btn btn-primary float-end"
+        (click)="updatePersona()"
+        [disabled]="loading"
+      >
+        <div
+          *ngIf="loading"
+          class="spinner-border spinner-border-sm"
+          role="status"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </div>
+
+        Update persona
+      </button>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-12">
+      <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+          <a
+            class="nav-link active"
+            id="nav-home-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#nav-home"
+            type="button"
+            role="tab"
+            aria-controls="nav-home"
+            aria-selected="true"
+          >
+            Identity and company
+          </a>
+          <a
+            class="nav-link"
+            id="nav-profile-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#nav-profile"
+            type="button"
+            role="tab"
+            aria-controls="nav-profile"
+            aria-selected="false"
+          >
+            Tone and Style
+          </a>
+          <a
+            class="nav-link"
+            id="nav-contact-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#nav-contact"
+            type="button"
+            role="tab"
+            aria-controls="nav-contact"
+            aria-selected="false"
+          >
+            Manners
+          </a>
+        </div>
+      </nav>
+      <form [formGroup]="personaForm">
+        <div class="tab-content" id="nav-tabContent">
+          <div
+            class="tab-pane fade show active mt-5"
+            id="nav-home"
+            role="tabpanel"
+            aria-labelledby="nav-home-tab"
+          >
+            <div class="row">
+              <div class="col-6">
+                <div class="mb-3">
+                  <label for="exampleFormControlInput1" class="form-label"
+                    >Agent name</label
+                  >
+
+                  <input
+                    [maxlength]="300"
+                    formControlName="agentName"
+                    [ngClass]="{
+                      'is-invalid': hasError('agentName')
+                    }"
+                    type="text"
+                    class="form-control"
+                  />
+                  <div class="invalid-feedback">Agent Name is required</div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="exampleFormControlInput1" class="form-label"
+                    >Company name</label
+                  >
+                  <input
+                    formControlName="companyName"
+                    [ngClass]="{
+                      'is-invalid': hasError('companyName')
+                    }"
+                    type="text"
+                    class="form-control"
+                  />
+                  <div class="invalid-feedback">Company Name is required</div>
+                </div>
+                <div class="mb-3">
+                  <label for="exampleFormControlInput1" class="form-label m-0"
+                    >Agent Avatar</label
+                  >
+                  <p class="desc mb-2">
+                    Build the API call for this action, including inputs from
+                    chat, variables, metadata, or tokens.
+                  </p>
+                  <input type="file" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                  <label for="exampleFormControlTextarea1" class="form-label"
+                    >Company description</label
+                  >
+                  <textarea
+                    [maxlength]="600"
+                    [ngClass]="{
+                      'is-invalid': hasError('description')
+                    }"
+                    formControlName="description"
+                    class="form-control"
+                    id="exampleFormControlTextarea1"
+                    rows="3"
+                  ></textarea>
+                  <div class="invalid-feedback">Description is required</div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="exampleFormControlTextarea1" class="form-label"
+                    >Welcome message</label
+                  >
+                  <textarea
+                    [maxlength]="600"
+                    formControlName="welcomeMessage"
+                    [ngClass]="{
+                      'is-invalid': hasError('welcomeMessage')
+                    }"
+                    class="form-control"
+                    id="exampleFormControlTextarea1"
+                    rows="3"
+                  ></textarea>
+                  <div class="invalid-feedback">
+                    Welcome Message is required
+                  </div>
+                </div>
+              </div>
+              <div class="col-6"></div>
+            </div>
+          </div>
+          <div
+            class="tab-pane fade mt-5"
+            id="nav-profile"
+            role="tabpanel"
+            aria-labelledby="nav-profile-tab"
+          >
+            <div class="row">
+              <div class="col-6">
+                <div class="mb-3">
+                  <label for="exampleFormControlInput1" class="form-label"
+                    >Language</label
+                  >
+                  <select
+                    formControlName="language"
+                    class="form-select"
+                    aria-label="Default select example"
+                  >
+                    <option selected value="english">English</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="exampleFormControlInput1" class="form-label"
+                    >Acsent</label
+                  >
+                  <select
+                    formControlName="acsent"
+                    class="form-select"
+                    aria-label="Default select example"
+                  >
+                    <option value="UK">UK English</option>
+                    <option value="US">US English</option>
+                    <option value="Australian">Australian English</option>
+                    <option value="Indian">Indian English</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="exampleFormControlInput1" class="form-label"
+                    >Tone of voice</label
+                  >
+                  <select
+                    formControlName="toneOfVoice"
+                    class="form-select"
+                    aria-label="Default select example"
+                  >
+                    <option value="freindly">Freindly</option>
+                    <option value="sophisticated">Sophisticated</option>
+                    <option value="playful">Playful</option>
+                    <option value="painspoken">Painspoken</option>
+                  </select>
+                </div>
+
+                <div
+                  class="d-flex align-items-center justify-content-start mb-3 gap-4"
+                >
+                  <label for="emoji-usage" class="form-label m-0"
+                    >Allow emoji usage</label
+                  >
+                  <label class="switch">
+                    <input
+                      id="emoji-usage"
+                      type="checkbox"
+                      formControlName="emojiUsage"
+                      [checked]="personaForm.value.emojiUsage"
+                    />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div class="mb-3">
+                  <label for="exampleFormControlInput1" class="form-label"
+                    >Message length</label
+                  >
+                  <select
+                    formControlName="messageLength"
+                    class="form-select"
+                    aria-label="Default select example"
+                  >
+                    <option value="normal">Normal</option>
+                    <option value="concise">Concise</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="exampleFormControlTextarea1" class="form-label"
+                    >Multistep instructions</label
+                  >
+                  <select
+                    formControlName="multistepInstruction"
+                    class="form-select"
+                    aria-label="Default select example"
+                  >
+                    <option value="single-step">Limit to a single step</option>
+                    <option value="multi-step">Send 2-3 steps at a time</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-6"></div>
+            </div>
+          </div>
+          <div
+            class="tab-pane fade mt-5"
+            id="nav-contact"
+            role="tabpanel"
+            aria-labelledby="nav-contact-tab"
+          >
+            <div class="row">
+              <div class="col-6">
+                <div class="card shadow-sm p-3 mb-3">
+                  <div
+                    class="d-flex align-items-center justify-content-between"
+                  >
+                    <div>
+                      <h2 class="title">Ask if more help is needed</h2>
+                      <p class="desc">
+                        After attempting to resolve an inquiry, the AI Agent
+                        will ask if the customer needs more help
+                      </p>
+                    </div>
+
+                    <label class="switch">
+                      <input
+                        type="checkbox"
+                        formControlName="moreHelp"
+                        [checked]="personaForm.value.moreHelp"
+                      />
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="card shadow-sm p-3 mb-3">
+                  <div
+                    class="d-flex align-items-center justify-content-between"
+                  >
+                    <div>
+                      <h2 class="title">
+                        Don't mention customers' personal info
+                      </h2>
+                      <p class="desc">
+                        The AI Agent will not mention personal info, such as a
+                        customer's name or email, in conversation
+                      </p>
+                    </div>
+
+                    <label class="switch">
+                      <input
+                        type="checkbox"
+                        formControlName="personalInfo"
+                        [checked]="personaForm.value.personalInfo"
+                      />
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="card shadow-sm p-3 mb-3">
+                  <div
+                    class="d-flex align-items-center justify-content-between"
+                  >
+                    <div>
+                      <h2 class="title">Don't talk about competitors</h2>
+                      <p class="desc">
+                        The AI Agent will refrain from engaging in conversation
+                        about your competitors
+                      </p>
+                    </div>
+
+                    <label class="switch">
+                      <input
+                        type="checkbox"
+                        formControlName="competitors"
+                        [checked]="personaForm.value.competitors"
+                      />
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6"></div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</ng-container>

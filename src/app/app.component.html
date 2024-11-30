@@ -1,1 +1,48 @@
-<router-outlet></router-outlet>
+<ng-container>
+  <div class="wrapper">
+    <!-- Sidebar -->
+    <aside id="sidebar" [class.collapsed]="isCollapsed">
+      <div class="w-100">
+        <!-- Sidebar Navigation -->
+
+        <div class="d-flex align-items-center justify-content-between">
+         <span style="font-size: 18px; color: #fff;">Customer portal</span>
+          <img
+            src="assets/icons/arrow-square-left.svg"
+            (click)="toggleSidebar()"
+            class="cursor-pointer"
+          />
+        </div>
+
+        <ul class="sidebar-nav mt-4">
+          <li class="sidebar-item">
+            <a
+              routerLink="/prompts"
+              routerLinkActive="active-link"
+              class="sidebar-link"
+              #rla="routerLinkActive"
+            >
+            <img
+            src="assets/icons/dashboard.svg
+            "
+          />
+              Customers
+            </a>
+          </li>
+        </ul>
+      </div>
+     
+    </aside>
+    <!-- Main Component -->
+    <div class="main">
+      <main class="content px-2">
+        <div class="container-fluid">
+          <router-outlet></router-outlet>
+          <div class="footer-text mt-4 mb-3">
+            <p>Made with <span>♥</span> by <a href="https://www.distinctcloud.io/" target="_blank"> Distinct Cloud Labs </a></p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</ng-container>

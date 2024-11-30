@@ -1,0 +1,201 @@
+.footer-area {
+    &.style-2 {
+        .footer-area-inner {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 50px 60px;
+            justify-content: space-between;
+            padding-top: 128px;
+            padding-bottom: 121px;
+
+            @media #{$xxl} {
+                padding-top: 98px;
+                padding-bottom: 91px;
+            }
+
+
+            @media #{$md} {
+                padding-top: 78px;
+                padding-bottom: 71px;
+            }
+
+            @media #{$sm} {
+                padding-top: 58px;
+                padding-bottom: 51px;
+                grid-template-columns: 100%;
+            }
+        }
+
+        .footer-area-inner>* {
+            min-width: 130px;
+
+        }
+
+        .footer-logo {
+            img {
+                max-height: 42px;
+
+                @media #{$lg} {
+                    max-height: 34px;
+                }
+            }
+        }
+
+        .description-text {
+            margin-top: 41px;
+
+            @media #{$lg} {
+                margin-top: 31px;
+            }
+
+            @media #{$md} {
+                margin-top: 21px;
+            }
+
+            .text {
+                max-width: 300px;
+            }
+        }
+
+        .footer-widget-wrapper {
+            .title {
+                font-size: 24px;
+
+                @media #{$lg} {
+                    font-size: 20px;
+                }
+            }
+
+
+        }
+
+
+        .footer-nav-list {
+            margin-top: 24px;
+
+            li {
+                font-size: 18px;
+                line-height: 30px;
+                a:hover {
+                    color: var(--primary);
+                    letter-spacing: .4px;
+                }
+            }
+        }
+
+        .social-links {
+            display: flex;
+            gap: 24px;
+
+            li {
+                line-height: 1;
+
+                a {
+
+                    &:hover {
+                        color: var(--primary);
+                    }
+                }
+            }
+        }
+
+        .copyright-text {
+            .text {
+                font-size: 16px;
+
+                a {
+                    color: var(--primary);
+                }
+
+            }
+        }
+
+        .copyright-area-inner {
+            border-top: 1px solid rgba(7, 32, 50, 0.08);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 60px;
+            justify-content: space-between;
+            padding: 38px 0;
+
+            @media #{$xxl} {
+                padding: 28px 0;
+
+            }
+
+            @media #{$sm} {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    }
+}
+
+.subscribe-form {
+    margin-top: 36px;
+
+    .input-field {
+        position: relative;
+        background-color: #282828;
+        border-radius: 10px;
+        overflow: hidden;
+
+        input {
+            border: 0;
+            padding: 19px 20px;
+            background-color: #FAFAFA;
+            color: var(--primary);
+            width: 100%;
+            padding-inline-end: 50px;
+            padding-inline-start: 50px;
+            width: 100%;
+
+            &::placeholder {
+                color: #ABB1B6;
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 1;
+            }
+
+            &:focus {
+                outline: 0;
+            }
+        }
+
+        .subscribe-btn {
+            position: absolute;
+            inset-inline-end: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+
+            img,
+            i {
+                @include rtl {
+                    transform: rotateY(180deg);
+                }
+            }
+        }
+
+        .icon {
+            color: #ABB1B6;
+            position: absolute;
+            inset-inline-start: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+
+    .policy-field {
+        margin-top: 20px;
+
+        label {
+            font-size: 14px;
+            margin-inline-start: 6px;
+
+            span {
+                color: var(--primary);
+                font-weight: 500;
+            }
+        }
+    }
+}

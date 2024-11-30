@@ -1,0 +1,219 @@
+<div *ngIf="loading" class="mt-5 d-flex justify-content-center">
+  <div class="spinner-border text-dark" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+<ng-container *ngIf="!loading">
+  <div class="row">
+    <div class="col-9">
+      <h4 class="title">Workflows</h4>
+      <p class="desc">
+        Tell your AI Agent what this Action is for and when to use it.
+      </p>
+    </div>
+    <div class="col-3">
+      <button
+        type="button"
+        class="btn btn-primary float-end"
+        data-bs-toggle="modal"
+        data-bs-target="#addGuidance"
+      >
+        <img src="assets/icons/plus.svg" /> Add New
+      </button>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Description</th>
+              <th scope="col">Action Type</th>
+              <!-- <th scope="col">Created at</th> -->
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let workflow of allWorkFlowList">
+              <td>{{ workflow.name }}</td>
+              <td>{{ workflow.description }}</td>
+              <!-- <td>{{workflow.name}}</td> -->
+              <td>{{ workflow.action }}</td>
+              <td>
+                <img
+                  src="assets/icons/edit.svg"
+                  data-bs-toggle="modal"
+                  data-bs-target="#addGuidance"
+                  (click)="editWorkFlow(workflow)"
+                  class="cursor-pointer me-2"
+                />
+                <img
+                  src="assets/icons/trash.svg"
+                  (click)="deleteWorkFlow(workflow.workflowId)"
+                  class="cursor-pointer"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Add Website Modal -->
+<div class="modal fade" id="addGuidance">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" style="background: white">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Add Workflow</h5>
+        <i class="fa-solid fa-xmark" data-bs-dismiss="modal"></i>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="workFlowForm">
+          <div class="row">
+            <div class="col-12">
+              <small>
+                Tell your AI Agent what this Action is for and when to use it.
+              </small>
+            </div>
+          </div>
+          <div class="col-12 mt-4">
+            <div class="mb-3">
+              <label for="websiteUrl" class="form-label">Name</label>
+              <input
+                type="text"
+                formControlName="name"
+                [maxlength]="300"
+                [ngClass]="{ 'is-invalid': hasError('name') }"
+                class="form-control"
+                placeholder="Unique action for this workflow"
+              />
+              <div class="invalid-feedback">Name is required</div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="mb-3">
+              <label for="websiteUrl" class="form-label">Description</label>
+              <textarea
+                formControlName="description"
+                [maxlength]="600"
+                [ngClass]="{ 'is-invalid': hasError('description') }"
+                type="text"
+                class="form-control"
+                placeholder="Direct them to example.com/pricing"
+              >
+              </textarea>
+              <small
+                >Describe what this Action can do, e.g. “Return an order status
+                with an order ID”</small
+              >
+              <div class="invalid-feedback">Description is required</div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="mb-3">
+              <label for="websiteUrl" class="form-label"
+                >Get inputs from chat <br />
+                <small>
+                  List any info your AI Agent needs to find in the conversation
+                  for this Action’s API call.
+                </small>
+              </label>
+              <div class="input-group">
+                <input
+                  formControlName="chat"
+                  [maxlength]="300"
+                  [ngClass]="{ 'is-invalid': hasError('chat') }"
+                  type="text"
+                  class="form-control"
+                  placeholder="Input eg. order_number"
+                />
+                <button type="button" class="btn btn-outline-secondary">
+                  Input Type
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item" href="#">Text</a></li>
+                  <li><a class="dropdown-item" href="#">Number</a></li>
+                  <li><a class="dropdown-item" href="#">Boolean</a></li>
+                </ul>
+                <div class="invalid-feedback">Chat input is required</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="mb-3">
+              <label for="websiteUrl" class="form-label"
+                >Perform a action <br />
+                <small>
+                  Build the API call for this Action, including inputs from
+                  chat, variables, metadata, or tokens.
+                </small>
+              </label>
+              <div class="input-group mb-3">
+                <label class="input-group-text" for="inputGroupSelect01"
+                  >Action Type</label
+                >
+                <select
+                  formControlName="action"
+                  [ngClass]="{ 'is-invalid': hasError('action') }"
+                  class="form-select"
+                  id="inputGroupSelect01"
+                >
+                  <option
+                    [value]="function.value"
+                    *ngFor="let function of workflowFunctionOptions"
+                  >
+                    {{ function.text }}
+                  </option>
+                </select>
+                <div class="invalid-feedback">Action type is required</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 mt-4">
+            <div class="mb-3">
+              <label for="websiteUrl" class="form-label">
+                Write your Javascript function here.
+              </label>
+              <textarea
+                [maxlength]="600"
+                formControlName="inputFunction"
+                [ngClass]="{ 'is-invalid': hasError('inputFunction') }"
+                class="form-control"
+              ></textarea>
+              <div class="invalid-feedback">Function is required</div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer d-flex justify-content-end">
+        <button
+          data-bs-dismiss="modal"
+          class="btn btn-outline-secondary"
+          #closebutton
+          (click)="workFlowForm.reset(); isEdit = false"
+        >
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" (click)="saveWorkFlow()">
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

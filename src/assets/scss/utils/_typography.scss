@@ -1,0 +1,164 @@
+/*----------------------------------------*/
+/*  01. TYPOGRAPHY CSS START
+/*----------------------------------------*/
+
+
+// ----------------------------
+// Font Family
+// ---------------------------
+
+//dm-sans
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
+
+
+
+:root {
+  --font_primary: "DM Sans", sans-serif;
+  --font_secondary: "DM Sans", sans-serif;
+  --font_awesome: 'Font Awesome 6 Free';
+}
+
+
+
+
+
+
+
+
+
+// Defalut Style
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font_primary);
+  line-height: 1;
+}
+
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  padding: 0;
+  margin: 0;
+  color: var(--primary);
+  font-family: var(--font_secondary);
+}
+
+ul,
+ol {
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  transition: all 0.3s;
+  color: inherit;
+
+  &:hover {
+    color: var(--primary);
+  }
+
+}
+
+button {
+  background-color: transparent;
+  border: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0;
+  line-height: 1.44;
+  font-weight: 400;
+  font-size: 18px;
+  color: var(--secondary);
+
+
+}
+
+strong {
+  font-weight: 500;
+}
+
+video,
+iframe,
+img {
+  margin: 0;
+  padding: 0;
+}
+
+img {
+  max-width: 100%;
+}
+
+.medium {
+  font-weight: 600;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+
+// No Gutter
+@media #{$sm} {
+  .g-0 {
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+
+  .row.g-0 {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  br {
+    display: none;
+  }
+}
+
+main {
+  display: inline-block;
+  width: 100%;
+}
+
+h1 {
+  font-size: 48px;
+}
+
+h2 {
+  font-size: 36px;
+}
+
+h3 {
+  font-size: 32px;
+}
+
+h4 {
+  font-size: 24px;
+}
+
+h5 {
+  font-size: 20px;
+}
+
+h6 {
+  font-size: 18px;
+}
