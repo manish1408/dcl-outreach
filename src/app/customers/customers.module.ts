@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { PromptsRoutingModule } from './prompts-routing.module';
-import { PromptsComponent } from './prompts.component';
+import { PromptsRoutingModule } from './customers-routing.module';
+import { CustomersComponent } from './customers.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { SharedPipe } from '../_pipes/shared.pipe';
@@ -10,7 +10,7 @@ import { SharedPipe } from '../_pipes/shared.pipe';
 
 @NgModule({
   declarations: [
-    PromptsComponent
+    CustomersComponent
   ],
   imports: [
     ReactiveFormsModule,
@@ -21,4 +21,4 @@ import { SharedPipe } from '../_pipes/shared.pipe';
     SharedPipe
   ]
 })
-export class PromptsModule { }
+export class CustomersModule { }

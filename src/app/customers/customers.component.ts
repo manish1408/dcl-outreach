@@ -10,16 +10,16 @@ import { PromptService } from '../_services/prompts.service';
 
 
 @Component({
-  selector: 'app-prompts',
-  templateUrl: './prompts.component.html',
-  styleUrl: './prompts.component.scss'
+  selector: 'app-customers',
+  templateUrl: './customers.component.html',
+  styleUrl: './customers.component.scss'
 })
-export class PromptsComponent {
+export class CustomersComponent {
   @ViewChild('closebutton') closebutton: any;
 
 
   loading: boolean = false;
-  addPrompt: FormGroup | any;
+  addCustomers: FormGroup | any;
   allPromptsList: any[] = [];
   isEdit: boolean = false;
 
@@ -34,7 +34,7 @@ export class PromptsComponent {
   ) {}
 
   ngOnInit() {
-    this.addPrompt = this.fb.group({
+    this.addCustomers = this.fb.group({
       promptText: ['', Validators.required],
       isActive: [false],
       promptId: [''],
@@ -46,10 +46,10 @@ export class PromptsComponent {
   }
 
 
-  hasError(controlName: keyof typeof this.addPrompt.controls) {
+  hasError(controlName: keyof typeof this.addCustomers.controls) {
     return (
-      this.addPrompt.controls[controlName].invalid &&
-      this.addPrompt.controls[controlName].touched
+      this.addCustomers.controls[controlName].invalid &&
+      this.addCustomers.controls[controlName].touched
     );
   }
 
@@ -79,21 +79,21 @@ export class PromptsComponent {
   }
 
   savePrompt() {
-    this.addPrompt.markAllAsTouched();
-    if (this.addPrompt.valid) {
+    this.addCustomers.markAllAsTouched();
+    if (this.addCustomers.valid) {
       if (this.isEdit) {
         const reqObj = {
-          promptText: this.addPrompt.value.promptText,
-          isActive:  this.addPrompt.value.isActive,
+          promptText: this.addCustomers.value.promptText,
+          isActive:  this.addCustomers.value.isActive,
           version: 1,
         };
         this.promptService
-          .updatePrompt(reqObj,this.addPrompt.value.promptId)
+          .updatePrompt(reqObj,this.addCustomers.value.promptId)
           .pipe(finalize(() => (this.loading = false)))
           .subscribe({
             next: (res: any) => {
               if (res) {
-                this.addPrompt.reset();
+                this.addCustomers.reset();
                 this.isEdit = false;
                 this.toastr.success('Prompt Updated Successfully');
                 this.getPromptsList();
@@ -108,8 +108,8 @@ export class PromptsComponent {
           });
       } else {
         const reqObj = {
-          promptText: this.addPrompt.value.promptText,
-          isActive:  this.addPrompt.value.isActive,
+          promptText: this.addCustomers.value.promptText,
+          isActive:  this.addCustomers.value.isActive,
           version: 1,
         };
 
@@ -119,7 +119,7 @@ export class PromptsComponent {
           .subscribe({
             next: (res: any) => {
               if (res.id) {
-                this.addPrompt.reset();
+                this.addCustomers.reset();
                 this.isEdit = false;
                 this.toastr.success('Prompt Add Successfully');
                 this.getPromptsList();
@@ -170,7 +170,7 @@ export class PromptsComponent {
 
   editPrompt(prompt: any) {
     this.isEdit = true;
-    this.addPrompt.patchValue({
+    this.addCustomers.patchValue({
       promptText: prompt.promptText,
       isActive: prompt.isActive,
       promptId: prompt._id,
@@ -179,7 +179,7 @@ export class PromptsComponent {
 
   resetForm(){
     this.isEdit = false;
-    this.addPrompt.patchValue({
+    this.addCustomers.patchValue({
       promptText: '',
       isActive: false,
       promptId: '',

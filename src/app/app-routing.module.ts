@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './_guards/auth.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'prompts', pathMatch: 'full' },
+  { path: '', redirectTo: 'customers', pathMatch: 'full' },
   // {
   //   path: '',
   //   loadChildren: () =>
@@ -88,7 +88,7 @@ const routes: Routes = [
   { path: 'conversations', loadChildren: () => import('./conversations/conversations.module').then(m => m.ConversationsModule) },
   { path: 'interactions', loadChildren: () => import('./interactions/interactions.module').then(m => m.InteractionsModule) },
   { path: 'loan-automation', loadChildren: () => import('./loan-automation/loan-automation.module').then(m => m.LoanAutomationModule) },
-  { path: 'prompts', loadChildren: () => import('./prompts/prompts.module').then(m => m.PromptsModule) },
+  { path: 'customers', loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule) },
   { path: 'workflowsJab', loadChildren: () => import('./workflows-jab/workflows-jab.module').then(m => m.WorkflowsJabModule) },
 ];
 

@@ -1,0 +1,103 @@
+<div *ngIf="loading" class="mt-5 d-flex justify-content-center">
+  <div class="spinner-border text-dark" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+<div class="row">
+  <div class="col-9">
+    <h4 class="title">Customers</h4>
+    <p class="desc">
+      Manage your customers
+    </p>
+  </div>
+
+
+  <div class="col-3">
+    <button type="button" class="btn btn-primary float-end" (click)="resetForm()" data-bs-toggle="modal"
+      data-bs-target="#addCustomers">
+      <img src="assets/icons/plus.svg" /> Add New
+    </button>
+  </div>
+</div>
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Company</th>
+            <th scope="col">LinkedIn</th>
+            <th scope="col">Chatbot</th>
+            <th scope="col">Email</th>
+            <th scope="col">Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let prompt of allPromptsList">
+            <td>{{prompt.promptText | summary : 100 }}</td>
+            <td>{{prompt.version}}</td>
+            <td>{{prompt.isActive}}</td>
+            <td>{{prompt.createdUpdateDate | date : "MM-dd-yy HH:mm"}}</td>
+            <td>
+              <img src="assets/icons/edit.svg" data-bs-toggle="modal" data-bs-target="#addCustomers"
+                class="cursor-pointer me-2" (click)="editPrompt(prompt)" />
+              <img src="assets/icons/trash.svg" class="cursor-pointer" (click)="deletePrompt(prompt._id)" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add Website Modal -->
+<div class="modal fade" id="addCustomers" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true" style="background: none">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" style="background: white">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">
+          {{ isEdit ? "Update" : "Add" }} Prompt
+        </h5>
+        <i class="fa-solid fa-xmark" data-bs-dismiss="modal" (click)="addCustomers.reset(); isEdit = false"></i>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="addCustomers">
+          <div class="row">
+          </div>
+
+          <div class="col-12">
+            <div class="mb-3">
+              <label for="websiteUrl" class="form-label">Prompt Text</label>
+              <textarea formControlName="promptText" [ngClass]="{ 'is-invalid': hasError('promptText') }" type="text"
+                class="form-control" placeholder="This is the sample Prompt Text" rows="7">
+              </textarea>
+              <div class="invalid-feedback">Prompt Text is required</div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-start mb-3 gap-4">
+            <label for="emoji-usage" class="form-label m-0">Is Active</label>
+            <label class="switch">
+              <input id="emoji-usage" type="checkbox" formControlName="isActive"
+                [checked]="addCustomers.value.isActive" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+
+        </form>
+      </div>
+      <div class="modal-footer d-flex justify-content-end">
+        <button data-bs-dismiss="modal" class="btn btn-outline-secondary" #closebutton
+          (click)="addCustomers.reset(); isEdit = false">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" (click)="savePrompt()">
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
