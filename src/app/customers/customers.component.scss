@@ -1,0 +1,74 @@
+.conv-wrapper {
+    border-radius: 12px;
+    height: 8vh;
+}
+
+.search-input {
+    padding: 12px;
+    padding-left: 20px;
+    border-radius: 32px !important;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+
+.search-icon {
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.dataTables_paginate {
+    float: right;
+    margin-right: 24px;
+    font-family: Outfit, sans-serif;
+    color: #8d8d8d;
+    border: none;
+}
+
+.paginate_button {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 0 5px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f4f4f4;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.paginate_button.previous {
+    background-color: #f4f4f4;
+    color: #333;
+    &:hover {
+        background-color: #6BE3AA;
+        color: #333;
+    }
+}
+
+.paginate_button.next {
+    background-color: #f4f4f4;
+    color: #333;
+    &:hover {
+        background-color: #6BE3AA;
+        color: #333;
+    }
+}

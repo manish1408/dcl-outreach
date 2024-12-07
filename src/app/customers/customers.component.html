@@ -5,50 +5,80 @@
 </div>
 <div class="row">
   <div class="col-9">
-    <h4 class="title">Customers</h4>
+    <h4 class="title">Leads</h4>
     <p class="desc">
-      Manage your customers
+      Leads List
     </p>
   </div>
 
 
-  <div class="col-3">
+  <!-- <div class="col-3">
     <button type="button" class="btn btn-primary float-end" (click)="resetForm()" data-bs-toggle="modal"
       data-bs-target="#addCustomers">
       <img src="assets/icons/plus.svg" /> Add New
     </button>
-  </div>
+  </div> -->
 </div>
+<!-- <div class="row"> -->
+  <div class="row  mt-2 conv-wrapper">
+  <div class="col-4 p-3">
+    <div class="input-group mb-5 position-relative">
+      <input type="text"    [formControl]="searchText"
+      class="search-input pl-5" placeholder="Search ..." />
+      <img
+        src="assets/icons/search.svg"
+        alt="Search Icon"
+        class="search-icon"
+        (click)="searchLead()"
+      />
+    </div>
+    </div>
+    </div>
+<!-- </div> -->
 <div class="row mt-4">
   <div class="col-12">
     <div class="table-responsive">
       <table class="table">
         <thead>
           <tr>
-            <th scope="col">Name</th>
             <th scope="col">Company</th>
-            <th scope="col">LinkedIn</th>
-            <th scope="col">Chatbot</th>
+            <th scope="col">Country</th>
             <th scope="col">Email</th>
-            <th scope="col">Email</th>
+            <th scope="col">Employees No</th>
+            <th scope="col">Rank</th>
+            <th scope="col">Technology Spend Amount</th>
+            <th scope="col">Net Income</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let prompt of allPromptsList">
-            <td>{{prompt.promptText | summary : 100 }}</td>
-            <td>{{prompt.version}}</td>
-            <td>{{prompt.isActive}}</td>
-            <td>{{prompt.createdUpdateDate | date : "MM-dd-yy HH:mm"}}</td>
-            <td>
+          <tr *ngFor="let lead of allLeadList">
+            <td>{{lead?.company  }}</td>
+            <td>{{lead?.country }}</td>
+             <td>{{lead?.emails?.split(';')[0] || ''}}</td>
+            <td>{{lead?.employees}}</td>
+            <td>{{lead?.pageRank}}</td>
+            <td>{{lead?.technologySpend}}</td>
+            <td>{{lead?.netIncome}}</td>
+
+            <!-- <td>
               <img src="assets/icons/edit.svg" data-bs-toggle="modal" data-bs-target="#addCustomers"
                 class="cursor-pointer me-2" (click)="editPrompt(prompt)" />
               <img src="assets/icons/trash.svg" class="cursor-pointer" (click)="deletePrompt(prompt._id)" />
-            </td>
+            </td> -->
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+</div>
+
+<div  class="dataTables_paginate paging_simple_numbers" id="basic-1_paginate">
+  <a>Viewing Page {{currentPage}} of {{totalPages}}. <b>|</b> </a>
+  <a *ngIf="currentPage > 1" class="paginate_button previous" aria-controls="basic-1" data-dt-idx="0" id="basic-1_previous"
+    (click)="onPreviousButtonClick()">Previous</a>
+
+  <a *ngIf="allLeadList?.length == 20"  class="paginate_button next" aria-controls="basic-1" data-dt-idx="3" id="basic-1_next"
+    (click)="onNextButtonClick()">Next</a>
 </div>
 
 <!-- Add Website Modal -->

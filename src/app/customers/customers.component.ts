@@ -1,10 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ToastService } from '../_services/toast.service';
 import { Subject, finalize, takeUntil } from 'rxjs';
 import { PromptService } from '../_services/prompts.service';
+import { LeadService } from '../_services/leads.service';
 
 
 
@@ -20,8 +21,11 @@ export class CustomersComponent {
 
   loading: boolean = false;
   addCustomers: FormGroup | any;
-  allPromptsList: any[] = [];
+  allLeadList: any[] = [];
   isEdit: boolean = false;
+  currentPage: number = 1;
+  searchText = new FormControl('');
+  totalPages:number = 1;
 
   constructor(
     private route: ActivatedRoute,
@@ -30,6 +34,7 @@ export class CustomersComponent {
     private toastr: ToastrService,
     private toastService: ToastService,
     private promptService: PromptService,
+    private leadService: LeadService,
 
   ) {}
 
@@ -42,7 +47,7 @@ export class CustomersComponent {
 
 
 
-    this.getPromptsList();
+    this.getAllLeads();
   }
 
 
@@ -55,25 +60,26 @@ export class CustomersComponent {
 
 
   
-  getPromptsList() {
+  getAllLeads() {
     this.loading = true;
-    this.promptService
-      .getAllPrompts()
+    const pagination = {
+      pageNumber: this.currentPage
+    }
+    this.leadService
+      .getAllLeads(pagination)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (res: any) => {
-          console.log('res: ', res);
-          if( res.prompts?.length){
-            this.allPromptsList =  res.prompts;
+          if( res?.success ==  true && res?.data?.leads?.length){
+            this.totalPages =  res.data.pagination.totalPages;
+            this.allLeadList = res.data.leads;
           }
           else{
-            this.allPromptsList =  [];
-
+            this.allLeadList =  [];
           }
-
         },
         error: (err) => {
-          this.toastr.error(err.error.msg);
+          this.toastr.error(err.error.detail.error);
         },
       });
   }
@@ -96,7 +102,7 @@ export class CustomersComponent {
                 this.addCustomers.reset();
                 this.isEdit = false;
                 this.toastr.success('Prompt Updated Successfully');
-                this.getPromptsList();
+                this.getAllLeads();
               } else {
                 this.toastr.error(res.msg);
               }
@@ -122,7 +128,7 @@ export class CustomersComponent {
                 this.addCustomers.reset();
                 this.isEdit = false;
                 this.toastr.success('Prompt Add Successfully');
-                this.getPromptsList();
+                this.getAllLeads();
               } else {
                 this.toastr.error(res.msg);
               }
@@ -151,7 +157,7 @@ export class CustomersComponent {
             next: (res: any) => {
               if (res.message) {
                 this.toastr.success('Prompt Deleted Successfully');
-                this.getPromptsList();
+                this.getAllLeads();
               } else {
                 this.toastr.error(res.msg);
               }
@@ -184,6 +190,41 @@ export class CustomersComponent {
       isActive: false,
       promptId: '',
     });  
+  }
+
+   onPreviousButtonClick() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.getAllLeads()
+    }
+  }
+
+   onNextButtonClick() {
+    this.currentPage++;
+    this.getAllLeads()
+  }
+
+  searchLead(){
+    console.log('search Text', this.searchText.value);
+    this.leadService
+    .searchLead(this.searchText.value)
+    .pipe(finalize(() => (this.loading = false)))
+    .subscribe({
+      next: (res: any) => {
+        console.log('res: ', res);
+        // if( res?.success ==  true && res?.data?.leads?.length){
+        //   this.totalPages =  res.data.pagination.totalPages;
+        //   this.allLeadList = res.data.leads;
+        // }
+        // else{
+        //   this.allLeadList =  [];
+        // }
+      },
+      error: (err) => {
+        console.log('err: ', err);
+        this.toastr.error(err.error.detail.error);
+      },
+    });
   }
 
 }
