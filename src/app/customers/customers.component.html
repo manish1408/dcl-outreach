@@ -11,15 +11,7 @@
     </p>
   </div>
 
-
-  <!-- <div class="col-3">
-    <button type="button" class="btn btn-primary float-end" (click)="resetForm()" data-bs-toggle="modal"
-      data-bs-target="#addCustomers">
-      <img src="assets/icons/plus.svg" /> Add New
-    </button>
-  </div> -->
 </div>
-<!-- <div class="row"> -->
   <div class="row  mt-2 conv-wrapper">
   <div class="col-4 p-3">
     <div class="input-group mb-5 position-relative">
@@ -34,7 +26,6 @@
     </div>
     </div>
     </div>
-<!-- </div> -->
 <div class="row mt-4">
   <div class="col-12">
     <div class="table-responsive">
@@ -61,7 +52,7 @@
             <td>{{lead?.pageRank}}</td>
             <td>{{lead?.technologySpend}}</td>
             <td>
-              <img src="assets/icons/eye.svg" data-bs-toggle="modal" data-bs-target="#addCustomers"
+              <img src="assets/icons/eye.svg" data-bs-toggle="modal" data-bs-target="#leadDetailModal"
                 class="cursor-pointer me-2" (click)="getLeadDetail(lead?.rootDomain )" />
             </td>
           </tr>
@@ -80,8 +71,8 @@
     (click)="onNextButtonClick()">Next</a>
 </div>
 
-<!-- Add Website Modal -->
-<div class="modal fade" id="addCustomers" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+<!-- Lead Detail Modal -->
+<div class="modal fade" id="leadDetailModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
   aria-labelledby="staticBackdropLabel" aria-hidden="true" style="background: none">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content" style="background: white">
@@ -89,10 +80,9 @@
         <h5 class="modal-title" id="staticBackdropLabel">
          Lead Detail
         </h5>
-        <i class="fa-solid fa-xmark" data-bs-dismiss="modal" (click)="addCustomers.reset(); isEdit = false"></i>
+        <i class="fa-solid fa-xmark" data-bs-dismiss="modal"></i>
       </div>
       <div class="modal-body">
-        <form [formGroup]="addCustomers">
           <div class="row">
             <div class="col-6">
               <div class="mb-3">
@@ -175,12 +165,9 @@
               </div>
             </div>
           </div>
-
-        </form>
       </div>
       <div class="modal-footer d-flex justify-content-end">
-        <button data-bs-dismiss="modal" class="btn btn-outline-secondary" #closebutton
-          (click)="addCustomers.reset(); isEdit = false">
+        <button data-bs-dismiss="modal" class="btn btn-outline-secondary" #closebutton>
           Close
         </button>
       </div>

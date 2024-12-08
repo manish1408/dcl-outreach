@@ -20,9 +20,7 @@ export class CustomersComponent {
 
 
   loading: boolean = false;
-  addCustomers: FormGroup | any;
   allLeadList: any[] = [];
-  isEdit: boolean = false;
   currentPage: number = 1;
   searchText = new FormControl('');
   totalPages:number = 1;
@@ -31,36 +29,15 @@ export class CustomersComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private fb: FormBuilder,
     private toastr: ToastrService,
     private toastService: ToastService,
-    private promptService: PromptService,
     private leadService: LeadService,
-
   ) {}
 
   ngOnInit() {
-    this.addCustomers = this.fb.group({
-      promptText: ['', Validators.required],
-      isActive: [false],
-      promptId: [''],
-    });
-
-
-
     this.getAllLeads();
   }
 
-
-  hasError(controlName: keyof typeof this.addCustomers.controls) {
-    return (
-      this.addCustomers.controls[controlName].invalid &&
-      this.addCustomers.controls[controlName].touched
-    );
-  }
-
-
-  
   getAllLeads() {
     this.loading = true;
     const pagination = {
@@ -84,115 +61,6 @@ export class CustomersComponent {
         },
       });
   }
-
-  savePrompt() {
-    this.addCustomers.markAllAsTouched();
-    if (this.addCustomers.valid) {
-      if (this.isEdit) {
-        const reqObj = {
-          promptText: this.addCustomers.value.promptText,
-          isActive:  this.addCustomers.value.isActive,
-          version: 1,
-        };
-        this.promptService
-          .updatePrompt(reqObj,this.addCustomers.value.promptId)
-          .pipe(finalize(() => (this.loading = false)))
-          .subscribe({
-            next: (res: any) => {
-              if (res) {
-                this.addCustomers.reset();
-                this.isEdit = false;
-                this.toastr.success('Prompt Updated Successfully');
-                this.getAllLeads();
-              } else {
-                this.toastr.error(res.msg);
-              }
-            },
-            error: (err) => {
-              console.log(err);
-              this.toastr.error(err.error.msg);
-            },
-          });
-      } else {
-        const reqObj = {
-          promptText: this.addCustomers.value.promptText,
-          isActive:  this.addCustomers.value.isActive,
-          version: 1,
-        };
-
-        this.promptService
-          .createPrompt(reqObj)
-          .pipe(finalize(() => (this.loading = false)))
-          .subscribe({
-            next: (res: any) => {
-              if (res.id) {
-                this.addCustomers.reset();
-                this.isEdit = false;
-                this.toastr.success('Prompt Add Successfully');
-                this.getAllLeads();
-              } else {
-                this.toastr.error(res.msg);
-              }
-            },
-            error: (err) => {
-              console.log(err);
-              this.toastr.error(err.error.msg);
-            },
-          });
-      }
-      this.closebutton.nativeElement.click();
-    }
-  }
-
-  deletePrompt(promptId: string) {
-    this.toastService.showConfirm(
-      'Are you sure?',
-      'Delete the selected Prompt?',
-      'Yes, delete it!',
-      'No, cancel',
-      () => {
-        this.promptService
-          .deletePrompt(promptId)
-          .pipe(finalize(() => (this.loading = false)))
-          .subscribe({
-            next: (res: any) => {
-              if (res.message) {
-                this.toastr.success('Prompt Deleted Successfully');
-                this.getAllLeads();
-              } else {
-                this.toastr.error(res.msg);
-              }
-            },
-            error: (err) => {
-              console.log(err);
-              this.toastr.error(err.error.msg);
-            },
-          });
-      },
-      () => {
-        // Cancel callback
-      }
-    );
-  }
-
-  editPrompt(prompt: any) {
-    this.isEdit = true;
-    this.addCustomers.patchValue({
-      promptText: prompt.promptText,
-      isActive: prompt.isActive,
-      promptId: prompt._id,
-    });
-  }
-
-  resetForm(){
-    this.isEdit = false;
-    this.addCustomers.patchValue({
-      promptText: '',
-      isActive: false,
-      promptId: '',
-    });  
-  }
-
    onPreviousButtonClick() {
     if (this.currentPage > 1) {
       this.currentPage--;
