@@ -26,6 +26,7 @@ export class CustomersComponent {
   currentPage: number = 1;
   searchText = new FormControl('');
   totalPages:number = 1;
+  leadDetail:any={ };
 
   constructor(
     private route: ActivatedRoute,
@@ -205,20 +206,45 @@ export class CustomersComponent {
   }
 
   searchLead(){
-    console.log('search Text', this.searchText.value);
+    if(!this.searchText.value){
+      this.allLeadList =[];
+      this.totalPages =  1;
+      this.currentPage = 1
+      this.getAllLeads();
+      return 
+    }
+    this.loading = true;
     this.leadService
     .searchLead(this.searchText.value)
     .pipe(finalize(() => (this.loading = false)))
     .subscribe({
       next: (res: any) => {
-        console.log('res: ', res);
-        // if( res?.success ==  true && res?.data?.leads?.length){
-        //   this.totalPages =  res.data.pagination.totalPages;
-        //   this.allLeadList = res.data.leads;
-        // }
-        // else{
-        //   this.allLeadList =  [];
-        // }
+        if( res?.success ==  true && res?.data?.length){
+          this.totalPages =  1;
+          this.currentPage = 1
+          this.allLeadList = res.data;
+        }
+        else{
+          this.allLeadList =  [];
+        }
+      },
+      error: (err) => {
+        this.toastr.error(err.error.detail.error);
+      },
+    });
+  }
+
+  getLeadDetail(rootDomainName:string){
+    this.leadService
+    .getLeadDetail(rootDomainName)
+    .pipe(finalize(() => (this.loading = false)))
+    .subscribe({
+      next: (res: any) => {
+        if( res?.success ==  true && res?.data){
+          this.leadDetail = res.data;
+        } else{
+          this.leadDetail =  { };
+        }
       },
       error: (err) => {
         console.log('err: ', err);

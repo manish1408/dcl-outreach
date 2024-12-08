@@ -14,10 +14,10 @@ export class LeadService {
     return this.http.post(`${this._url}/leads/get-all-leads`, data);
   }
   searchLead(searchText: any) {
-    return this.http.get<any>(`${this._url}/leads/search-lead?domainKeyword= ${searchText}`);
+    return this.http.get<any>(`${this._url}/leads/search-lead?domainKeyword=${searchText}`);
   }
-  updatePrompt(data: any,promptId:string) {
-    return this.http.put<any>(`${this._url}/prompts/${promptId}`, data);
+  getLeadDetail(rootDomain:string) {
+    return this.http.get<any>(`${this._url}/leads/get-lead-detail?rootDomain=${rootDomain}`);
   }
   deletePrompt(promptId:string) {
     return this.http.delete<any>(`${this._url}/prompts/${promptId}`);

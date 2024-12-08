@@ -42,29 +42,28 @@
         <thead>
           <tr>
             <th scope="col">Company</th>
+            <th scope="col">Root Domain</th>
+            <th scope="col">Vertical</th>
             <th scope="col">Country</th>
             <th scope="col">Email</th>
-            <th scope="col">Employees No</th>
             <th scope="col">Rank</th>
-            <th scope="col">Technology Spend Amount</th>
-            <th scope="col">Net Income</th>
+            <th scope="col">Spend Amount</th>
+            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let lead of allLeadList">
             <td>{{lead?.company  }}</td>
+            <td>{{lead?.rootDomain }}</td>
+            <td>{{lead?.vertical }}</td>
             <td>{{lead?.country }}</td>
              <td>{{lead?.emails?.split(';')[0] || ''}}</td>
-            <td>{{lead?.employees}}</td>
             <td>{{lead?.pageRank}}</td>
             <td>{{lead?.technologySpend}}</td>
-            <td>{{lead?.netIncome}}</td>
-
-            <!-- <td>
-              <img src="assets/icons/edit.svg" data-bs-toggle="modal" data-bs-target="#addCustomers"
-                class="cursor-pointer me-2" (click)="editPrompt(prompt)" />
-              <img src="assets/icons/trash.svg" class="cursor-pointer" (click)="deletePrompt(prompt._id)" />
-            </td> -->
+            <td>
+              <img src="assets/icons/eye.svg" data-bs-toggle="modal" data-bs-target="#addCustomers"
+                class="cursor-pointer me-2" (click)="getLeadDetail(lead?.rootDomain )" />
+            </td>
           </tr>
         </tbody>
       </table>
@@ -72,7 +71,7 @@
   </div>
 </div>
 
-<div  class="dataTables_paginate paging_simple_numbers" id="basic-1_paginate">
+<div *ngIf="allLeadList?.length"  class="dataTables_paginate paging_simple_numbers" id="basic-1_paginate">
   <a>Viewing Page {{currentPage}} of {{totalPages}}. <b>|</b> </a>
   <a *ngIf="currentPage > 1" class="paginate_button previous" aria-controls="basic-1" data-dt-idx="0" id="basic-1_previous"
     (click)="onPreviousButtonClick()">Previous</a>
@@ -88,44 +87,101 @@
     <div class="modal-content" style="background: white">
       <div class="modal-header">
         <h5 class="modal-title" id="staticBackdropLabel">
-          {{ isEdit ? "Update" : "Add" }} Prompt
+         Lead Detail
         </h5>
         <i class="fa-solid fa-xmark" data-bs-dismiss="modal" (click)="addCustomers.reset(); isEdit = false"></i>
       </div>
       <div class="modal-body">
         <form [formGroup]="addCustomers">
           <div class="row">
-          </div>
+            <div class="col-6">
+              <div class="mb-3">
+                <label for="websiteUrl" class="form-label">Company Name:</label>
+              <span> {{leadDetail?.company}} </span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="mb-3">
+                <label for="websiteUrl" class="form-label">Root Name:</label>
+              <span> {{leadDetail?.rootDomain}} </span>
+              </div>
+            </div>
 
-          <div class="col-12">
-            <div class="mb-3">
-              <label for="websiteUrl" class="form-label">Prompt Text</label>
-              <textarea formControlName="promptText" [ngClass]="{ 'is-invalid': hasError('promptText') }" type="text"
-                class="form-control" placeholder="This is the sample Prompt Text" rows="7">
-              </textarea>
-              <div class="invalid-feedback">Prompt Text is required</div>
+            <div class="col-6">
+              <div class="mb-3">
+                <label for="websiteUrl" class="form-label">Vertical:</label>
+              <span> {{leadDetail?.vertical}} </span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="mb-3">
+                <label for="websiteUrl" class="form-label">Country:</label>
+              <span> {{leadDetail?.country}} </span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="mb-3">
+                <label for="websiteUrl" class="form-label">City:</label>
+              <span> {{leadDetail?.city}} </span>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="mb-3">
+                <label for="websiteUrl" class="form-label">Email:</label>
+              <span> {{leadDetail?.emails?.split(';')[0] || ''}}</span>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="mb-3">
+                <label for="websiteUrl" class="form-label">Technology Spend Amount:</label>
+              <span> {{leadDetail?.technologySpend}} </span>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="mb-3">
+                <label for="websiteUrl" class="form-label">Page Rank:</label>
+              <span> {{leadDetail?.pageRank}} </span>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="mb-3">
+                <label for="websiteUrl" class="form-label">Cloud Flare Rank:</label>
+              <span> {{leadDetail?.cloudflareRank}} </span>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="mb-3">
+                <label for="websiteUrl" class="form-label">Crux Rank:</label>
+              <span> {{leadDetail?.cruxRank}} </span>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="mb-3">
+                <label for="websiteUrl" class="form-label">Number of Employees:</label>
+              <span> {{leadDetail?.employees}} </span>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="mb-3">
+                <label for="websiteUrl" class="form-label"> Zip:</label>
+              <span> {{leadDetail?.zip}} </span>
+              </div>
             </div>
           </div>
-
-          <div class="d-flex align-items-center justify-content-start mb-3 gap-4">
-            <label for="emoji-usage" class="form-label m-0">Is Active</label>
-            <label class="switch">
-              <input id="emoji-usage" type="checkbox" formControlName="isActive"
-                [checked]="addCustomers.value.isActive" />
-              <span class="slider round"></span>
-            </label>
-          </div>
-
 
         </form>
       </div>
       <div class="modal-footer d-flex justify-content-end">
         <button data-bs-dismiss="modal" class="btn btn-outline-secondary" #closebutton
           (click)="addCustomers.reset(); isEdit = false">
-          Cancel
-        </button>
-        <button type="submit" class="btn btn-primary" (click)="savePrompt()">
-          Submit
+          Close
         </button>
       </div>
     </div>
