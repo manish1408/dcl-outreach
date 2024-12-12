@@ -45,7 +45,7 @@
         <tbody>
           <tr *ngFor="let lead of allLeadList">
             <td>{{lead?.company  }}</td>
-            <td>{{lead?.rootDomain }}</td>
+            <td><a [href]="'https://'+lead?.rootDomain" target="_blank"> {{lead?.rootDomain }}</a> </td>
             <td>{{lead?.vertical }}</td>
             <td>{{lead?.country }}</td>
              <td>{{lead?.emails?.split(';')[0] || ''}}</td>
@@ -62,13 +62,33 @@
   </div>
 </div>
 
+<div *ngIf="allLeadList?.length" class="per-page-item">
+  <div class="dropdown">
+    <a class="paginate_button dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
+      Items Per Page  {{ itemsPerPage }}
+    </a>
+
+    <ul class="dropdown-menu chat-drop p-0">
+      <ng-container>
+        <li *ngFor="let itemPerPage of itemsPerPageList">
+          <a role="button" class="dropdown-item" (click)="selectItemPerPage(itemPerPage)">{{ itemPerPage }}</a>
+        </li>
+      </ng-container>
+    </ul>
+  </div>
+</div>
+
 <div *ngIf="allLeadList?.length"  class="dataTables_paginate paging_simple_numbers" id="basic-1_paginate">
   <a>Viewing Page {{currentPage}} of {{totalPages}}. <b>|</b> </a>
-  <a *ngIf="currentPage > 1" class="paginate_button previous" aria-controls="basic-1" data-dt-idx="0" id="basic-1_previous"
+  <a *ngIf="currentPage > 1" class="paginate_button " aria-controls="basic-1" data-dt-idx="0" id="basic-1_previous"
     (click)="onPreviousButtonClick()">Previous</a>
 
-  <a *ngIf="allLeadList?.length == 20"  class="paginate_button next" aria-controls="basic-1" data-dt-idx="3" id="basic-1_next"
+  <a *ngIf="allLeadList?.length == 20"  class="paginate_button " aria-controls="basic-1" data-dt-idx="3" id="basic-1_next"
     (click)="onNextButtonClick()">Next</a>
+<a>Page # </a>
+<input type="number" [(ngModel)]="pageNumber" (keydown.enter)="onPageNumberChange()" class="pagination-input" min="1"
+  placeholder="#" />
+    
 </div>
 
 <!-- Lead Detail Modal -->

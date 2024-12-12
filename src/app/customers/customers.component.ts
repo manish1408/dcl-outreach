@@ -24,7 +24,10 @@ export class CustomersComponent {
   currentPage: number = 1;
   searchText = new FormControl('');
   totalPages:number = 1;
+  itemsPerPage:number = 20;
   leadDetail:any={ };
+  itemsPerPageList:number[] = [10,20,50,100];
+  pageNumber: number = 1;
 
   constructor(
     private route: ActivatedRoute,
@@ -41,7 +44,8 @@ export class CustomersComponent {
   getAllLeads() {
     this.loading = true;
     const pagination = {
-      pageNumber: this.currentPage
+      pageNumber: this.currentPage,
+      limit:this.itemsPerPage       // need to add in api  
     }
     this.leadService
       .getAllLeads(pagination)
@@ -64,12 +68,14 @@ export class CustomersComponent {
    onPreviousButtonClick() {
     if (this.currentPage > 1) {
       this.currentPage--;
+      this.pageNumber = this.currentPage;
       this.getAllLeads()
     }
   }
 
    onNextButtonClick() {
     this.currentPage++;
+    this.pageNumber = this.currentPage;
     this.getAllLeads()
   }
 
@@ -77,7 +83,8 @@ export class CustomersComponent {
     if(!this.searchText.value){
       this.allLeadList =[];
       this.totalPages =  1;
-      this.currentPage = 1
+      this.currentPage = 1;
+      this.pageNumber = 1;
       this.getAllLeads();
       return 
     }
@@ -89,7 +96,8 @@ export class CustomersComponent {
       next: (res: any) => {
         if( res?.success ==  true && res?.data?.length){
           this.totalPages =  1;
-          this.currentPage = 1
+          this.currentPage = 1;
+          this.pageNumber = 1;
           this.allLeadList = res.data;
         }
         else{
@@ -121,4 +129,15 @@ export class CustomersComponent {
     });
   }
 
+  selectItemPerPage(number:number){
+    this.itemsPerPage = number;
+    this.getAllLeads();
+  }
+
+  onPageNumberChange() {
+    if(this.pageNumber && this.pageNumber > 0  &&  this.pageNumber  <= this.totalPages){
+      this.currentPage = this.pageNumber;
+      this.getAllLeads();
+    }
+  }
 }

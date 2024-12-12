@@ -41,6 +41,14 @@
     border: none;
 }
 
+.per-page-item {
+    float: left;
+    margin-right: 24px;
+    font-family: Outfit, sans-serif;
+    color: #8d8d8d;
+    border: none;
+}
+
 .paginate_button {
     display: inline-block;
     padding: 8px 16px;
@@ -55,7 +63,7 @@
     transition: background-color 0.3s ease;
 }
 
-.paginate_button.previous {
+.paginate_button {
     background-color: #f4f4f4;
     color: #333;
     &:hover {
@@ -64,11 +72,23 @@
     }
 }
 
-.paginate_button.next {
-    background-color: #f4f4f4;
-    color: #333;
-    &:hover {
-        background-color: #6BE3AA;
-        color: #333;
-    }
+.pagination-input {
+    width: 40px;
+    height: 30px;
+    padding: 5px;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.pagination-input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.pagination-input::-webkit-outer-spin-button,
+.pagination-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
