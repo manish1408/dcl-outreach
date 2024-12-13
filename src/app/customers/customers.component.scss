@@ -92,3 +92,12 @@
     -webkit-appearance: none;
     margin: 0;
 }
+
+.input-group input {
+    min-width: 150px;
+  }
+  .input-group {
+    flex-wrap: nowrap; /* Ensure all inputs stay in one line */
+    overflow-x: auto; /* Allow horizontal scrolling if needed */
+  }
+  

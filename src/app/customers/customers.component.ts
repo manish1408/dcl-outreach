@@ -28,6 +28,9 @@ export class CustomersComponent {
   leadDetail:any={ };
   itemsPerPageList:number[] = [10,20,50,100];
   pageNumber: number = 1;
+  contacts: any[] = [
+    { name: '', linkedin: '', email: '', phone1: '', phone2: '' } // Initial contact
+  ];
 
   constructor(
     private route: ActivatedRoute,
@@ -41,6 +44,13 @@ export class CustomersComponent {
     this.getAllLeads();
   }
 
+  addContact() {
+    this.contacts.push({ name: '', linkedin: '', email: '', phone1: '', phone2: '' });
+  }
+
+  removeContact(index: number) {
+    this.contacts.splice(index, 1);
+  }
   getAllLeads() {
     this.loading = true;
     const pagination = {
