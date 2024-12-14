@@ -94,7 +94,7 @@
         <h5 class="modal-title" id="staticBackdropLabel">
           Lead Detail
         </h5>
-        <img src="../../assets/icons/cross-red.svg" class="cursor-pointer" data-bs-toggle="modal"/>
+        <img src="../../assets/icons/cross-red.svg"    #closebutton class="cursor-pointer" data-bs-toggle="modal"  />
       </div>
       <div class="modal-body">
 
@@ -117,7 +117,7 @@
               role="tab" aria-controls="ppt" aria-selected="false">PPT Slide</button>
           </li>
         </ul>
-
+        <form  [formGroup]="leadDetailForm">
         <!-- Tabs Content -->
         <div class="tab-content mt-3" id="leadTabsContent">
           <!-- General Tab -->
@@ -126,7 +126,7 @@
               <div class="col-12">
                 <label class="form-label">About Company</label>
                 <div class="mb-3">
-                  <textarea type="text" class="form-control" placeholder="Add about company">
+                  <textarea type="text"  formControlName="aboutCompany"  class="form-control" placeholder="Add about company">
               </textarea>
                 </div>
               </div>
@@ -216,31 +216,35 @@
           <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
             <div class="row">
               <div class="col-12">
-                <div *ngFor="let contact of contacts; let i = index" class="mb-3">
+                <div formArrayName="contacts">
+                <div *ngFor="let contactRows of leadDetailForm.get('contacts')?.controls; let i = index"   class="mb-3">
+                  <div [formGroup]="contactRows">
                   <div class="input-group">
                     <!-- Contact Name -->
-                    <input type="text" class="form-control" [(ngModel)]="contact.name" placeholder="Contact Name"
+                    <input type="text" formControlName="name" class="form-control"  placeholder="Contact Name"
                       aria-label="Contact Name" />
 
                     <!-- LinkedIn -->
-                    <input type="url" class="form-control" [(ngModel)]="contact.linkedin" placeholder="LinkedIn URL"
+                    <input type="url" formControlName="linkedin" class="form-control" placeholder="LinkedIn URL"
                       aria-label="LinkedIn URL" />
 
                     <!-- Email -->
-                    <input type="email" class="form-control" [(ngModel)]="contact.email" placeholder="Email"
+                    <input type="email"  formControlName="email" class="form-control"  placeholder="Email"
                       aria-label="Email" />
 
                     <!-- Phone Number 1 -->
-                    <input type="tel" class="form-control" [(ngModel)]="contact.phone1" placeholder="Phone Number 1"
+                    <input type="tel" class="form-control"  formControlName="phone1" placeholder="Phone Number 1"
                       aria-label="Phone Number 1" />
 
                     <!-- Phone Number 2 -->
-                    <input type="tel" class="form-control" [(ngModel)]="contact.phone2" placeholder="Phone Number 2"
+                    <input type="tel" class="form-control"  formControlName="phone2" placeholder="Phone Number 2"
                       aria-label="Phone Number 2" />
 
                     <!-- Remove Button -->
                     <button class="btn btn-danger" type="button" (click)="removeContact(i)">Remove</button>
                   </div>
+                </div>
+                </div>
                 </div>
 
                 <div class="input-group mb-3">
@@ -268,6 +272,7 @@
                 <div class="mb-3">
                   <textarea 
                     id="followUp1" 
+                    formControlName="initial_email" 
                     class="form-control" 
                     placeholder="Enter follow-up notes here..."></textarea>
                 </div>
@@ -285,6 +290,7 @@
                 <div class="mb-3">
                   <textarea 
                     id="followUp1" 
+                    formControlName="follow_up_1" 
                     class="form-control" 
                     placeholder="Enter follow-up notes here..."></textarea>
                 </div>
@@ -292,19 +298,19 @@
               <div class="col-12">
                 <label class="form-label">Follow up 2</label>
                 <div class="mb-3">
-                  <textarea type="text" class="form-control" placeholder=""></textarea>
+                  <textarea type="text" formControlName="follow_up_2"    class="form-control" placeholder=""></textarea>
                 </div>
               </div>
               <div class="col-12">
                 <label class="form-label">Linkedin Follow up</label>
                 <div class="mb-3">
-                  <textarea type="text" class="form-control" placeholder=""></textarea>
+                  <textarea type="text" formControlName="linkedin_follow_up"  class="form-control" placeholder=""></textarea>
                 </div>
               </div>
               <div class="col-12">
                 <label class="form-label">Final follow up (Linkedin)</label>
                 <div class="mb-3">
-                  <textarea type="text" class="form-control" placeholder=""></textarea>
+                  <textarea type="text" formControlName="final_follow_up_linkedin" class="form-control" placeholder=""></textarea>
                 </div>
               </div>
             </div>
@@ -322,9 +328,10 @@
 
           </div>
           <div class="modal-footer d-flex justify-content-end">
-            <button class="btn btn-primary" type="button">Update contact</button>
+            <button class="btn btn-primary" (click)="updateLeadDetail()" type="button">Update contact</button>
           </div>
         </div>
+      </form>
       </div>
     </div>
   </div>

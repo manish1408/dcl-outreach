@@ -19,7 +19,10 @@ export class LeadService {
   getLeadDetail(rootDomain:string) {
     return this.http.get<any>(`${this._url}/leads/get-lead-detail?rootDomain=${rootDomain}`);
   }
-  deletePrompt(promptId:string) {
-    return this.http.delete<any>(`${this._url}/prompts/${promptId}`);
+  updateLead(data: any,leadId:string) {
+    return this.http.put<any>(`${this._url}/leads/leads/update?leadId=${leadId}`, data);
+  }
+  deleteLead(leadId:string) {
+    return this.http.delete<any>(`${this._url}/prompts/${leadId}`);
   }
 }
