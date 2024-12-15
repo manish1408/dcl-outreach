@@ -224,24 +224,31 @@
                       <div *ngFor="let contact of contacts.controls; let i = index" [formGroupName]="i" class="mb-3">
                         <div class="input-group">
                           <!-- Contact Name -->
-                          <input type="text" formControlName="name" class="form-control" placeholder="Contact Name"
+                           <div class="col">
+                            <input type="text" formControlName="name" class="form-control" placeholder="Contact Name"
                             aria-label="Contact Name" />
                             <div *ngIf="contact.get('name')?.touched && contact.get('name')?.invalid"
                             class="invalid-feedback d-block">
                             <span *ngIf="contact.get('name')?.hasError('required')">Contact Name is required.</span>
                           </div>
+                           </div>
+                          
 
                           <!-- LinkedIn -->
+                           <div class="col">
                             <input type="url" formControlName="linkedin" class="form-control" placeholder="LinkedIn URL"
                             aria-label="LinkedIn URL" />
                             <div *ngIf="contact.get('linkedin')?.touched && contact.get('linkedin')?.invalid"
                             class="invalid-feedback d-block">
                             <span *ngIf="contact.get('linkedin')?.hasError('required')">LinkedIn URL is required.</span>
                           </div>
+                           </div>
+                       
                        
 
                           <!-- Email -->
-                          <input type="email" formControlName="email" class="form-control" placeholder="Email"
+                           <div class="col">
+                            <input type="email" formControlName="email" class="form-control" placeholder="Email"
                             aria-label="Email" />
                           <div *ngIf="contact.get('email')?.touched && contact.get('email')?.invalid"
                             class="invalid-feedback d-block">
@@ -249,14 +256,19 @@
                             <span *ngIf="contact.get('email')?.hasError('email')">Please enter a valid email
                               address.</span>
                           </div>
+                           </div>
 
                           <!-- Phone Number 1 -->
-                          <input type="tel" formControlName="phone1" class="form-control" placeholder="Phone Number 1"
+                           <div class="col">
+                            <input type="tel" formControlName="phone1" class="form-control" placeholder="Phone Number 1"
                             aria-label="Phone Number 1" />
+                           </div>
 
                           <!-- Phone Number 2 -->
-                          <input type="tel" formControlName="phone2" class="form-control" placeholder="Phone Number 2"
+                           <div class="col">
+                            <input type="tel" formControlName="phone2" class="form-control" placeholder="Phone Number 2"
                             aria-label="Phone Number 2" />
+                           </div>
 
                           <!-- Remove Button -->
                           <button class="btn btn-danger" type="button" (click)="removeContact(i)">Remove</button>
