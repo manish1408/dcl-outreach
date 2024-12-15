@@ -9,8 +9,7 @@ import {
 import { ActivatedRoute, Router } from "@angular/router";
 import { ToastrService } from "ngx-toastr";
 import { ToastService } from "../_services/toast.service";
-import { Subject, finalize, takeUntil } from "rxjs";
-import { PromptService } from "../_services/prompts.service";
+import { finalize } from "rxjs";
 import { LeadService } from "../_services/leads.service";
 
 @Component({
@@ -89,31 +88,38 @@ export class CustomersComponent {
   // Function to populate the form with server data
   populateForm(data: any): void {
     this.leadDetailForm.patchValue({
-      aboutCompany: data.aboutCompany || "",
-      pptSlide: data.pptSlide || "",
-      initial_email: data.initial_email.notes,
-      follow_up_1: data.follow_up_1.notes,
-      follow_up_2: data.follow_up_2.notes,
-      linkedin_follow_up: data.linkedin_follow_up.notes,
-      final_follow_up_linkedin: data.final_follow_up_linkedin.notes,
+      aboutCompany: data?.aboutCompany || "",
+      pptSlide: data?.pptSlide || "",
+      initial_email: data?.initial_email?.notes || "",
+      follow_up_1: data?.follow_up_1?.notes || "",
+      follow_up_2: data?.follow_up_2?.notes || "",
+      linkedin_follow_up: data?.linkedin_follow_up?.notes || "",
+      final_follow_up_linkedin: data?.final_follow_up_linkedin?.notes || "",
     });
 
     // Populate contacts array
-    const contactsArray = this.leadDetailForm.get("contacts") as FormArray;
-    contactsArray.clear(); // Clear existing form controls
-    (data.contacts || []).forEach((contact: any) => {
-      contactsArray.push(
-        this.fb.group({
-          name: contact.name || "",
-          linkedin: contact.linkedin || "",
-          email: contact.email || "",
-          phone1: contact.phone1 || "",
-          phone2: contact.phone2 || "",
-          status: contact.status || "",
-          sent_on: contact.sent_on || "",
-        })
-      );
-    });
+    if(data?.contacts?.length ){
+      const contactsArray = this.leadDetailForm.get("contacts") as FormArray;
+      contactsArray.clear(); // Clear existing form controls
+      (data.contacts || []).forEach((contact: any) => {
+        contactsArray.push(
+          this.fb.group({
+            name: contact?.name || "",
+            linkedin: contact?.linkedin || "",
+            email: contact?.email || "",
+            phone1: contact?.phone1 || "",
+            phone2: contact?.phone2 || "",
+            status: contact?.status || "",
+            sent_on: contact?.sent_on || "",
+          })
+        );
+      });
+    }
+    else{
+      const contactsArray = this.leadDetailForm.get("contacts") as FormArray;
+      contactsArray.clear(); // Clear existing form controls
+      contactsArray.push(this.createContactFormGroup());
+    }
   }
 
   onPreviousButtonClick() {
@@ -198,61 +204,72 @@ export class CustomersComponent {
   }
 
   updateLeadDetail() {
-    // need to update according to structure
-    const payload = {
-      aboutCompany: this.leadDetailForm.value.aboutCompany,
-      contacts: this.leadDetailForm.value.contacts,
-      initial_email: {
-        notes: this.leadDetailForm.value.initial_email,
-        status: "",
-        sent_on: "",
-      },
-      follow_up_1: {
-        notes: this.leadDetailForm.value.follow_up_1,
-        status: "",
-        sent_on: "",
-      },
-      follow_up_2: {
-        notes: this.leadDetailForm.value.follow_up_2,
-        status: "",
-        sent_on: "",
-      },
-      linkedin_follow_up: {
-        notes: this.leadDetailForm.value.linkedin_follow_up,
-        status: "",
-        sent_on: "",
-      },
-      final_follow_up_linkedin: {
-        notes: this.leadDetailForm.value.final_follow_up_linkedin,
-        status: "",
-        sent_on: "",
-      },
-      pptSlide: "",
-    };
+    this.leadDetailForm.markAllAsTouched();
+    if(this.leadDetailForm.valid){
+  // need to update according to structure
+  const payload = {
+    aboutCompany: this.leadDetailForm.value.aboutCompany,
+    contacts: this.leadDetailForm.value.contacts,
+    initial_email: {
+      notes: this.leadDetailForm.value.initial_email,
+      status: "",
+      sent_on: "",
+    },
+    follow_up_1: {
+      notes: this.leadDetailForm.value.follow_up_1,
+      status: "",
+      sent_on: "",
+    },
+    follow_up_2: {
+      notes: this.leadDetailForm.value.follow_up_2,
+      status: "",
+      sent_on: "",
+    },
+    linkedin_follow_up: {
+      notes: this.leadDetailForm.value.linkedin_follow_up,
+      status: "",
+      sent_on: "",
+    },
+    final_follow_up_linkedin: {
+      notes: this.leadDetailForm.value.final_follow_up_linkedin,
+      status: "",
+      sent_on: "",
+    },
+    pptSlide: "",
+  };
 
-    this.leadService
-      .updateLead(payload, this.leadDetail._id)
-      .pipe(finalize(() => (this.loading = false)))
-      .subscribe({
-        next: (res: any) => {
-          if (res?.success == true) {
-            this.toastr.success("Leads Updated Successfully");
-            this.closebutton.nativeElement.click();
-          }
-        },
-        error: (err) => {
-          if (err.status == 422) {
-            this.toastr.error("Invalid Data Format");
-          } else {
-            this.toastr.error(err?.error?.detail?.error);
-          }
-        },
-      });
+  // this.leadService
+  //   .updateLead(payload, this.leadDetail._id)
+  //   .pipe(finalize(() => (this.loading = false)))
+  //   .subscribe({
+  //     next: (res: any) => {
+  //       if (res?.success == true) {
+  //         this.toastr.success("Leads Updated Successfully");
+  //         this.closebutton.nativeElement.click();
+  //       }
+  //     },
+  //     error: (err) => {
+  //       if (err.status == 422) {
+  //         this.toastr.error("Invalid Data Format");
+  //       } else {
+  //         this.toastr.error(err?.error?.detail?.error);
+  //       }
+  //     },
+  //   });
+    }
+    else{
+     this.toastr.error("Fields are required in Contact Tab");
+    }
+
+  
   }
 
   addContact() {
-    const contacts = this.leadDetailForm.get("contacts") as FormArray;
-    contacts.push(this.createContactFormGroup());
+    this.leadDetailForm.markAllAsTouched();
+    if(this.leadDetailForm.valid){
+      const contacts = this.leadDetailForm.get("contacts") as FormArray;
+      contacts.push(this.createContactFormGroup());
+    }
   }
 
   removeContact(index: number) {
@@ -265,10 +282,10 @@ export class CustomersComponent {
       name: new FormControl("", Validators.required),
       linkedin: new FormControl("", Validators.required),
       email: new FormControl("", [Validators.required, Validators.email]),
-      phone1: new FormControl("", Validators.required),
-      phone2: new FormControl("", Validators.required),
-      status: new FormControl("", Validators.required),
-      sent_on: new FormControl("", Validators.required),
+      phone1: new FormControl(""),
+      phone2: new FormControl(""),
+      status: new FormControl(""),
+      sent_on: new FormControl(""),
     });
   }
 
