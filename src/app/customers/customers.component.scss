@@ -101,3 +101,8 @@
     overflow-x: auto; /* Allow horizontal scrolling if needed */
   }
   
+  .invalid-feedback {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+  }
