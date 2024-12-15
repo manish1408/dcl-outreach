@@ -122,19 +122,7 @@ export class CustomersComponent {
     }
   }
 
-  onPreviousButtonClick() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.pageNumber = this.currentPage;
-      this.getAllLeads();
-    }
-  }
 
-  onNextButtonClick() {
-    this.currentPage++;
-    this.pageNumber = this.currentPage;
-    this.getAllLeads();
-  }
 
   searchLead() {
     if (!this.searchText.value) {
@@ -187,21 +175,7 @@ export class CustomersComponent {
       });
   }
 
-  selectItemPerPage(number: number) {
-    this.itemsPerPage = number;
-    this.getAllLeads();
-  }
 
-  onPageNumberChange() {
-    if (
-      this.pageNumber &&
-      this.pageNumber > 0 &&
-      this.pageNumber <= this.totalPages
-    ) {
-      this.currentPage = this.pageNumber;
-      this.getAllLeads();
-    }
-  }
 
   updateLeadDetail() {
     this.leadDetailForm.markAllAsTouched();
@@ -238,30 +212,28 @@ export class CustomersComponent {
     pptSlide: "",
   };
 
-  // this.leadService
-  //   .updateLead(payload, this.leadDetail._id)
-  //   .pipe(finalize(() => (this.loading = false)))
-  //   .subscribe({
-  //     next: (res: any) => {
-  //       if (res?.success == true) {
-  //         this.toastr.success("Leads Updated Successfully");
-  //         this.closebutton.nativeElement.click();
-  //       }
-  //     },
-  //     error: (err) => {
-  //       if (err.status == 422) {
-  //         this.toastr.error("Invalid Data Format");
-  //       } else {
-  //         this.toastr.error(err?.error?.detail?.error);
-  //       }
-  //     },
-  //   });
+      this.leadService
+        .updateLead(payload, this.leadDetail._id)
+        .pipe(finalize(() => (this.loading = false)))
+        .subscribe({
+          next: (res: any) => {
+            if (res?.success == true) {
+              this.toastr.success("Leads Updated Successfully");
+              this.closebutton.nativeElement.click();
+            }
+          },
+          error: (err) => {
+            if (err.status == 422) {
+              this.toastr.error("Invalid Data Format");
+            } else {
+              this.toastr.error(err?.error?.detail?.error);
+            }
+          },
+        });
     }
-    else{
-     this.toastr.error("Fields are required in Contact Tab");
+    else {
+      this.toastr.error("Fields are required in Contact Tab");
     }
-
-  
   }
 
   addContact() {
@@ -297,5 +269,40 @@ export class CustomersComponent {
       phone1: "",
       phone2: "",
     });
+  }
+
+
+  /**
+   * Pagination Methods
+   */
+  
+  onPreviousButtonClick() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.pageNumber = this.currentPage;
+      this.getAllLeads();
+    }
+  }
+
+  onNextButtonClick() {
+    this.currentPage++;
+    this.pageNumber = this.currentPage;
+    this.getAllLeads();
+  }
+
+  selectItemPerPage(number: number) {
+    this.itemsPerPage = number;
+    this.getAllLeads();
+  }
+
+  onPageNumberChange() {
+    if (
+      this.pageNumber &&
+      this.pageNumber > 0 &&
+      this.pageNumber <= this.totalPages
+    ) {
+      this.currentPage = this.pageNumber;
+      this.getAllLeads();
+    }
   }
 }
