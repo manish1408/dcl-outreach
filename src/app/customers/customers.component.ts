@@ -104,9 +104,9 @@ export class CustomersComponent {
       (data.contacts || []).forEach((contact: any) => {
         contactsArray.push(
           this.fb.group({
-            name: contact?.name || "",
-            linkedin: contact?.linkedin || "",
-            email: contact?.email || "",
+            name: [contact?.name || "", Validators.required],
+            linkedin: [contact?.linkedin || "", Validators.required],
+            email:  [ contact?.email || "", [Validators.required, Validators.email] ],
             phone1: contact?.phone1 || "",
             phone2: contact?.phone2 || "",
             status: contact?.status || "",
