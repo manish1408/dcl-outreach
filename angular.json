@@ -32,8 +32,6 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.svg",
-              "src/sitemap.xml",
-              "src/robots.txt",
               "src/assets",
               {
                 "glob": "**/*",

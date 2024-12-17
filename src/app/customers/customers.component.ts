@@ -30,7 +30,6 @@ export class CustomersComponent {
   itemsPerPageList: number[] = [10, 20, 50, 100];
   pageNumber: number = 1;
 
-
   leadDetailForm!: FormGroup | any;
   constructor(
     private route: ActivatedRoute,
@@ -56,9 +55,9 @@ export class CustomersComponent {
     this.getAllLeads();
   }
 
-   // Get the contacts FormArray
-   get contacts(): FormArray {
-    return this.leadDetailForm.get('contacts') as FormArray;
+  // Get the contacts FormArray
+  get contacts(): FormArray {
+    return this.leadDetailForm.get("contacts") as FormArray;
   }
 
   getAllLeads() {
@@ -66,6 +65,12 @@ export class CustomersComponent {
     const pagination = {
       pageNumber: this.currentPage,
       limit: this.itemsPerPage, // need to add in api
+      sort: [
+        {
+          filedName: "vertical",
+          sortValue: "desc",
+        },
+      ],
     };
     this.leadService
       .getAllLeads(pagination)
@@ -98,7 +103,7 @@ export class CustomersComponent {
     });
 
     // Populate contacts array
-    if(data?.contacts?.length ){
+    if (data?.contacts?.length) {
       const contactsArray = this.leadDetailForm.get("contacts") as FormArray;
       contactsArray.clear(); // Clear existing form controls
       (data.contacts || []).forEach((contact: any) => {
@@ -106,7 +111,10 @@ export class CustomersComponent {
           this.fb.group({
             name: [contact?.name || "", Validators.required],
             linkedin: [contact?.linkedin || "", Validators.required],
-            email:  [ contact?.email || "", [Validators.required, Validators.email] ],
+            email: [
+              contact?.email || "",
+              [Validators.required, Validators.email],
+            ],
             phone1: contact?.phone1 || "",
             phone2: contact?.phone2 || "",
             status: contact?.status || "",
@@ -114,15 +122,12 @@ export class CustomersComponent {
           })
         );
       });
-    }
-    else{
+    } else {
       const contactsArray = this.leadDetailForm.get("contacts") as FormArray;
       contactsArray.clear(); // Clear existing form controls
       contactsArray.push(this.createContactFormGroup());
     }
   }
-
-
 
   searchLead() {
     if (!this.searchText.value) {
@@ -175,42 +180,64 @@ export class CustomersComponent {
       });
   }
 
+  onIsQualifiedChange(lead:any) {
+    const payload = {
+      isQualified: lead.isQualified,
+    };
 
-
+    this.leadService
+      .updateLead(payload, lead._id)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: (res: any) => {
+          if (res?.success == true) {
+            this.toastr.success("Leads Updated Successfully");
+            this.closebutton.nativeElement.click();
+          }
+        },
+        error: (err) => {
+          if (err.status == 422) {
+            this.toastr.error("Invalid Data Format");
+          } else {
+            this.toastr.error(err?.error?.detail?.error);
+          }
+        },
+      });
+  }
   updateLeadDetail() {
     this.leadDetailForm.markAllAsTouched();
-    if(this.leadDetailForm.valid){
-  // need to update according to structure
-  const payload = {
-    aboutCompany: this.leadDetailForm.value.aboutCompany,
-    contacts: this.leadDetailForm.value.contacts,
-    initial_email: {
-      notes: this.leadDetailForm.value.initial_email,
-      status: "",
-      sent_on: "",
-    },
-    follow_up_1: {
-      notes: this.leadDetailForm.value.follow_up_1,
-      status: "",
-      sent_on: "",
-    },
-    follow_up_2: {
-      notes: this.leadDetailForm.value.follow_up_2,
-      status: "",
-      sent_on: "",
-    },
-    linkedin_follow_up: {
-      notes: this.leadDetailForm.value.linkedin_follow_up,
-      status: "",
-      sent_on: "",
-    },
-    final_follow_up_linkedin: {
-      notes: this.leadDetailForm.value.final_follow_up_linkedin,
-      status: "",
-      sent_on: "",
-    },
-    pptSlide: "",
-  };
+    if (this.leadDetailForm.valid) {
+      // need to update according to structure
+      const payload = {
+        aboutCompany: this.leadDetailForm.value.aboutCompany,
+        contacts: this.leadDetailForm.value.contacts,
+        initial_email: {
+          notes: this.leadDetailForm.value.initial_email,
+          status: "",
+          sent_on: "",
+        },
+        follow_up_1: {
+          notes: this.leadDetailForm.value.follow_up_1,
+          status: "",
+          sent_on: "",
+        },
+        follow_up_2: {
+          notes: this.leadDetailForm.value.follow_up_2,
+          status: "",
+          sent_on: "",
+        },
+        linkedin_follow_up: {
+          notes: this.leadDetailForm.value.linkedin_follow_up,
+          status: "",
+          sent_on: "",
+        },
+        final_follow_up_linkedin: {
+          notes: this.leadDetailForm.value.final_follow_up_linkedin,
+          status: "",
+          sent_on: "",
+        },
+        pptSlide: "",
+      };
 
       this.leadService
         .updateLead(payload, this.leadDetail._id)
@@ -230,15 +257,14 @@ export class CustomersComponent {
             }
           },
         });
-    }
-    else {
+    } else {
       this.toastr.error("Fields are required in Contact Tab");
     }
   }
 
   addContact() {
     this.leadDetailForm.markAllAsTouched();
-    if(this.leadDetailForm.valid){
+    if (this.leadDetailForm.valid) {
       const contacts = this.leadDetailForm.get("contacts") as FormArray;
       contacts.push(this.createContactFormGroup());
     }
@@ -271,11 +297,10 @@ export class CustomersComponent {
     });
   }
 
-
   /**
    * Pagination Methods
    */
-  
+
   onPreviousButtonClick() {
     if (this.currentPage > 1) {
       this.currentPage--;

@@ -34,7 +34,7 @@
             <th scope="col">Country</th>
             <th scope="col">Contacts</th>
             <th scope="col">Rank</th>
-            <th scope="col">Spend Amount</th>
+            <th scope="col">Qualified</th>
             <th scope="col">Action</th>
           </tr>
         </thead>
@@ -46,7 +46,9 @@
             <td>{{lead?.country }}</td>
             <td>{{lead?.contacts?.length || 0}} contact</td>
             <td>{{lead?.pageRank}}</td>
-            <td>{{lead?.technologySpend}}</td>
+            <td>
+              <input type="checkbox" style="width: 20px; height: 20px;" [(ngModel)]="lead.isQualified" (change)="onIsQualifiedChange(lead)" />
+            </td>
             <td>
               <img src="assets/icons/eye.svg" data-bs-toggle="modal" data-bs-target="#leadDetailModal"
                 class="cursor-pointer me-2" (click)="getLeadDetail(lead?.rootDomain )" />
