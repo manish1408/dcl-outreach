@@ -204,6 +204,32 @@ export class CustomersComponent {
         },
       });
   }
+
+  onIsReviewedChange(lead:any) {
+    const payload = {
+      isReviewed: lead.isReviewed,
+    };
+
+    this.leadService
+      .updateLead(payload, lead._id)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: (res: any) => {
+          if (res?.success == true) {
+            this.toastr.success("Leads Updated Successfully");
+            this.closebutton.nativeElement.click();
+          }
+        },
+        error: (err) => {
+          if (err.status == 422) {
+            this.toastr.error("Invalid Data Format");
+          } else {
+            this.toastr.error(err?.error?.detail?.error);
+          }
+        },
+      });
+  }
+
   updateLeadDetail() {
     this.leadDetailForm.markAllAsTouched();
     if (this.leadDetailForm.valid) {
