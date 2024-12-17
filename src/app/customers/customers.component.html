@@ -7,14 +7,14 @@
     </p>
     
   </div>
-  <div class="col-2">
-    <span *ngIf="loading" >
+  <div style="width: 80px;" *ngIf="loading">
+    <span >
       <span class="spinner-border text-dark" role="status">
         <span class="visually-hidden">Loading...</span>
       </span>
     </span>
   </div>
-  <div class="col-2">
+  <div class="col-3">
     <div class="dropdown">
       <a class="paginate_button dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
         <b>Sort By:</b> &nbsp; <i>{{sortSelection.text}}
