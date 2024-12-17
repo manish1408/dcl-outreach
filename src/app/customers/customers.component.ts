@@ -11,6 +11,7 @@ import { ToastrService } from "ngx-toastr";
 import { ToastService } from "../_services/toast.service";
 import { finalize } from "rxjs";
 import { LeadService } from "../_services/leads.service";
+import { colorSets } from "@swimlane/ngx-charts";
 
 @Component({
   selector: "app-customers",
@@ -24,6 +25,7 @@ export class CustomersComponent {
   allLeadList: any[] = [];
   currentPage: number = 1;
   searchText = new FormControl("");
+  filterInputValue = new FormControl("");
   totalPages: number = 1;
   itemsPerPage: number = 20;
   leadDetail: any = {};
@@ -33,7 +35,8 @@ export class CustomersComponent {
     filedName: "social",
     sortValue: "asc",
     text: "Social Ascending"
-  }
+  };
+  filterType:string= "vertical";
   sortingArray = [
     {
       "filedName": "social",
@@ -75,7 +78,8 @@ export class CustomersComponent {
       "sortValue": "desc",
       "text": "Page Rank Descending"
     },
-  ]
+  ];
+  filtersArray:string[]=["state", "city", "vertical", "country"];
 
   leadDetailForm!: FormGroup | any;
   constructor(
@@ -109,7 +113,7 @@ export class CustomersComponent {
 
   getAllLeads() {
     this.loading = true;
-    const pagination = {
+    const pagination:any = {
       pageNumber: this.currentPage,
       limit: this.itemsPerPage, // need to add in api
       sort: [
@@ -118,6 +122,7 @@ export class CustomersComponent {
           sortValue: this.sortSelection.sortValue,
         },
       ],
+      filter : this.filterInputValue.value ?  [  { filterName: this.filterType,filterValue:  this.filterInputValue.value }]:[ ]
     };
     this.leadService
       .getAllLeads(pagination)
@@ -421,6 +426,14 @@ export class CustomersComponent {
 
   sortSelected(selectedSort:any){
     this.sortSelection = selectedSort;
+    this.getAllLeads();
+  }
+
+  filterBy(filterName:string){
+    this.filterType = filterName;
+  }
+
+  searchByFilter(){
     this.getAllLeads();
   }
 }
