@@ -29,6 +29,53 @@ export class CustomersComponent {
   leadDetail: any = {};
   itemsPerPageList: number[] = [10, 20, 50, 100];
   pageNumber: number = 1;
+  sortSelection: any = {
+    filedName: "social",
+    sortValue: "asc",
+    text: "Social Ascending"
+  }
+  sortingArray = [
+    {
+      "filedName": "social",
+      "sortValue": "asc",
+      "text": "Social Ascending"
+    },
+    {
+      "filedName": "social",
+      "sortValue": "desc",
+      "text": "Social Descending"
+    },
+    {
+      "filedName": "employees",
+      "sortValue": "asc",
+      "text": "Employees Ascending"
+    },
+    {
+      "filedName": "employees",
+      "sortValue": "desc",
+      "text": "Employees Descending"
+    },
+    {
+      "filedName": "vertical",
+      "sortValue": "asc",
+      "text": "Vertical Ascending"
+    },
+    {
+      "filedName": "vertical",
+      "sortValue": "desc",
+      "text": "Vertical Descending"
+    },
+    {
+      "filedName": "pageRank",
+      "sortValue": "asc",
+      "text": "Page Rank Ascending"
+    },
+    {
+      "filedName": "pageRank",
+      "sortValue": "desc",
+      "text": "Page Rank Descending"
+    },
+  ]
 
   leadDetailForm!: FormGroup | any;
   constructor(
@@ -67,8 +114,8 @@ export class CustomersComponent {
       limit: this.itemsPerPage, // need to add in api
       sort: [
         {
-          filedName: "vertical",
-          sortValue: "desc",
+          filedName: this.sortSelection.filedName,
+          sortValue: this.sortSelection.sortValue,
         },
       ],
     };
@@ -370,5 +417,10 @@ export class CustomersComponent {
       this.currentPage = this.pageNumber;
       this.getAllLeads();
     }
+  }
+
+  sortSelected(selectedSort:any){
+    this.sortSelection = selectedSort;
+    this.getAllLeads();
   }
 }

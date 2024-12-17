@@ -1,6 +1,6 @@
 
 <div class="row">
-  <div class="col-5">
+  <div class="col-4">
     <h4 class="title">Leads</h4>
     <p class="desc">
       Leads List
@@ -14,7 +14,22 @@
       </span>
     </span>
   </div>
-<div class="col-5">
+  <div class="col-3">
+    <div class="dropdown">
+      <a class="paginate_button dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
+        <b>Sort By:</b> &nbsp; <i>{{sortSelection.text}}
+        </i> </a>
+  
+      <ul class="dropdown-menu chat-drop p-0">
+        <ng-container>
+          <li *ngFor="let sortValue of sortingArray">
+            <a role="button" class="dropdown-item" (click)="sortSelected(sortValue)">{{ sortValue.text }}</a>
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+  </div>
+<div class="col-3">
   <div class="input-group position-relative">
     <input type="text" [formControl]="searchText" class="search-input pl-5" placeholder="Search ..." />
     <img src="assets/icons/search.svg" alt="Search Icon" class="search-icon" (click)="searchLead()" />
