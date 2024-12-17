@@ -22,6 +22,9 @@ export class LeadService {
   updateLead(data: any,leadId:string) {
     return this.http.put<any>(`${this._url}/leads/leads/update?leadId=${leadId}`, data);
   }
+  generateMessages(leadId:string) {
+    return this.http.put<any>(`${this._url}/leads/leads/generate-messages?leadId=${leadId}`, {});
+  }
   deleteLead(leadId:string) {
     return this.http.delete<any>(`${this._url}/prompts/${leadId}`);
   }

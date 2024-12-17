@@ -323,6 +323,21 @@ export class CustomersComponent {
     });
   }
 
+  generateMessage(){
+    this.leadService
+    .generateMessages(this.leadDetail._id)
+    .pipe(finalize(() => (this.loading = false)))
+    .subscribe({
+      next: (res: any) => {
+        if (res?.success == true) {
+        }
+      },
+      error: (err) => {
+        console.log('err: ', err);
+      },
+    });
+  }
+
   /**
    * Pagination Methods
    */
