@@ -98,36 +98,23 @@
       </table>
     </div>
   </div>
-</div>
+  <div class="col-6">
+    Page {{currentPage}} of {{totalPages}} 
+  </div>
 
-<div *ngIf="allLeadList?.length" class="per-page-item">
-  <div class="dropdown">
-    <a class="paginate_button dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
-      Items Per Page {{ itemsPerPage }}
-    </a>
-
-    <ul class="dropdown-menu chat-drop p-0">
-      <ng-container>
-        <li *ngFor="let itemPerPage of itemsPerPageList">
-          <a role="button" class="dropdown-item" (click)="selectItemPerPage(itemPerPage)">{{ itemPerPage }}</a>
-        </li>
-      </ng-container>
-    </ul>
+  <div class="col-6">
+    <div *ngIf="allLeadList?.length" class="dataTables_paginate paging_simple_numbers" id="basic-1_paginate">
+      <a *ngIf="currentPage > 1" class="paginate_button " aria-controls="basic-1" data-dt-idx="0" id="basic-1_previous"
+        (click)="onPreviousButtonClick()">Previous</a>
+        <input type="number" [(ngModel)]="pageNumber" (keydown.enter)="onPageNumberChange()" class="pagination-input" min="1" placeholder="#" />
+    
+      <a *ngIf="allLeadList?.length == 20" class="paginate_button " aria-controls="basic-1" data-dt-idx="3"
+        id="basic-1_next" (click)="onNextButtonClick()">Next</a>
+    </div>
   </div>
 </div>
 
-<div *ngIf="allLeadList?.length" class="dataTables_paginate paging_simple_numbers" id="basic-1_paginate">
-  <a>Viewing Page {{currentPage}} of {{totalPages}}. <b>|</b> </a>
-  <a *ngIf="currentPage > 1" class="paginate_button " aria-controls="basic-1" data-dt-idx="0" id="basic-1_previous"
-    (click)="onPreviousButtonClick()">Previous</a>
 
-  <a *ngIf="allLeadList?.length == 20" class="paginate_button " aria-controls="basic-1" data-dt-idx="3"
-    id="basic-1_next" (click)="onNextButtonClick()">Next</a>
-  <a>Page # </a>
-  <input type="number" [(ngModel)]="pageNumber" (keydown.enter)="onPageNumberChange()" class="pagination-input" min="1"
-    placeholder="#" />
-
-</div>
 
 <!-- Lead Detail Modal -->
 <div class="modal fade" id="leadDetailModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"

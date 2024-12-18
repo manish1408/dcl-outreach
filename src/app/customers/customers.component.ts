@@ -103,7 +103,9 @@ export class CustomersComponent {
       final_follow_up_linkedin: new FormControl(""),
       pptSlide: new FormControl(""),
     });
-
+    if(this.route.snapshot.queryParams["page"]) {
+      this.currentPage = this.route.snapshot.queryParams["page"];
+    }
     this.getAllLeads();
   }
 
@@ -114,6 +116,7 @@ export class CustomersComponent {
 
   getAllLeads() {
     this.loading = true;
+
     const pagination: any = {
       pageNumber: this.currentPage,
       limit: this.itemsPerPage, // need to add in api
@@ -268,27 +271,29 @@ export class CustomersComponent {
   updateLeadDetail() {
     this.leadDetailForm.markAllAsTouched();
     if (this.leadDetailForm.valid) {
-      if(this.leadDetail.initial_email === null) {
+      if (this.leadDetail.initial_email === null) {
         this.leadDetail.initial_email = {};
       }
-      if(this.leadDetail.follow_up_1 === null) {
+      if (this.leadDetail.follow_up_1 === null) {
         this.leadDetail.follow_up_1 = {};
       }
-      if(this.leadDetail.follow_up_2 === null) {
+      if (this.leadDetail.follow_up_2 === null) {
         this.leadDetail.follow_up_2 = {};
       }
-      if(this.leadDetail.linkedin_follow_up === null) {
+      if (this.leadDetail.linkedin_follow_up === null) {
         this.leadDetail.linkedin_follow_up = {};
       }
-      if(this.leadDetail.final_follow_up_linkedin === null) {
+      if (this.leadDetail.final_follow_up_linkedin === null) {
         this.leadDetail.final_follow_up_linkedin = {};
       }
       this.leadDetail.aboutCompany = this.leadDetailForm.value.aboutCompany;
       this.leadDetail.contacts = this.leadDetailForm.value.contacts;
       this.leadDetail.initial_email["notes"] =
         this.leadDetailForm.value.initial_email;
-      this.leadDetail.follow_up_1["notes"] = this.leadDetailForm.value.follow_up_1;
-      this.leadDetail.follow_up_2["notes"] = this.leadDetailForm.value.follow_up_2;
+      this.leadDetail.follow_up_1["notes"] =
+        this.leadDetailForm.value.follow_up_1;
+      this.leadDetail.follow_up_2["notes"] =
+        this.leadDetailForm.value.follow_up_2;
       this.leadDetail.linkedin_follow_up["notes"] =
         this.leadDetailForm.value.linkedin_follow_up;
       this.leadDetail.final_follow_up_linkedin["notes"] =
@@ -306,6 +311,7 @@ export class CustomersComponent {
             if (res?.success == true) {
               this.toastr.success("Leads Updated Successfully");
               this.closebutton.nativeElement.click();
+            this.getAllLeads();
             }
           },
           error: (err) => {
@@ -383,13 +389,21 @@ export class CustomersComponent {
     if (this.currentPage > 1) {
       this.currentPage--;
       this.pageNumber = this.currentPage;
+      this.router.navigate(["leads"], {
+        queryParams: { page: this.pageNumber },
+      });
       this.getAllLeads();
     }
   }
 
   onNextButtonClick() {
+    debugger;
     this.currentPage++;
     this.pageNumber = this.currentPage;
+    this.router.navigate(["leads"], {
+      queryParams: { page: this.pageNumber },
+    });
+
     this.getAllLeads();
   }
 
