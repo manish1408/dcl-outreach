@@ -32,54 +32,54 @@ export class CustomersComponent {
   itemsPerPageList: number[] = [10, 20, 50, 100];
   pageNumber: number = 1;
   sortSelection: any = {
-    filedName: "social",
-    sortValue: "asc",
-    text: "Social Ascending"
+    filedName: "vertical",
+    sortValue: "desc",
+    text: "Vertical Descending",
   };
-  filterType:string= "vertical";
+  filterType: string = "vertical";
   sortingArray = [
     {
-      "filedName": "social",
-      "sortValue": "asc",
-      "text": "Social Ascending"
+      filedName: "social",
+      sortValue: "asc",
+      text: "Social Ascending",
     },
     {
-      "filedName": "social",
-      "sortValue": "desc",
-      "text": "Social Descending"
+      filedName: "social",
+      sortValue: "desc",
+      text: "Social Descending",
     },
     {
-      "filedName": "employees",
-      "sortValue": "asc",
-      "text": "Employees Ascending"
+      filedName: "employees",
+      sortValue: "asc",
+      text: "Employees Ascending",
     },
     {
-      "filedName": "employees",
-      "sortValue": "desc",
-      "text": "Employees Descending"
+      filedName: "employees",
+      sortValue: "desc",
+      text: "Employees Descending",
     },
     {
-      "filedName": "vertical",
-      "sortValue": "asc",
-      "text": "Vertical Ascending"
+      filedName: "vertical",
+      sortValue: "asc",
+      text: "Vertical Ascending",
     },
     {
-      "filedName": "vertical",
-      "sortValue": "desc",
-      "text": "Vertical Descending"
+      filedName: "vertical",
+      sortValue: "desc",
+      text: "Vertical Descending",
     },
     {
-      "filedName": "pageRank",
-      "sortValue": "asc",
-      "text": "Page Rank Ascending"
+      filedName: "pageRank",
+      sortValue: "asc",
+      text: "Page Rank Ascending",
     },
     {
-      "filedName": "pageRank",
-      "sortValue": "desc",
-      "text": "Page Rank Descending"
+      filedName: "pageRank",
+      sortValue: "desc",
+      text: "Page Rank Descending",
     },
   ];
-  filtersArray:string[]=["state", "city", "vertical", "country"];
+  filtersArray: string[] = ["state", "city", "vertical", "country"];
 
   leadDetailForm!: FormGroup | any;
   constructor(
@@ -113,7 +113,7 @@ export class CustomersComponent {
 
   getAllLeads() {
     this.loading = true;
-    const pagination:any = {
+    const pagination: any = {
       pageNumber: this.currentPage,
       limit: this.itemsPerPage, // need to add in api
       sort: [
@@ -122,7 +122,14 @@ export class CustomersComponent {
           sortValue: this.sortSelection.sortValue,
         },
       ],
-      filter : this.filterInputValue.value ?  [  { filterName: this.filterType,filterValue:  this.filterInputValue.value }]:[ ]
+      filter: this.filterInputValue.value
+        ? [
+            {
+              filterName: this.filterType,
+              filterValue: this.filterInputValue.value,
+            },
+          ]
+        : [],
     };
     this.leadService
       .getAllLeads(pagination)
@@ -232,38 +239,13 @@ export class CustomersComponent {
       });
   }
 
-  onIsQualifiedChange(lead:any) {
-    const payload = {
-      isQualified: lead.isQualified,
-    };
+  onIsReviewedChange(lead: any) {
+    let payload = JSON.parse(JSON.stringify(lead));
+    let leadId = payload._id;
+    delete payload._id;
 
     this.leadService
-      .updateLead(payload, lead._id)
-      .pipe(finalize(() => (this.loading = false)))
-      .subscribe({
-        next: (res: any) => {
-          if (res?.success == true) {
-            this.toastr.success("Leads Updated Successfully");
-            this.closebutton.nativeElement.click();
-          }
-        },
-        error: (err) => {
-          if (err.status == 422) {
-            this.toastr.error("Invalid Data Format");
-          } else {
-            this.toastr.error(err?.error?.detail?.error);
-          }
-        },
-      });
-  }
-
-  onIsReviewedChange(lead:any) {
-    const payload = {
-      isReviewed: lead.isReviewed,
-    };
-
-    this.leadService
-      .updateLead(payload, lead._id)
+      .updateLead(payload, leadId)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (res: any) => {
@@ -285,40 +267,38 @@ export class CustomersComponent {
   updateLeadDetail() {
     this.leadDetailForm.markAllAsTouched();
     if (this.leadDetailForm.valid) {
-      // need to update according to structure
-      const payload = {
-        aboutCompany: this.leadDetailForm.value.aboutCompany,
-        contacts: this.leadDetailForm.value.contacts,
-        initial_email: {
-          notes: this.leadDetailForm.value.initial_email,
-          status: "",
-          sent_on: "",
-        },
-        follow_up_1: {
-          notes: this.leadDetailForm.value.follow_up_1,
-          status: "",
-          sent_on: "",
-        },
-        follow_up_2: {
-          notes: this.leadDetailForm.value.follow_up_2,
-          status: "",
-          sent_on: "",
-        },
-        linkedin_follow_up: {
-          notes: this.leadDetailForm.value.linkedin_follow_up,
-          status: "",
-          sent_on: "",
-        },
-        final_follow_up_linkedin: {
-          notes: this.leadDetailForm.value.final_follow_up_linkedin,
-          status: "",
-          sent_on: "",
-        },
-        pptSlide: "",
-      };
+      if(this.leadDetail.initial_email === null) {
+        this.leadDetail.initial_email = {};
+      }
+      if(this.leadDetail.follow_up_1 === null) {
+        this.leadDetail.follow_up_1 = {};
+      }
+      if(this.leadDetail.follow_up_2 === null) {
+        this.leadDetail.follow_up_2 = {};
+      }
+      if(this.leadDetail.linkedin_follow_up === null) {
+        this.leadDetail.linkedin_follow_up = {};
+      }
+      if(this.leadDetail.final_follow_up_linkedin === null) {
+        this.leadDetail.final_follow_up_linkedin = {};
+      }
+      this.leadDetail.aboutCompany = this.leadDetailForm.value.aboutCompany;
+      this.leadDetail.contacts = this.leadDetailForm.value.contacts;
+      this.leadDetail.initial_email["notes"] =
+        this.leadDetailForm.value.initial_email;
+      this.leadDetail.follow_up_1["notes"] = this.leadDetailForm.value.follow_up_1;
+      this.leadDetail.follow_up_2["notes"] = this.leadDetailForm.value.follow_up_2;
+      this.leadDetail.linkedin_follow_up["notes"] =
+        this.leadDetailForm.value.linkedin_follow_up;
+      this.leadDetail.final_follow_up_linkedin["notes"] =
+        this.leadDetailForm.value.final_follow_up_linkedin;
+
+      let payload = JSON.parse(JSON.stringify(this.leadDetail));
+      let leadId = payload._id;
+      delete payload._id;
 
       this.leadService
-        .updateLead(payload, this.leadDetail._id)
+        .updateLead(payload, leadId)
         .pipe(finalize(() => (this.loading = false)))
         .subscribe({
           next: (res: any) => {
@@ -375,19 +355,19 @@ export class CustomersComponent {
     });
   }
 
-  generateMessage(){
+  generateMessage() {
     this.leadService
-    .generateMessages(this.leadDetail._id)
-    .pipe(finalize(() => (this.loading = false)))
-    .subscribe({
-      next: (res: any) => {
-        if (res?.success == true) {
-        }
-      },
-      error: (err) => {
-        console.log('err: ', err);
-      },
-    });
+      .generateMessages(this.leadDetail._id)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: (res: any) => {
+          if (res?.success == true) {
+          }
+        },
+        error: (err) => {
+          console.log("err: ", err);
+        },
+      });
   }
 
   /**
@@ -424,16 +404,16 @@ export class CustomersComponent {
     }
   }
 
-  sortSelected(selectedSort:any){
+  sortSelected(selectedSort: any) {
     this.sortSelection = selectedSort;
     this.getAllLeads();
   }
 
-  filterBy(filterName:string){
+  filterBy(filterName: string) {
     this.filterType = filterName;
   }
 
-  searchByFilter(){
+  searchByFilter() {
     this.getAllLeads();
   }
 }
