@@ -1,25 +1,25 @@
-
 <div class="row">
-  <div class="col-2">
-    <h4 class="title">Leads</h4>
-    <p class="desc">
-      Leads List
-    </p>
-    
-  </div>
-  <div style="width: 80px;" *ngIf="loading">
-    <span >
+  <div class="col-3">
+    <ng-container *ngIf="!loading">
+      <h4 class="title">Leads</h4>
+      <p class="desc">
+        Leads List
+      </p>
+    </ng-container>
+ <div *ngIf="loading">
+    <span>
       <span class="spinner-border text-dark" role="status">
         <span class="visually-hidden">Loading...</span>
       </span>
     </span>
   </div>
+  </div>
+ 
   <div class="col-3">
-    <div class="dropdown">
+    <div class="dropdown  float-end">
       <a class="paginate_button dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
         <b>Sort By:</b> &nbsp; <i>{{sortSelection.text}}
         </i> </a>
-  
       <ul class="dropdown-menu chat-drop p-0">
         <ng-container>
           <li *ngFor="let sortValue of sortingArray">
@@ -29,7 +29,7 @@
       </ul>
     </div>
   </div>
-  <div class="col-4">
+  <div class="col-3">
     <div class="d-flex flex-direction-row">
       <a class="paginate_button dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
         {{filterType}}
@@ -42,17 +42,18 @@
         </ng-container>
       </ul>
       <div class="input-group position-relative">
-        <input type="text" [formControl]="filterInputValue" class="filter-input pl-5" placeholder="Search by {{filterType}}" />
+        <input type="text" [formControl]="filterInputValue" class="search-input pl-5"
+          placeholder="Search by {{filterType}}" />
         <img src="assets/icons/search.svg" alt="Search Icon" class="search-icon" (click)="searchByFilter()" />
       </div>
     </div>
   </div>
-<div class="col-2">
-  <div class="input-group position-relative">
-    <input type="text" [formControl]="searchText" class="search-input pl-5" placeholder="Search Lead ..." />
-    <img src="assets/icons/search.svg" alt="Search Icon" class="search-icon" (click)="searchLead()" />
+  <div class="col-3">
+    <div class="input-group position-relative float-end">
+      <input type="text" [formControl]="searchText" class="search-input pl-5" placeholder="Search Lead ..." />
+      <img src="assets/icons/search.svg" alt="Search Icon" class="search-icon" (click)="searchLead()" />
+    </div>
   </div>
-</div>
 </div>
 
 <div class="row mt-4">
@@ -81,10 +82,12 @@
             <td>{{lead?.contacts?.length || 0}} contact</td>
             <td>{{lead?.pageRank}}</td>
             <td>
-              <input type="checkbox" style="width: 20px; height: 20px;" [(ngModel)]="lead.isReviewed" (change)="onIsReviewedChange(lead)" />
+              <input type="checkbox" style="width: 20px; height: 20px;" [(ngModel)]="lead.isReviewed"
+                (change)="onIsReviewedChange(lead)" />
             </td>
             <td>
-              <input type="checkbox" style="width: 20px; height: 20px;" [(ngModel)]="lead.isQualified" (change)="onIsReviewedChange(lead)" />
+              <input type="checkbox" style="width: 20px; height: 20px;" [(ngModel)]="lead.isQualified"
+                (change)="onIsReviewedChange(lead)" />
             </td>
             <td>
               <img src="assets/icons/eye.svg" data-bs-toggle="modal" data-bs-target="#leadDetailModal"
@@ -263,51 +266,52 @@
                       <div *ngFor="let contact of contacts.controls; let i = index" [formGroupName]="i" class="mb-3">
                         <div class="input-group">
                           <!-- Contact Name -->
-                           <div class="col">
+                          <div class="col">
                             <input type="text" formControlName="name" class="form-control" placeholder="Contact Name"
-                            aria-label="Contact Name" />
+                              aria-label="Contact Name" />
                             <div *ngIf="contact.get('name')?.touched && contact.get('name')?.invalid"
-                            class="invalid-feedback d-block">
-                            <span *ngIf="contact.get('name')?.hasError('required')">Contact Name is required.</span>
+                              class="invalid-feedback d-block">
+                              <span *ngIf="contact.get('name')?.hasError('required')">Contact Name is required.</span>
+                            </div>
                           </div>
-                           </div>
-                          
+
 
                           <!-- LinkedIn -->
-                           <div class="col">
+                          <div class="col">
                             <input type="url" formControlName="linkedin" class="form-control" placeholder="LinkedIn URL"
-                            aria-label="LinkedIn URL" />
+                              aria-label="LinkedIn URL" />
                             <div *ngIf="contact.get('linkedin')?.touched && contact.get('linkedin')?.invalid"
-                            class="invalid-feedback d-block">
-                            <span *ngIf="contact.get('linkedin')?.hasError('required')">LinkedIn URL is required.</span>
+                              class="invalid-feedback d-block">
+                              <span *ngIf="contact.get('linkedin')?.hasError('required')">LinkedIn URL is
+                                required.</span>
+                            </div>
                           </div>
-                           </div>
-                       
-                       
+
+
 
                           <!-- Email -->
-                           <div class="col">
+                          <div class="col">
                             <input type="email" formControlName="email" class="form-control" placeholder="Email"
-                            aria-label="Email" />
-                          <div *ngIf="contact.get('email')?.touched && contact.get('email')?.invalid"
-                            class="invalid-feedback d-block">
-                            <span *ngIf="contact.get('email')?.hasError('required')">Email is required.</span>
-                            <span *ngIf="contact.get('email')?.hasError('email')">Please enter a valid email
-                              address.</span>
+                              aria-label="Email" />
+                            <div *ngIf="contact.get('email')?.touched && contact.get('email')?.invalid"
+                              class="invalid-feedback d-block">
+                              <span *ngIf="contact.get('email')?.hasError('required')">Email is required.</span>
+                              <span *ngIf="contact.get('email')?.hasError('email')">Please enter a valid email
+                                address.</span>
+                            </div>
                           </div>
-                           </div>
 
                           <!-- Phone Number 1 -->
-                           <div class="col">
+                          <div class="col">
                             <input type="tel" formControlName="phone1" class="form-control" placeholder="Phone Number 1"
-                            aria-label="Phone Number 1" />
-                           </div>
+                              aria-label="Phone Number 1" />
+                          </div>
 
                           <!-- Phone Number 2 -->
-                           <div class="col">
+                          <div class="col">
                             <input type="tel" formControlName="phone2" class="form-control" placeholder="Phone Number 2"
-                            aria-label="Phone Number 2" />
-                           </div>
+                              aria-label="Phone Number 2" />
+                          </div>
 
                           <!-- Remove Button -->
                           <button class="btn btn-danger" type="button" (click)="removeContact(i)">Remove</button>
@@ -380,9 +384,12 @@
                   </div>
                 </div>
                 <div class="col-12">
-                  <div class="input-group mb-3 d-flex justify-content-center">
-                    <button class="btn btn-primary" (click)="generateMessage()" type="button">Generate Message</button>
-                  </div>
+                    <button [disabled]="generatingMessage" class="btn btn-primary float-end m-4" (click)="generateMessage()" type="button">
+                        Generate Message
+                      <span *ngIf="generatingMessage" style="width: 24px;height: 24px;" class="spinner-border text-dark" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </span>
+                    </button>
                 </div>
               </div>
             </div>

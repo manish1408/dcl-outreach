@@ -31,6 +31,7 @@ export class CustomersComponent {
   leadDetail: any = {};
   itemsPerPageList: number[] = [10, 20, 50, 100];
   pageNumber: number = 1;
+  generatingMessage = false;
   sortSelection: any = {
     filedName: "vertical",
     sortValue: "desc",
@@ -356,16 +357,20 @@ export class CustomersComponent {
   }
 
   generateMessage() {
+    this.generatingMessage = true;
     this.leadService
       .generateMessages(this.leadDetail._id)
-      .pipe(finalize(() => (this.loading = false)))
+      .pipe(finalize(() => (this.generatingMessage = false)))
       .subscribe({
         next: (res: any) => {
           if (res?.success == true) {
+            this.getLeadDetail(this.leadDetail.rootDomain);
+            this.toastr.success("Messages generated.");
           }
         },
         error: (err) => {
           console.log("err: ", err);
+          this.toastr.error(err);
         },
       });
   }
