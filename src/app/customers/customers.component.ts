@@ -80,7 +80,7 @@ export class CustomersComponent {
       text: "Page Rank Descending",
     },
   ];
-  filtersArray: string[] = ["state", "city", "vertical", "country"];
+  filtersArray: string[] = ["state", "city", "vertical", "country", "isQualified", "isReviewed"];
 
   leadDetailForm!: FormGroup | any;
   constructor(
