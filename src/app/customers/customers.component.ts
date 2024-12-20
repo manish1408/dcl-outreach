@@ -381,6 +381,25 @@ export class CustomersComponent {
       });
   }
 
+  generatePPT() {
+    this.generatingMessage = true;
+    this.leadService
+      .generatePPT(this.leadDetail._id)
+      .pipe(finalize(() => (this.generatingMessage = false)))
+      .subscribe({
+        next: (res: any) => {
+          if (res?.success == true) {
+            this.getLeadDetail(this.leadDetail.rootDomain);
+            this.toastr.success("PPT generated.");
+          }
+        },
+        error: (err) => {
+          console.log("err: ", err);
+          this.toastr.error(err);
+        },
+      });
+  }
+
   /**
    * Pagination Methods
    */
