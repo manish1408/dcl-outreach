@@ -400,6 +400,25 @@ export class CustomersComponent {
       });
   }
 
+  createChatbot() {
+    this.generatingMessage = true;
+    this.leadService
+      .createChatbot(this.leadDetail.rootDomain)
+      .pipe(finalize(() => (this.generatingMessage = false)))
+      .subscribe({
+        next: (res: any) => {
+          if (res?.success == true) {
+            this.getLeadDetail(this.leadDetail.rootDomain);
+            this.toastr.success("Chatbot created.");
+          }
+        },
+        error: (err) => {
+          console.log("err: ", err);
+          this.toastr.error(err);
+        },
+      });
+  }
+
   /**
    * Pagination Methods
    */

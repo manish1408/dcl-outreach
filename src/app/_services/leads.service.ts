@@ -28,6 +28,14 @@ export class LeadService {
   generatePPT(leadId:string) {
     return this.http.post<any>(`${this._url}/pptmaker/generate-ppt?company_id=${leadId}&blob_name="dcl.pptx"`, {});
   }
+
+  createChatbot(websiteUrl:string) {
+    const reqObj = {
+      websiteUrl: websiteUrl,
+    };
+    return this.http.post<any>(`https://api.miloassistant.ai/api/v1/ai/create-complete-chatbot`, reqObj);
+  }
+
   deleteLead(leadId:string) {
     return this.http.delete<any>(`${this._url}/prompts/${leadId}`);
   }
