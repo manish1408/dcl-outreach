@@ -158,11 +158,11 @@ export class CustomersComponent {
     this.leadDetailForm.patchValue({
       aboutCompany: data?.aboutCompany || "",
       pptSlide: data?.pptSlide || "",
-      initial_email: data?.initial_email?.notes || "",
-      follow_up_1: data?.follow_up_1?.notes || "",
-      follow_up_2: data?.follow_up_2?.notes || "",
-      linkedin_follow_up: data?.linkedin_follow_up?.notes || "",
-      final_follow_up_linkedin: data?.final_follow_up_linkedin?.notes || "",
+      initial_email: data?.initial_email?.emailBody || "",
+      follow_up_1: data?.follow_up_1?.emailBody || "",
+      follow_up_2: data?.follow_up_2?.emailBody || "",
+      linkedin_follow_up: data?.linkedin_follow_up?.emailBody || "",
+      final_follow_up_linkedin: data?.final_follow_up_linkedin?.emailBody || "",
     });
 
     // Populate contacts array

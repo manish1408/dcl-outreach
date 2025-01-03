@@ -62,6 +62,7 @@
       <table class="table">
         <thead>
           <tr>
+            <!--  -->
             <th scope="col">Company</th>
             <th scope="col">Root Domain</th>
             <th scope="col">Vertical</th>
@@ -322,12 +323,22 @@
               <div class="row">
                 <div class="col-12">
                   <div class="d-flex justify-content-between align-items-center mb-2">
-                    <label for="followUp1" class="form-label">Initial Email</label>
+                    <label for="followUp1" class="form-label">Initial Email: {{leadDetail?.initial_email?.subject}}</label>
                     <div>
                       <!-- Status Badge -->
-                      <span class="badge bg-success me-2">Completed</span>
+                      <span class="badge bg-danger me-2" *ngIf="leadDetail?.initial_email?.status === 'Not Replied' ">
+                        {{leadDetail?.initial_email?.status}}
+                      </span>
+
+                      <span class="badge bg-warning me-2" *ngIf="leadDetail?.initial_email?.status === 'Awaiting Reply' ">
+                        {{leadDetail?.initial_email?.status}}
+                      </span>
+
+                      <span class="badge bg-success me-2" *ngIf="leadDetail?.initial_email?.status === 'Replied' ">
+                        {{leadDetail?.initial_email?.status}}
+                      </span>
                       <!-- Sent On Date Badge -->
-                      <span class="badge bg-secondary">Sent on: 2024-12-12</span>
+                      <span class="badge bg-secondary">Sent on: {{leadDetail?.initial_email?.sent_on | date:'medium'}}</span>
                     </div>
                   </div>
                   <div class="mb-3">
@@ -337,12 +348,23 @@
                 </div>
                 <div class="col-12">
                   <div class="d-flex justify-content-between align-items-center mb-2">
-                    <label for="followUp1" class="form-label">Follow up 1</label>
+                    <label for="followUp1" class="form-label">Follow up 1: {{leadDetail?.follow_up_1?.subject}}</label>
                     <div>
                       <!-- Status Badge -->
-                      <span class="badge bg-success me-2">Completed</span>
-                      <!-- Sent On Date Badge -->
-                      <span class="badge bg-secondary">Sent on: 2024-12-12</span>
+                      <span class="badge bg-danger me-2" *ngIf="leadDetail?.follow_up_1?.status === 'Not Replied' ">
+                        {{leadDetail?.follow_up_1?.status}}
+                      </span>
+
+                      <span class="badge bg-warning me-2" *ngIf="leadDetail?.follow_up_1?.status === 'Awaiting Reply' ">
+                        {{leadDetail?.follow_up_1?.status}}
+                      </span>
+
+                      <span class="badge bg-success me-2" *ngIf="leadDetail?.follow_up_1?.status === 'Replied' ">
+                        {{leadDetail?.follow_up_1?.status}}
+                      </span>
+                      
+                       <!-- Sent On Date Badge -->
+                       <span class="badge bg-secondary">Sent on: {{leadDetail?.follow_up_1?.sent_on | date:'medium'}}</span>
                     </div>
                   </div>
                   <div class="mb-3">
@@ -351,7 +373,28 @@
                   </div>
                 </div>
                 <div class="col-12">
-                  <label class="form-label">Follow up 2</label>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label for="followUp1" class="form-label">Follow up 2: {{leadDetail?.follow_up_2?.subject}}</label>
+                    <div>
+                      <!-- Status Badge -->
+                      <span class="badge bg-danger me-2" *ngIf="leadDetail?.follow_up_2?.status === 'Not Replied' ">
+                        {{leadDetail?.follow_up_2?.status}}
+                      </span>
+
+                      <span class="badge bg-warning me-2" *ngIf="leadDetail?.follow_up_2?.status === 'Awaiting Reply' ">
+                        {{leadDetail?.follow_up_2?.status}}
+                      </span>
+
+                      <span class="badge bg-success me-2" *ngIf="leadDetail?.follow_up_2?.status === 'Replied' ">
+                        {{leadDetail?.follow_up_2?.status}}
+                      </span>
+                      
+                       <!-- Sent On Date Badge -->
+                       <span class="badge bg-secondary">Sent on: {{leadDetail?.follow_up_2?.sent_on | date:'medium'}}</span>
+                    </div>
+                  </div>
+
+
                   <div class="mb-3">
                     <textarea type="text" formControlName="follow_up_2" class="form-control" placeholder=""></textarea>
                   </div>
@@ -384,6 +427,7 @@
             <div class="tab-pane fade" id="ppt" role="tabpanel" aria-labelledby="ppt-tab">
               <div class="row">
                 <div class="col-12">
+                  <a href="https://dclcmsdocs.blob.core.windows.net/dcl-erp-docs/{{leadDetail?.pptSlide}}" target="_blank"> <img src="../../assets/icons/pdf.svg"></a>
                   <div class="input-group mb-3">
                     <button [disabled]="generatingMessage" class="btn btn-primary float-end" (click)="generatePPT()" type="button">
                       Generate PPT
