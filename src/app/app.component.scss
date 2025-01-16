@@ -43,9 +43,14 @@
   position: fixed;
   top: 0;
   z-index: 1;
-  .collapse-arrow {
-    rotate: 180deg;
-  }
+}
+
+.collapse-arrow {
+  rotate: 180deg;
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  top: 16px;
 }
 .menu-icon {
   color: #ffffff;

@@ -13,6 +13,9 @@ export class LeadService {
   getAllLeads(data:any){
     return this.http.post(`${this._url}/leads/get-all-leads`, data);
   }
+  createLead(data:any){
+    return this.http.post(`${this._url}/leads/create-lead-assets`, data);
+  }
   searchLead(searchText: any) {
     return this.http.get<any>(`${this._url}/leads/search-lead?domainKeyword=${searchText}`);
   }

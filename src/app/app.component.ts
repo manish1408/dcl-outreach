@@ -15,7 +15,7 @@ import { LocalStorageService } from './_services/local-storage.service';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  isCollapsed = true;
+  isCollapsed = false;
   isLoggedIn = false;
   user: any;
   chatbots: any;

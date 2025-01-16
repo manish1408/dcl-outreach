@@ -17,7 +17,7 @@
         <ul class="sidebar-nav mt-4">
           <li class="sidebar-item">
             <a
-              routerLink="/prompts"
+              routerLink="/leads/inbound"
               routerLinkActive="active-link"
               class="sidebar-link"
               #rla="routerLinkActive"
@@ -26,7 +26,21 @@
             src="assets/icons/dashboard.svg
             "
           />
-              Customers
+              Inbound Leads
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a
+              routerLink="/leads/outbound"
+              routerLinkActive="active-link"
+              class="sidebar-link"
+              #rla="routerLinkActive"
+            >
+            <img
+            src="assets/icons/dashboard.svg
+            "
+          />
+              Outbound Leads
             </a>
           </li>
         </ul>
@@ -35,6 +49,7 @@
     </aside>
     <!-- Main Component -->
     <div class="main">
+    <img *ngIf="isCollapsed" src="assets/icons/arrow-square-left.svg" class="cursor-pointer collapse-arrow me-2 ng-star-inserted" (click)="toggleSidebar()">
       <main class="content px-2">
         <div class="container-fluid">
           <router-outlet></router-outlet>

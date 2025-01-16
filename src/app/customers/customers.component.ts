@@ -38,6 +38,7 @@ export class CustomersComponent {
     text: "Vertical Descending",
   };
   filterType: string = "vertical";
+  leadType:any = 'inbound'
   sortingArray = [
     {
       filedName: "social",
@@ -83,6 +84,7 @@ export class CustomersComponent {
   filtersArray: string[] = ["state", "city", "vertical", "country", "isQualified", "isReviewed"];
 
   leadDetailForm!: FormGroup | any;
+  createLeadForm!: FormGroup | any;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -93,6 +95,11 @@ export class CustomersComponent {
   ) {}
 
   ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+      this.leadType = params.get('id');
+      this.filterInputValue.reset();
+      this.getAllLeads();
+    });
     this.leadDetailForm = this.fb.group({
       aboutCompany: new FormControl(""),
       contacts: new FormArray([this.createContactFormGroup()]), // Initialize with one empty contact
@@ -106,12 +113,25 @@ export class CustomersComponent {
     if(this.route.snapshot.queryParams["page"]) {
       this.currentPage = this.route.snapshot.queryParams["page"];
     }
-    this.getAllLeads();
+
+    this.createLeadForm = this.fb.group({
+      domain: ['', Validators.required],
+      company: ['', Validators.required],
+      contacts: new FormArray([this.createContactFormGroup()]),
+    });
+
   }
 
   // Get the contacts FormArray
   get contacts(): FormArray {
     return this.leadDetailForm.get("contacts") as FormArray;
+  }
+
+  hasError(controlName: keyof typeof this.createLeadForm.controls) {
+    return (
+      this.createLeadForm.controls[controlName]?.invalid &&
+      this.createLeadForm.controls[controlName]?.touched
+    );
   }
 
   getAllLeads() {
@@ -128,12 +148,19 @@ export class CustomersComponent {
       ],
       filter: this.filterInputValue.value
         ? [
-            {
-              filterName: this.filterType,
-              filterValue: this.filterInputValue.value,
-            },
-          ]
-        : [],
+          {
+            filterName: this.filterType,
+            filterValue: this.filterInputValue.value,
+          },
+          {
+            filterName: 'leadType',
+            filterValue: this.leadType?.toUpperCase(),
+          },
+        ]
+        : [{
+          filterName: 'leadType',
+          filterValue: this.leadType?.toUpperCase(),
+        },],
     };
     this.leadService
       .getAllLeads(pagination)
@@ -472,5 +499,41 @@ export class CustomersComponent {
 
   searchByFilter() {
     this.getAllLeads();
+  }
+
+  createLead(){
+    this.createLeadForm.markAllAsTouched();
+    if(!this.createLeadForm.valid){
+      this.toastr.error('Invalid form');
+      return
+    }
+    this.createLeadForm
+    debugger
+    const payload = 
+      {
+        "rootDomain": this.createLeadForm.value.domain ,
+        "company": this.createLeadForm.value.company ,
+        "contact": [
+          this.createLeadForm.value.contacts
+        ]
+      }
+    this.loading = true
+    this.leadService
+      .createLead(payload)
+      .pipe(finalize(() => (this.generatingMessage = false)))
+      .subscribe({
+        next: (res: any) => {
+          debugger
+          if (res?.success == true) {
+            this.getAllLeads();
+            this.toastr.success("Lead created.");
+            this.createLeadForm.reset();
+          }
+        },
+        error: (err) => {
+          console.log("err: ", err);
+          this.toastr.error(err);
+        },
+      });
   }
 }
