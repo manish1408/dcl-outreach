@@ -127,6 +127,10 @@ export class CustomersComponent {
     return this.leadDetailForm.get("contacts") as FormArray;
   }
 
+  get contactsLeadUpdate(): FormArray {
+    return this.createLeadForm.get("contacts") as FormArray;
+  }
+
   hasError(controlName: keyof typeof this.createLeadForm.controls) {
     return (
       this.createLeadForm.controls[controlName]?.invalid &&
@@ -362,8 +366,23 @@ export class CustomersComponent {
     }
   }
 
+  addNewLeadContact() {
+    this.createLeadForm.markAllAsTouched();
+    if (this.createLeadForm.valid) {
+      const contacts = this.createLeadForm.get("contacts") as FormArray;
+      contacts.push(this.createContactFormGroup());
+    }
+  }
+  
+
   removeContact(index: number) {
     const contacts = this.leadDetailForm.get("contacts") as FormArray;
+    contacts.removeAt(index);
+  }
+
+
+  removeNewLeadContact(index: number) {
+    const contacts = this.createLeadForm.get("contacts") as FormArray;
     contacts.removeAt(index);
   }
 
@@ -462,7 +481,7 @@ export class CustomersComponent {
   }
 
   onNextButtonClick() {
-    debugger;
+    // debugger;
     this.currentPage++;
     this.pageNumber = this.currentPage;
     this.router.navigate(["leads"], {
@@ -502,13 +521,14 @@ export class CustomersComponent {
   }
 
   createLead(){
+    // debugger
     this.createLeadForm.markAllAsTouched();
     if(!this.createLeadForm.valid){
       this.toastr.error('Invalid form');
       return
     }
     this.createLeadForm
-    debugger
+    // debugger
     const payload = 
       {
         "rootDomain": this.createLeadForm.value.domain ,
@@ -523,7 +543,7 @@ export class CustomersComponent {
       .pipe(finalize(() => (this.generatingMessage = false)))
       .subscribe({
         next: (res: any) => {
-          debugger
+          // debugger
           if (res?.success == true) {
             this.getAllLeads();
             this.toastr.success("Lead created.");

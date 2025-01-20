@@ -515,7 +515,7 @@ style="background: none"
 
               <form [formGroup]="createLeadForm">
                 <div formArrayName="contacts">
-                  <div *ngFor="let contact of contacts.controls; let i = index" [formGroupName]="i" class="mb-3">
+                  <div *ngFor="let contact of contactsLeadUpdate.controls; let i = index" [formGroupName]="i" class="mb-3">
                     <div class="input-group gap-2">
                       <!-- Contact Name -->
                       <div class="col">
@@ -566,7 +566,7 @@ style="background: none"
                       </div>
 
                       <!-- Remove Button -->
-                      <button class="btn btn-danger" type="button" (click)="removeContact(i)">Remove</button>
+                      <button class="btn btn-danger" type="button" (click)="removeNewLeadContact(i)">Remove</button>
                     </div>
                   </div>
                 </div>
@@ -574,7 +574,7 @@ style="background: none"
               </form>
 
               <div class="input-group mb-3">
-                <button class="btn btn-primary" type="button" (click)="addContact()">Add Contact</button>
+                <button class="btn btn-primary" type="button" (click)="addNewLeadContact()">Add Contact</button>
               </div>
 
           <div class="invalid-feedback">Contact is required</div>
