@@ -533,9 +533,7 @@ export class CustomersComponent {
       {
         "rootDomain": this.createLeadForm.value.domain ,
         "company": this.createLeadForm.value.company ,
-        "contact": [
-          this.createLeadForm.value.contacts
-        ]
+        "contacts": this.createLeadForm.value.contacts
       }
     this.loading = true
     this.leadService
