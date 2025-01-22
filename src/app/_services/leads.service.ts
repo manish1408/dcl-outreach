@@ -28,6 +28,9 @@ export class LeadService {
   generateMessages(leadId:string) {
     return this.http.put<any>(`${this._url}/leads/leads/generate-messages?leadId=${leadId}`, {});
   }
+  deleteLeadDetail(leadId:string) {
+    return this.http.delete<any>(`${this._url}/leads/delete-lead?leadId=${leadId}`, {});
+  }
   generatePPT(leadId:string) {
     return this.http.post<any>(`${this._url}/pptmaker/generate-ppt?company_id=${leadId}&blob_name="dcl.pptx"`, {});
   }

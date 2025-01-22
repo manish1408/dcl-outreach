@@ -1,65 +1,47 @@
-<div class="row ms-4">
-  <div class="col-1">
+<div class="row">
+  <div class="col-3">
     <ng-container *ngIf="!loading">
       <h4 class="title">Leads</h4>
       <p class="desc">
         Leads List
       </p>
     </ng-container>
- <div *ngIf="loading">
-    <span>
-      <span class="spinner-border text-dark" role="status">
-        <span class="visually-hidden">Loading...</span>
+    <div *ngIf="loading">
+      <span>
+        <span class="spinner-border text-dark" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </span>
       </span>
-    </span>
-  </div>
-  </div>
- 
-  <div class="col-3">
-    <div class="dropdown  float-end">
-      <a class="paginate_button dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
-        <b>Sort By:</b> &nbsp; <i>{{sortSelection.text}}
-        </i> </a>
-      <ul class="dropdown-menu chat-drop p-0">
-        <ng-container>
-          <li *ngFor="let sortValue of sortingArray">
-            <a role="button" class="dropdown-item" (click)="sortSelected(sortValue)">{{ sortValue.text }}</a>
-          </li>
-        </ng-container>
-      </ul>
     </div>
   </div>
-  <div class="col-3">
-    <div class="d-flex flex-direction-row">
-      <a class="paginate_button dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
-        {{filterType}}
-      </a>
-      <ul class="dropdown-menu chat-drop p-0">
-        <ng-container>
-          <li *ngFor="let filters of filtersArray">
-            <a role="button" class="dropdown-item" (click)="filterBy(filters)">{{ filters }}</a>
-          </li>
-        </ng-container>
-      </ul>
-      <div class="input-group position-relative">
-        <input type="text" [formControl]="filterInputValue" class="search-input pl-5"
-          placeholder="Search by {{filterType}}" />
-        <img src="assets/icons/search.svg" alt="Search Icon" class="search-icon" (click)="searchByFilter()" />
-      </div>
-    </div>
+
+  <div class="col-2">
+
   </div>
   <div class="col-3">
-    <div class="input-group position-relative float-end">
+    <label *ngIf="leadType === 'inbound'" class="form-control float-end ml-2" style="width: auto;margin-left: 15px;">
+      <input type="checkbox" [(ngModel)]="isReviewdModel" (ngModelChange)="getAllLeads()">
+      Reviewed
+    </label>
+    <label *ngIf="leadType === 'inbound'" class="form-control float-end ml-2" style="width: auto;margin-left: 15px;">
+      <input type="checkbox" [(ngModel)]="isQualifiedModel" (ngModelChange)="getAllLeads()">
+      Qualified
+    </label>
+  </div>
+  <div class="col-4">
+
+    <div *ngIf="leadType === 'outbound'" class="float-end">
+      <button class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#createChatbot">
+        Add lead
+      </button>
+    </div>
+    <div class="input-group position-relative float-end" style="width: 75%;">
       <input type="text" [formControl]="searchText" class="search-input pl-5" placeholder="Search Lead ..." />
       <img src="assets/icons/search.svg" alt="Search Icon" class="search-icon" (click)="searchLead()" />
     </div>
   </div>
 
-  <div *ngIf="leadType === 'outbound'" class="col-2">
-    <button class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#createChatbot">
-      Add lead
-    </button>
-  </div>
+
 
 </div>
 
@@ -72,12 +54,15 @@
             <!--  -->
             <th scope="col">Company</th>
             <th scope="col">Root Domain</th>
-            <th scope="col">Vertical</th>
-            <th scope="col">Country</th>
+            <th *ngIf="leadType === 'inbound'" scope="col">Vertical
+              <i (click)="sortSelected('asc')" class="cursor-pointer fa-solid fa-chevron-up"></i>
+              <i (click)="sortSelected('desc')" class="cursor-pointer fa-solid fa-chevron-down"></i>
+            </th>
+            <th *ngIf="leadType === 'inbound'" scope="col">Country</th>
             <th scope="col">Contacts</th>
-            <th scope="col">Rank</th>
-            <th scope="col">Reviewed</th>
-            <th scope="col">Qualified</th>
+            <th scope="col">Demo Link</th>
+            <th *ngIf="leadType === 'inbound'" scope="col">Reviewed</th>
+            <th *ngIf="leadType === 'inbound'" scope="col">Qualified</th>
             <th scope="col">Action</th>
           </tr>
         </thead>
@@ -85,21 +70,30 @@
           <tr *ngFor="let lead of allLeadList">
             <td>{{lead?.company }}</td>
             <td><a [href]="'https://'+lead?.rootDomain" target="_blank"> {{lead?.rootDomain }}</a> </td>
-            <td>{{lead?.vertical }}</td>
-            <td>{{lead?.country }}</td>
+            <td *ngIf="leadType === 'inbound'">{{lead?.vertical }}</td>
+            <td *ngIf="leadType === 'inbound'">{{lead?.country }}</td>
             <td>{{lead?.contacts?.length || 0}} contact</td>
-            <td>{{lead?.pageRank}}</td>
-            <td>
+            <td> <a *ngIf="lead?.chatbot" target="_blank"
+                href="https://demo.distinctcloud.io/demo?website={{lead?.rootDomain}}">Chatbot</a>
+              <span *ngIf="!lead?.chatbot">
+                Not Created
+              </span>
+            </td>
+            <td *ngIf="leadType === 'inbound'">
               <input type="checkbox" style="width: 20px; height: 20px;" [(ngModel)]="lead.isReviewed"
                 (change)="onIsReviewedChange(lead)" />
             </td>
-            <td>
+            <td *ngIf="leadType === 'inbound'">
               <input type="checkbox" style="width: 20px; height: 20px;" [(ngModel)]="lead.isQualified"
                 (change)="onIsReviewedChange(lead)" />
             </td>
             <td>
               <img src="assets/icons/eye.svg" data-bs-toggle="modal" data-bs-target="#leadDetailModal"
                 class="cursor-pointer me-2" (click)="getLeadDetail(lead?.rootDomain )" />
+              <img src="../../assets/icons/trash.svg" class="cursor-pointer me-2" (click)="deleteLeadDetail(lead)" />
+
+              <img *ngIf="leadType === 'outbound'" src="../../assets/icons/installation.svg" title="Regenerate Chatbot"
+                class="cursor-pointer me-2" (click)="regenerateLead(lead )" />
             </td>
           </tr>
         </tbody>
@@ -107,15 +101,16 @@
     </div>
   </div>
   <div class="col-6">
-    Page {{currentPage}} of {{totalPages}} 
+    Page {{currentPage}} of {{totalPages}}
   </div>
 
   <div class="col-6">
     <div *ngIf="allLeadList?.length" class="dataTables_paginate paging_simple_numbers" id="basic-1_paginate">
       <a *ngIf="currentPage > 1" class="paginate_button " aria-controls="basic-1" data-dt-idx="0" id="basic-1_previous"
         (click)="onPreviousButtonClick()">Previous</a>
-        <input type="number" [(ngModel)]="pageNumber" (keydown.enter)="onPageNumberChange()" class="pagination-input" min="1" placeholder="#" />
-    
+      <input type="number" [(ngModel)]="pageNumber" (keydown.enter)="onPageNumberChange()" class="pagination-input"
+        min="1" placeholder="#" />
+
       <a *ngIf="allLeadList?.length == 20" class="paginate_button " aria-controls="basic-1" data-dt-idx="3"
         id="basic-1_next" (click)="onNextButtonClick()">Next</a>
     </div>
@@ -330,14 +325,16 @@
               <div class="row">
                 <div class="col-12">
                   <div class="d-flex justify-content-between align-items-center mb-2">
-                    <label for="followUp1" class="form-label">Initial Email: {{leadDetail?.initial_email?.subject}}</label>
+                    <label for="followUp1" class="form-label">Initial Email:
+                      {{leadDetail?.initial_email?.subject}}</label>
                     <div>
                       <!-- Status Badge -->
                       <span class="badge bg-danger me-2" *ngIf="leadDetail?.initial_email?.status === 'Not Replied' ">
                         {{leadDetail?.initial_email?.status}}
                       </span>
 
-                      <span class="badge bg-warning me-2" *ngIf="leadDetail?.initial_email?.status === 'Awaiting Reply' ">
+                      <span class="badge bg-warning me-2"
+                        *ngIf="leadDetail?.initial_email?.status === 'Awaiting Reply' ">
                         {{leadDetail?.initial_email?.status}}
                       </span>
 
@@ -345,7 +342,8 @@
                         {{leadDetail?.initial_email?.status}}
                       </span>
                       <!-- Sent On Date Badge -->
-                      <span class="badge bg-secondary">Sent on: {{leadDetail?.initial_email?.sent_on | date:'medium'}}</span>
+                      <span class="badge bg-secondary">Sent on: {{leadDetail?.initial_email?.sent_on |
+                        date:'medium'}}</span>
                     </div>
                   </div>
                   <div class="mb-3">
@@ -369,9 +367,10 @@
                       <span class="badge bg-success me-2" *ngIf="leadDetail?.follow_up_1?.status === 'Replied' ">
                         {{leadDetail?.follow_up_1?.status}}
                       </span>
-                      
-                       <!-- Sent On Date Badge -->
-                       <span class="badge bg-secondary">Sent on: {{leadDetail?.follow_up_1?.sent_on | date:'medium'}}</span>
+
+                      <!-- Sent On Date Badge -->
+                      <span class="badge bg-secondary">Sent on: {{leadDetail?.follow_up_1?.sent_on |
+                        date:'medium'}}</span>
                     </div>
                   </div>
                   <div class="mb-3">
@@ -395,9 +394,10 @@
                       <span class="badge bg-success me-2" *ngIf="leadDetail?.follow_up_2?.status === 'Replied' ">
                         {{leadDetail?.follow_up_2?.status}}
                       </span>
-                      
-                       <!-- Sent On Date Badge -->
-                       <span class="badge bg-secondary">Sent on: {{leadDetail?.follow_up_2?.sent_on | date:'medium'}}</span>
+
+                      <!-- Sent On Date Badge -->
+                      <span class="badge bg-secondary">Sent on: {{leadDetail?.follow_up_2?.sent_on |
+                        date:'medium'}}</span>
                     </div>
                   </div>
 
@@ -421,12 +421,14 @@
                   </div>
                 </div>
                 <div class="col-12">
-                    <button [disabled]="generatingMessage" class="btn btn-primary float-end m-4" (click)="generateMessage()" type="button">
-                        Generate Message
-                      <span *ngIf="generatingMessage" style="width: 24px;height: 24px;" class="spinner-border text-dark" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                      </span>
-                    </button>
+                  <button [disabled]="generatingMessage" class="btn btn-primary float-end m-4"
+                    (click)="generateMessage()" type="button">
+                    Generate Message
+                    <span *ngIf="generatingMessage" style="width: 24px;height: 24px;" class="spinner-border text-dark"
+                      role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -434,21 +436,26 @@
             <div class="tab-pane fade" id="ppt" role="tabpanel" aria-labelledby="ppt-tab">
               <div class="row">
                 <div class="col-12">
-                  <a href="https://dclcmsdocs.blob.core.windows.net/dcl-erp-docs/{{leadDetail?.pptSlide}}" target="_blank"> <img src="../../assets/icons/pdf.svg"></a>
+                  <a href="https://dclcmsdocs.blob.core.windows.net/dcl-erp-docs/{{leadDetail?.pptSlide}}"
+                    target="_blank"> <img src="../../assets/icons/pdf.svg"></a>
                   <div class="input-group mb-3">
-                    <button [disabled]="generatingMessage" class="btn btn-primary float-end" (click)="generatePPT()" type="button">
+                    <button [disabled]="generatingMessage" class="btn btn-primary float-end" (click)="generatePPT()"
+                      type="button">
                       Generate PPT
-                    <span *ngIf="generatingMessage" style="width: 24px;height: 24px;" class="spinner-border text-dark" role="status">
-                      <span class="visually-hidden">Loading...</span>
-                    </span>
-                  </button>
+                      <span *ngIf="generatingMessage" style="width: 24px;height: 24px;" class="spinner-border text-dark"
+                        role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </span>
+                    </button>
 
-                  <button [disabled]="generatingMessage" class="btn btn-primary float-end" (click)="createChatbot()" type="button">
-                    Create chatbot
-                  <span *ngIf="generatingMessage" style="width: 24px;height: 24px;" class="spinner-border text-dark" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                  </span>
-                </button>
+                    <button [disabled]="generatingMessage" class="btn btn-primary float-end" (click)="createChatbot()"
+                      type="button">
+                      Create chatbot
+                      <span *ngIf="generatingMessage" style="width: 24px;height: 24px;" class="spinner-border text-dark"
+                        role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </span>
+                    </button>
 
                   </div>
                 </div>
@@ -466,139 +473,110 @@
   </div>
 </div>
 
-<div
-class="modal fade"
-id="createChatbot"
-data-bs-backdrop="static"
-data-bs-keyboard="false"
-tabindex="-1"
-aria-labelledby="staticBackdropLabel"
-aria-hidden="true"
-style="background: none"
->
-<div class="modal-dialog modal-dialog-centered">
-  <div class="modal-content" style="background: white">
-    <div class="modal-header">
-      <h5 class="modal-title" id="staticBackdropLabel">Create Lead</h5>
-      <i class="fa-solid fa-xmark" data-bs-dismiss="modal"></i>
-    </div>
-    <div class="modal-body">
-      <form [formGroup]="createLeadForm">
-        <div class="mb-3">
-          <label for="exampleFormControlTextarea1" class="form-label"
-            >Company</label
-          >
-          <input
-            [ngClass]="{ 'is-invalid': hasError('company') }"
-            formControlName="company"
-            class="form-control"
-            placeholder="Name"
-          />
-          <div class="invalid-feedback">Chatbot name is required</div>
-        </div>
-        <div class="mb-3">
-          <label for="exampleFormControlTextarea1" class="form-label"
-            >Website url</label
-          >
-          <input
-            [ngClass]="{ 'is-invalid': hasError('domain') }"
-            formControlName="domain"
-            class="form-control"
-            placeholder="Name"
-          />
-          <div class="invalid-feedback">Chatbot name is required</div>
-        </div>
-        <div class="mb-3">
-          <label for="exampleFormControlTextarea1" class="form-label"
-            >Contact</label
-          >
+<div class="modal fade" id="createChatbot" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true" style="background: none">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background: white">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Create Lead</h5>
+        <i class="fa-solid fa-xmark" data-bs-dismiss="modal"></i>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createLeadForm">
+          <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Company</label>
+            <input [ngClass]="{ 'is-invalid': hasError('company') }" formControlName="company" class="form-control"
+              placeholder="Name" />
+            <div class="invalid-feedback">Chatbot name is required</div>
+          </div>
+          <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Website url</label>
+            <input [ngClass]="{ 'is-invalid': hasError('domain') }" formControlName="domain" class="form-control"
+              placeholder="Name" />
+            <div class="invalid-feedback">Chatbot name is required</div>
+          </div>
+          <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Contact</label>
 
-              <form [formGroup]="createLeadForm">
-                <div formArrayName="contacts">
-                  <div *ngFor="let contact of contactsLeadUpdate.controls; let i = index" [formGroupName]="i" class="mb-3">
-                    <div class="input-group gap-2">
-                      <!-- Contact Name -->
-                      <div class="col">
-                        <input type="text" formControlName="name" class="form-control" placeholder="Contact Name"
-                          aria-label="Contact Name" />
-                        <div *ngIf="contact.get('name')?.touched && contact.get('name')?.invalid"
-                          class="invalid-feedback d-block">
-                          <span *ngIf="contact.get('name')?.hasError('required')">Contact Name is required.</span>
-                        </div>
+            <form [formGroup]="createLeadForm">
+              <div formArrayName="contacts">
+                <div *ngFor="let contact of contactsLeadUpdate.controls; let i = index" [formGroupName]="i"
+                  class="mb-3">
+                  <div class="input-group gap-2">
+                    <!-- Contact Name -->
+                    <div class="col">
+                      <input type="text" formControlName="name" class="form-control" placeholder="Contact Name"
+                        aria-label="Contact Name" />
+                      <div *ngIf="contact.get('name')?.touched && contact.get('name')?.invalid"
+                        class="invalid-feedback d-block">
+                        <span *ngIf="contact.get('name')?.hasError('required')">Contact Name is required.</span>
                       </div>
-
-
-                      <!-- LinkedIn -->
-                      <div class="col">
-                        <input type="url" formControlName="linkedin" class="form-control" placeholder="LinkedIn URL"
-                          aria-label="LinkedIn URL" />
-                        <div *ngIf="contact.get('linkedin')?.touched && contact.get('linkedin')?.invalid"
-                          class="invalid-feedback d-block">
-                          <span *ngIf="contact.get('linkedin')?.hasError('required')">LinkedIn URL is
-                            required.</span>
-                        </div>
-                      </div>
-
-
-
-                      <!-- Email -->
-                      <div class="col">
-                        <input type="email" formControlName="email" class="form-control" placeholder="Email"
-                          aria-label="Email" />
-                        <div *ngIf="contact.get('email')?.touched && contact.get('email')?.invalid"
-                          class="invalid-feedback d-block">
-                          <span *ngIf="contact.get('email')?.hasError('required')">Email is required.</span>
-                          <span *ngIf="contact.get('email')?.hasError('email')">Please enter a valid email
-                            address.</span>
-                        </div>
-                      </div>
-
-                      <!-- Phone Number 1 -->
-                      <div class="col">
-                        <input type="tel" formControlName="phone1" class="form-control" placeholder="Phone Number 1"
-                          aria-label="Phone Number 1" />
-                      </div>
-
-                      <!-- Phone Number 2 -->
-                      <div class="col">
-                        <input type="tel" formControlName="phone2" class="form-control" placeholder="Phone Number 2"
-                          aria-label="Phone Number 2" />
-                      </div>
-
-                      <!-- Remove Button -->
-                      <button class="btn btn-danger" type="button" (click)="removeNewLeadContact(i)">Remove</button>
                     </div>
+
+
+                    <!-- LinkedIn -->
+                    <div class="col">
+                      <input type="url" formControlName="linkedin" class="form-control" placeholder="LinkedIn URL"
+                        aria-label="LinkedIn URL" />
+                      <div *ngIf="contact.get('linkedin')?.touched && contact.get('linkedin')?.invalid"
+                        class="invalid-feedback d-block">
+                        <span *ngIf="contact.get('linkedin')?.hasError('required')">LinkedIn URL is
+                          required.</span>
+                      </div>
+                    </div>
+
+
+
+                    <!-- Email -->
+                    <div class="col">
+                      <input type="email" formControlName="email" class="form-control" placeholder="Email"
+                        aria-label="Email" />
+                      <div *ngIf="contact.get('email')?.touched && contact.get('email')?.invalid"
+                        class="invalid-feedback d-block">
+                        <span *ngIf="contact.get('email')?.hasError('required')">Email is required.</span>
+                        <span *ngIf="contact.get('email')?.hasError('email')">Please enter a valid email
+                          address.</span>
+                      </div>
+                    </div>
+
+                    <!-- Phone Number 1 -->
+                    <div class="col">
+                      <input type="tel" formControlName="phone1" class="form-control" placeholder="Phone Number 1"
+                        aria-label="Phone Number 1" />
+                    </div>
+
+                    <!-- Phone Number 2 -->
+                    <div class="col">
+                      <input type="tel" formControlName="phone2" class="form-control" placeholder="Phone Number 2"
+                        aria-label="Phone Number 2" />
+                    </div>
+
+                    <!-- Remove Button -->
+                    <button class="btn btn-danger" type="button" (click)="removeNewLeadContact(i)">Remove</button>
                   </div>
                 </div>
-
-              </form>
-
-              <div class="input-group mb-3">
-                <button class="btn btn-primary" type="button" (click)="addNewLeadContact()">Add Contact</button>
               </div>
 
-          <div class="invalid-feedback">Contact is required</div>
-        </div>
-      </form>
-      <div></div>
-    </div>
-    <div class="modal-footer d-flex justify-content-end">
-      <button
-        data-bs-dismiss="modal"
-        class="btn btn-outline-secondary"
-        (click)="createLeadForm.reset()"
-      >
-        Cancel
-      </button>
-      <button
-        data-bs-dismiss="modal"
-        class="btn btn-primary"
-        (click)="createLead()"
-        [disabled]="createLeadForm.invalid"
-      >
-        Submit
-      </button>
+            </form>
+
+            <div class="input-group mb-3">
+              <button class="btn btn-primary" type="button" (click)="addNewLeadContact()">Add Contact</button>
+            </div>
+
+            <div class="invalid-feedback">Contact is required</div>
+          </div>
+        </form>
+        <div></div>
+      </div>
+      <div class="modal-footer d-flex justify-content-end">
+        <button data-bs-dismiss="modal" class="btn btn-outline-secondary" (click)="createLeadForm.reset()">
+          Cancel
+        </button>
+        <button data-bs-dismiss="modal" class="btn btn-primary" (click)="createLead()"
+          [disabled]="createLeadForm.invalid">
+          Submit
+        </button>
+      </div>
     </div>
   </div>
-</div>
 </div>

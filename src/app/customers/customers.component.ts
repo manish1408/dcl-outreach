@@ -25,7 +25,7 @@ export class CustomersComponent {
   allLeadList: any[] = [];
   currentPage: number = 1;
   searchText = new FormControl("");
-  filterInputValue = new FormControl("");
+  filterInputValue = "";
   totalPages: number = 1;
   itemsPerPage: number = 20;
   leadDetail: any = {};
@@ -37,8 +37,11 @@ export class CustomersComponent {
     sortValue: "desc",
     text: "Vertical Descending",
   };
+  isReviewdModel: any;
+  isQualifiedModel: any;
+
   filterType: string = "vertical";
-  leadType:any = 'inbound'
+  leadType: any = "inbound";
   sortingArray = [
     {
       filedName: "social",
@@ -81,7 +84,14 @@ export class CustomersComponent {
       text: "Page Rank Descending",
     },
   ];
-  filtersArray: string[] = ["state", "city", "vertical", "country", "isQualified", "isReviewed"];
+  filtersArray: string[] = [
+    "state",
+    "city",
+    "vertical",
+    "country",
+    "isQualified",
+    "isReviewed",
+  ];
 
   leadDetailForm!: FormGroup | any;
   createLeadForm!: FormGroup | any;
@@ -95,9 +105,8 @@ export class CustomersComponent {
   ) {}
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      this.leadType = params.get('id');
-      this.filterInputValue.reset();
+    this.route.paramMap.subscribe((params) => {
+      this.leadType = params.get("id");
       this.getAllLeads();
     });
     this.leadDetailForm = this.fb.group({
@@ -110,16 +119,15 @@ export class CustomersComponent {
       final_follow_up_linkedin: new FormControl(""),
       pptSlide: new FormControl(""),
     });
-    if(this.route.snapshot.queryParams["page"]) {
+    if (this.route.snapshot.queryParams["page"]) {
       this.currentPage = this.route.snapshot.queryParams["page"];
     }
 
     this.createLeadForm = this.fb.group({
-      domain: ['', Validators.required],
-      company: ['', Validators.required],
+      domain: ["", Validators.required],
+      company: ["", Validators.required],
       contacts: new FormArray([this.createContactFormGroup()]),
     });
-
   }
 
   // Get the contacts FormArray
@@ -140,7 +148,25 @@ export class CustomersComponent {
 
   getAllLeads() {
     this.loading = true;
+    let filter = [
+      {
+        filterName: "leadType",
+        filterValue: this.leadType?.toUpperCase(),
+      },
+    ];
 
+    if (this.isReviewdModel) {
+      filter.push({
+        filterName: "isReviewed",
+        filterValue: this.isReviewdModel.toString(),
+      });
+    }
+    if (this.isQualifiedModel) {
+      filter.push({
+        filterName: "isQualified",
+        filterValue: this.isQualifiedModel.toString(),
+      });
+    }
     const pagination: any = {
       pageNumber: this.currentPage,
       limit: this.itemsPerPage, // need to add in api
@@ -150,21 +176,7 @@ export class CustomersComponent {
           sortValue: this.sortSelection.sortValue,
         },
       ],
-      filter: this.filterInputValue.value
-        ? [
-          {
-            filterName: this.filterType,
-            filterValue: this.filterInputValue.value,
-          },
-          {
-            filterName: 'leadType',
-            filterValue: this.leadType?.toUpperCase(),
-          },
-        ]
-        : [{
-          filterName: 'leadType',
-          filterValue: this.leadType?.toUpperCase(),
-        },],
+      filter: filter
     };
     this.leadService
       .getAllLeads(pagination)
@@ -273,7 +285,39 @@ export class CustomersComponent {
         },
       });
   }
+  deleteLeadDetail(lead: any) {
+    this.toastService.showConfirm(
+      'Are you sure?',
+      'Delete the selected lead?',
+      'Yes, delete it!',
+      'No, cancel',
+      () => {
+        this.leadService
+        .deleteLeadDetail(lead._id)
+        .pipe(finalize(() => (this.loading = false)))
+        .subscribe({
+          next: (res: any) => {
+            if (res?.success == true && res?.data) {
+              this.toastr.success("Lead deleted successfully.");
+              this.getAllLeads();
+            } else {
+              this.toastr.error("Error.");
+            }
+          },
+          error: (err) => {
+            console.log("err: ", err);
+            this.toastr.error(err.error.detail.error);
+          },
+        });
+      },
+      () => {
+        // Cancel callback
+      }
+    );
 
+
+   
+  }
   onIsReviewedChange(lead: any) {
     let payload = JSON.parse(JSON.stringify(lead));
     let leadId = payload._id;
@@ -342,7 +386,7 @@ export class CustomersComponent {
             if (res?.success == true) {
               this.toastr.success("Leads Updated Successfully");
               this.closebutton.nativeElement.click();
-            this.getAllLeads();
+              this.getAllLeads();
             }
           },
           error: (err) => {
@@ -373,13 +417,11 @@ export class CustomersComponent {
       contacts.push(this.createContactFormGroup());
     }
   }
-  
 
   removeContact(index: number) {
     const contacts = this.leadDetailForm.get("contacts") as FormArray;
     contacts.removeAt(index);
   }
-
 
   removeNewLeadContact(index: number) {
     const contacts = this.createLeadForm.get("contacts") as FormArray;
@@ -508,7 +550,11 @@ export class CustomersComponent {
   }
 
   sortSelected(selectedSort: any) {
-    this.sortSelection = selectedSort;
+    this.sortSelection = {
+      filedName: "vertical",
+      sortValue: selectedSort,
+      text: "Vertical Descending",
+    };
     this.getAllLeads();
   }
 
@@ -520,24 +566,19 @@ export class CustomersComponent {
     this.getAllLeads();
   }
 
-  createLead(){
-    // debugger
+  createLead() {
     this.createLeadForm.markAllAsTouched();
-    if(!this.createLeadForm.valid){
-      this.toastr.error('Invalid form');
-      return
+    if (!this.createLeadForm.valid) {
+      this.toastr.error("Invalid form");
+      return;
     }
-    this.createLeadForm
-    // debugger
-    const payload = 
-      {
-        "rootDomain": this.createLeadForm.value.domain ,
-        "company": this.createLeadForm.value.company ,
-        "contact": [
-          this.createLeadForm.value.contacts
-        ]
-      }
-    this.loading = true
+    this.createLeadForm;
+    const payload = {
+      rootDomain: this.createLeadForm.value.domain,
+      company: this.createLeadForm.value.company,
+      contact: [this.createLeadForm.value.contacts],
+    };
+    this.loading = true;
     this.leadService
       .createLead(payload)
       .pipe(finalize(() => (this.generatingMessage = false)))
@@ -548,6 +589,27 @@ export class CustomersComponent {
             this.getAllLeads();
             this.toastr.success("Lead created.");
             this.createLeadForm.reset();
+          }
+        },
+        error: (err) => {
+          console.log("err: ", err);
+          this.toastr.error(err);
+        },
+      });
+  }
+
+  regenerateLead(lead:any) {
+    const payload = {
+      rootDomain: lead.rootDomain
+    };
+    this.loading = true;
+    this.leadService
+      .createLead(payload)
+      .subscribe({
+        next: (res: any) => {
+          if (res?.success == true) {
+            this.getAllLeads();
+            this.toastr.success("Chatbot generation started in background.");
           }
         },
         error: (err) => {
