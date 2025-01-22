@@ -572,13 +572,15 @@ export class CustomersComponent {
       this.toastr.error("Invalid form");
       return;
     }
-    this.createLeadForm;
-    const payload = {
-      rootDomain: this.createLeadForm.value.domain,
-      company: this.createLeadForm.value.company,
-      contact: [this.createLeadForm.value.contacts],
-    };
-    this.loading = true;
+    this.createLeadForm
+    // debugger
+    const payload = 
+      {
+        "rootDomain": this.createLeadForm.value.domain ,
+        "company": this.createLeadForm.value.company ,
+        "contacts": this.createLeadForm.value.contacts
+      }
+    this.loading = true
     this.leadService
       .createLead(payload)
       .pipe(finalize(() => (this.generatingMessage = false)))
