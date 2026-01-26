@@ -21,7 +21,12 @@
           <h4 class="card-subtitle mb-1 text-body-secondary">Total Credits</h4>
           <p class="card-desc">Money received</p>
           <div class="d-flex align-items-center justify-content-between mt-2">
-            <p class="card-text text-success">₹{{ credits | number:'1.0-0' }}</p>
+            <div>
+              <p class="card-text text-success mb-0">₹{{ credits | number:'1.0-0' }}</p>
+              <span class="badge bg-secondary small" *ngIf="totalUsdCredits > 0">
+                ${{ totalUsdCredits | number:'1.0-0' }}
+              </span>
+            </div>
             <div class="trend-stats">
               <img src="assets/icons/trend-up.svg" />
             </div>

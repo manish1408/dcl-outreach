@@ -76,7 +76,12 @@
                   </td>
                   <td>{{ invoice.issueDate | date:'shortDate' }}</td>
                   <td>{{ invoice.dueDate | date:'shortDate' }}</td>
-                  <td>₹{{ invoice.total | number:'1.0-0' }}</td>
+                  <td>
+                    <div>₹{{ invoice.total | number:'1.0-0' }}</div>
+                    <span class="badge bg-secondary small" *ngIf="invoice.usdAmount">
+                      ${{ invoice.usdAmount | number:'1.0-0' }}
+                    </span>
+                  </td>
                   <td>
                     <span class="badge" [ngClass]="statusClassMap[invoice.status] ? statusClassMap[invoice.status] : 'bg-secondary'">
                       {{ invoice.status | titlecase }}
@@ -248,7 +253,12 @@
           <tfoot>
             <tr>
               <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
-              <td class="text-end">₹{{ selectedInvoice.amount | number:'1.0-0' }}</td>
+              <td class="text-end">
+                <div>₹{{ selectedInvoice.amount | number:'1.0-0' }}</div>
+                <span class="badge bg-secondary small" *ngIf="selectedInvoice.usdAmount">
+                  ${{ selectedInvoice.usdAmount | number:'1.0-0' }}
+                </span>
+              </td>
             </tr>
             <tr *ngIf="selectedInvoice.tax">
               <td colspan="3" class="text-end"><strong>Tax:</strong></td>
@@ -256,7 +266,12 @@
             </tr>
             <tr>
               <td colspan="3" class="text-end"><strong>Total:</strong></td>
-              <td class="text-end"><strong>₹{{ selectedInvoice.total | number:'1.0-0' }}</strong></td>
+              <td class="text-end">
+                <div><strong>₹{{ selectedInvoice.total | number:'1.0-0' }}</strong></div>
+                <span class="badge bg-secondary small" *ngIf="selectedInvoice.usdAmount">
+                  <strong>${{ selectedInvoice.usdAmount | number:'1.0-0' }}</strong>
+                </span>
+              </td>
             </tr>
           </tfoot>
         </table>

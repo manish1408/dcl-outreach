@@ -1,9 +1,25 @@
 <nav class="accounting-nav">
-  <ul class="nav nav-pills">
-    <li class="nav-item" *ngFor="let item of navItems">
-      <a class="nav-link" [routerLink]="item.path" routerLinkActive="active">
-        {{ item.label }}
-      </a>
-    </li>
-  </ul>
+  <div class="d-flex justify-content-between align-items-center">
+    <ul class="nav nav-pills">
+      <li class="nav-item" *ngFor="let item of navItems">
+        <a class="nav-link" [routerLink]="item.path" routerLinkActive="active">
+          {{ item.label }}
+        </a>
+      </li>
+    </ul>
+    <div class="date-filter-section">
+      <form [formGroup]="dateFilterForm" class="d-flex align-items-center gap-2">
+        <select class="form-select form-select-sm" formControlName="period" style="width: auto;">
+          <option *ngFor="let option of periodOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+        <div *ngIf="dateFilterForm.get('period')?.value === 'custom'" class="d-flex align-items-center gap-2">
+          <input type="date" class="form-control form-control-sm" formControlName="startDate" style="width: auto;">
+          <span>to</span>
+          <input type="date" class="form-control form-control-sm" formControlName="endDate" style="width: auto;">
+        </div>
+      </form>
+    </div>
+  </div>
 </nav>

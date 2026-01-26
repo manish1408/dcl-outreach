@@ -22,3 +22,14 @@
   background-color: #5DD89D;
   color: #fff;
 }
+
+.date-filter-section {
+  display: flex;
+  align-items: center;
+}
+
+.date-filter-section .form-select-sm,
+.date-filter-section .form-control-sm {
+  font-size: 14px;
+  padding: 4px 8px;
+}

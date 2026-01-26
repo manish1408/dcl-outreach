@@ -1,0 +1,718 @@
+{
+  "transactions": [
+    {
+      "id": "1",
+      "date": "2025-07-05",
+      "type": "credit",
+      "amount": 50000,
+      "usdAmount": 600,
+      "exchangeRate": 83.33,
+      "category": "Project Payment",
+      "description": "Payment from Client A - Project Alpha",
+      "clientName": "Client A",
+      "invoiceId": "INV-001"
+    },
+    {
+      "id": "2",
+      "date": "2025-07-10",
+      "type": "debit",
+      "amount": 15000,
+      "category": "Software Tools",
+      "description": "Annual subscription for development tools",
+      "invoiceId": "EXP-001"
+    },
+    {
+      "id": "3",
+      "date": "2025-07-15",
+      "type": "credit",
+      "amount": 75000,
+      "usdAmount": 900,
+      "exchangeRate": 83.33,
+      "category": "Project Payment",
+      "description": "Payment from Client B - Project Beta",
+      "clientName": "Client B",
+      "invoiceId": "INV-002"
+    },
+    {
+      "id": "4",
+      "date": "2025-07-20",
+      "type": "debit",
+      "amount": 25000,
+      "category": "Salaries",
+      "description": "Monthly salary payment",
+      "invoiceId": "EXP-002"
+    },
+    {
+      "id": "5",
+      "date": "2025-07-25",
+      "type": "debit",
+      "amount": 5000,
+      "category": "Office Rent",
+      "description": "Monthly office rent",
+      "invoiceId": "EXP-003"
+    },
+    {
+      "id": "6",
+      "date": "2025-08-01",
+      "type": "credit",
+      "amount": 40000,
+      "usdAmount": 480,
+      "exchangeRate": 83.33,
+      "category": "Consulting",
+      "description": "Consulting fee from Client C",
+      "clientName": "Client C",
+      "invoiceId": "INV-003"
+    },
+    {
+      "id": "7",
+      "date": "2025-08-05",
+      "type": "debit",
+      "amount": 12000,
+      "category": "Marketing",
+      "description": "Digital marketing campaign",
+      "invoiceId": "EXP-004"
+    },
+    {
+      "id": "8",
+      "date": "2025-08-10",
+      "type": "debit",
+      "amount": 8000,
+      "category": "Utilities",
+      "description": "Electricity and internet bills",
+      "invoiceId": "EXP-005"
+    },
+    {
+      "id": "9",
+      "date": "2025-08-15",
+      "type": "credit",
+      "amount": 60000,
+      "usdAmount": 720,
+      "exchangeRate": 83.33,
+      "category": "Project Payment",
+      "description": "Payment from Client D - Project Gamma",
+      "clientName": "Client D",
+      "invoiceId": "INV-004"
+    },
+    {
+      "id": "10",
+      "date": "2025-08-20",
+      "type": "credit",
+      "amount": 35000,
+      "usdAmount": 420,
+      "exchangeRate": 83.33,
+      "category": "Consulting",
+      "description": "Consulting fee from Client E",
+      "clientName": "Client E",
+      "invoiceId": "INV-005"
+    },
+    {
+      "id": "11",
+      "date": "2025-09-01",
+      "type": "debit",
+      "amount": 25000,
+      "category": "Salaries",
+      "description": "Monthly salary payment",
+      "invoiceId": "EXP-006"
+    },
+    {
+      "id": "12",
+      "date": "2025-09-05",
+      "type": "credit",
+      "amount": 55000,
+      "usdAmount": 660,
+      "exchangeRate": 83.33,
+      "category": "Project Payment",
+      "description": "Payment from Client F - Project Delta",
+      "clientName": "Client F",
+      "invoiceId": "INV-006"
+    },
+    {
+      "id": "13",
+      "date": "2025-09-10",
+      "type": "debit",
+      "amount": 5000,
+      "category": "Office Rent",
+      "description": "Monthly office rent",
+      "invoiceId": "EXP-007"
+    },
+    {
+      "id": "14",
+      "date": "2025-09-15",
+      "type": "credit",
+      "amount": 45000,
+      "usdAmount": 540,
+      "exchangeRate": 83.33,
+      "category": "Consulting",
+      "description": "Consulting fee from Client G",
+      "clientName": "Client G",
+      "invoiceId": "INV-007"
+    },
+    {
+      "id": "15",
+      "date": "2025-09-20",
+      "type": "debit",
+      "amount": 10000,
+      "category": "Software Tools",
+      "description": "Cloud infrastructure subscription",
+      "invoiceId": "EXP-008"
+    },
+    {
+      "id": "16",
+      "date": "2025-10-01",
+      "type": "credit",
+      "amount": 80000,
+      "usdAmount": 960,
+      "exchangeRate": 83.33,
+      "category": "Project Payment",
+      "description": "Payment from Client H - Project Epsilon",
+      "clientName": "Client H",
+      "invoiceId": "INV-008"
+    },
+    {
+      "id": "17",
+      "date": "2025-10-05",
+      "type": "debit",
+      "amount": 25000,
+      "category": "Salaries",
+      "description": "Monthly salary payment",
+      "invoiceId": "EXP-009"
+    },
+    {
+      "id": "18",
+      "date": "2025-10-10",
+      "type": "debit",
+      "amount": 5000,
+      "category": "Office Rent",
+      "description": "Monthly office rent",
+      "invoiceId": "EXP-010"
+    },
+    {
+      "id": "19",
+      "date": "2025-10-15",
+      "type": "credit",
+      "amount": 30000,
+      "usdAmount": 360,
+      "exchangeRate": 83.33,
+      "category": "Consulting",
+      "description": "Consulting fee from Client I",
+      "clientName": "Client I",
+      "invoiceId": "INV-009"
+    },
+    {
+      "id": "20",
+      "date": "2025-10-20",
+      "type": "debit",
+      "amount": 15000,
+      "category": "Marketing",
+      "description": "Social media advertising",
+      "invoiceId": "EXP-011"
+    },
+    {
+      "id": "21",
+      "date": "2025-11-01",
+      "type": "credit",
+      "amount": 70000,
+      "usdAmount": 840,
+      "exchangeRate": 83.33,
+      "category": "Project Payment",
+      "description": "Payment from Client J - Project Zeta",
+      "clientName": "Client J",
+      "invoiceId": "INV-010"
+    },
+    {
+      "id": "22",
+      "date": "2025-11-05",
+      "type": "debit",
+      "amount": 25000,
+      "category": "Salaries",
+      "description": "Monthly salary payment",
+      "invoiceId": "EXP-012"
+    },
+    {
+      "id": "23",
+      "date": "2025-11-10",
+      "type": "debit",
+      "amount": 5000,
+      "category": "Office Rent",
+      "description": "Monthly office rent",
+      "invoiceId": "EXP-013"
+    },
+    {
+      "id": "24",
+      "date": "2025-11-15",
+      "type": "credit",
+      "amount": 50000,
+      "usdAmount": 600,
+      "exchangeRate": 83.33,
+      "category": "Project Payment",
+      "description": "Payment from Client K - Project Eta",
+      "clientName": "Client K",
+      "invoiceId": "INV-011"
+    },
+    {
+      "id": "25",
+      "date": "2025-11-20",
+      "type": "debit",
+      "amount": 18000,
+      "category": "Software Tools",
+      "description": "Development tools and licenses",
+      "invoiceId": "EXP-014"
+    },
+    {
+      "id": "26",
+      "date": "2025-12-01",
+      "type": "credit",
+      "amount": 90000,
+      "usdAmount": 1080,
+      "exchangeRate": 83.33,
+      "category": "Project Payment",
+      "description": "Payment from Client L - Project Theta",
+      "clientName": "Client L",
+      "invoiceId": "INV-012"
+    },
+    {
+      "id": "27",
+      "date": "2025-12-05",
+      "type": "debit",
+      "amount": 25000,
+      "category": "Salaries",
+      "description": "Monthly salary payment",
+      "invoiceId": "EXP-015"
+    },
+    {
+      "id": "28",
+      "date": "2025-12-10",
+      "type": "debit",
+      "amount": 5000,
+      "category": "Office Rent",
+      "description": "Monthly office rent",
+      "invoiceId": "EXP-016"
+    },
+    {
+      "id": "29",
+      "date": "2025-12-15",
+      "type": "credit",
+      "amount": 65000,
+      "usdAmount": 780,
+      "exchangeRate": 83.33,
+      "category": "Consulting",
+      "description": "Consulting fee from Client M",
+      "clientName": "Client M",
+      "invoiceId": "INV-013"
+    },
+    {
+      "id": "30",
+      "date": "2025-12-20",
+      "type": "debit",
+      "amount": 20000,
+      "category": "Marketing",
+      "description": "Year-end marketing campaign",
+      "invoiceId": "EXP-017"
+    },
+    {
+      "id": "31",
+      "date": "2026-01-01",
+      "type": "credit",
+      "amount": 85000,
+      "usdAmount": 1020,
+      "exchangeRate": 83.33,
+      "category": "Project Payment",
+      "description": "Payment from Client N - Project Iota",
+      "clientName": "Client N",
+      "invoiceId": "INV-014"
+    },
+    {
+      "id": "32",
+      "date": "2026-01-05",
+      "type": "debit",
+      "amount": 25000,
+      "category": "Salaries",
+      "description": "Monthly salary payment",
+      "invoiceId": "EXP-018"
+    },
+    {
+      "id": "33",
+      "date": "2026-01-10",
+      "type": "debit",
+      "amount": 5000,
+      "category": "Office Rent",
+      "description": "Monthly office rent",
+      "invoiceId": "EXP-019"
+    },
+    {
+      "id": "34",
+      "date": "2026-01-15",
+      "type": "credit",
+      "amount": 55000,
+      "usdAmount": 660,
+      "exchangeRate": 83.33,
+      "category": "Project Payment",
+      "description": "Payment from Client O - Project Kappa",
+      "clientName": "Client O",
+      "invoiceId": "INV-015"
+    },
+    {
+      "id": "35",
+      "date": "2026-01-20",
+      "type": "debit",
+      "amount": 12000,
+      "category": "Utilities",
+      "description": "Electricity, internet and phone bills",
+      "invoiceId": "EXP-020"
+    }
+  ],
+  "invoices": [
+    {
+      "id": "1",
+      "invoiceNumber": "INV-001",
+      "clientName": "Client A",
+      "clientEmail": "clienta@example.com",
+      "issueDate": "2025-07-01",
+      "dueDate": "2025-07-15",
+      "amount": 50000,
+      "usdAmount": 600,
+      "exchangeRate": 83.33,
+      "status": "paid",
+      "items": [
+        {
+          "description": "Project Alpha - Development",
+          "quantity": 1,
+          "rate": 50000,
+          "amount": 50000
+        }
+      ],
+      "tax": 0,
+      "total": 50000
+    },
+    {
+      "id": "2",
+      "invoiceNumber": "INV-002",
+      "clientName": "Client B",
+      "clientEmail": "clientb@example.com",
+      "issueDate": "2025-07-10",
+      "dueDate": "2025-07-25",
+      "amount": 75000,
+      "usdAmount": 900,
+      "exchangeRate": 83.33,
+      "status": "paid",
+      "items": [
+        {
+          "description": "Project Beta - Full Stack Development",
+          "quantity": 1,
+          "rate": 75000,
+          "amount": 75000
+        }
+      ],
+      "tax": 0,
+      "total": 75000
+    },
+    {
+      "id": "3",
+      "invoiceNumber": "INV-003",
+      "clientName": "Client C",
+      "clientEmail": "clientc@example.com",
+      "issueDate": "2025-07-25",
+      "dueDate": "2025-08-10",
+      "amount": 40000,
+      "usdAmount": 480,
+      "exchangeRate": 83.33,
+      "status": "paid",
+      "items": [
+        {
+          "description": "Consulting Services",
+          "quantity": 40,
+          "rate": 1000,
+          "amount": 40000
+        }
+      ],
+      "tax": 0,
+      "total": 40000
+    },
+    {
+      "id": "4",
+      "invoiceNumber": "INV-004",
+      "clientName": "Client D",
+      "clientEmail": "clientd@example.com",
+      "issueDate": "2025-08-10",
+      "dueDate": "2025-08-25",
+      "amount": 60000,
+      "usdAmount": 720,
+      "exchangeRate": 83.33,
+      "status": "paid",
+      "items": [
+        {
+          "description": "Project Gamma - Mobile App Development",
+          "quantity": 1,
+          "rate": 60000,
+          "amount": 60000
+        }
+      ],
+      "tax": 0,
+      "total": 60000
+    },
+    {
+      "id": "5",
+      "invoiceNumber": "INV-005",
+      "clientName": "Client E",
+      "clientEmail": "cliente@example.com",
+      "issueDate": "2025-08-15",
+      "dueDate": "2025-08-30",
+      "amount": 35000,
+      "usdAmount": 420,
+      "exchangeRate": 83.33,
+      "status": "paid",
+      "items": [
+        {
+          "description": "Consulting Services",
+          "quantity": 35,
+          "rate": 1000,
+          "amount": 35000
+        }
+      ],
+      "tax": 0,
+      "total": 35000
+    },
+    {
+      "id": "6",
+      "invoiceNumber": "INV-006",
+      "clientName": "Client F",
+      "clientEmail": "clientf@example.com",
+      "issueDate": "2025-09-01",
+      "dueDate": "2025-09-15",
+      "amount": 55000,
+      "usdAmount": 660,
+      "exchangeRate": 83.33,
+      "status": "paid",
+      "items": [
+        {
+          "description": "Project Delta - Web Application",
+          "quantity": 1,
+          "rate": 55000,
+          "amount": 55000
+        }
+      ],
+      "tax": 0,
+      "total": 55000
+    },
+    {
+      "id": "7",
+      "invoiceNumber": "INV-007",
+      "clientName": "Client G",
+      "clientEmail": "clientg@example.com",
+      "issueDate": "2025-09-10",
+      "dueDate": "2025-09-25",
+      "amount": 45000,
+      "usdAmount": 540,
+      "exchangeRate": 83.33,
+      "status": "paid",
+      "items": [
+        {
+          "description": "Consulting Services",
+          "quantity": 45,
+          "rate": 1000,
+          "amount": 45000
+        }
+      ],
+      "tax": 0,
+      "total": 45000
+    },
+    {
+      "id": "8",
+      "invoiceNumber": "INV-008",
+      "clientName": "Client H",
+      "clientEmail": "clienth@example.com",
+      "issueDate": "2025-10-01",
+      "dueDate": "2025-10-15",
+      "amount": 80000,
+      "usdAmount": 960,
+      "exchangeRate": 83.33,
+      "status": "paid",
+      "items": [
+        {
+          "description": "Project Epsilon - Enterprise Solution",
+          "quantity": 1,
+          "rate": 80000,
+          "amount": 80000
+        }
+      ],
+      "tax": 0,
+      "total": 80000
+    },
+    {
+      "id": "9",
+      "invoiceNumber": "INV-009",
+      "clientName": "Client I",
+      "clientEmail": "clienti@example.com",
+      "issueDate": "2025-10-10",
+      "dueDate": "2025-10-25",
+      "amount": 30000,
+      "usdAmount": 360,
+      "exchangeRate": 83.33,
+      "status": "paid",
+      "items": [
+        {
+          "description": "Consulting Services",
+          "quantity": 30,
+          "rate": 1000,
+          "amount": 30000
+        }
+      ],
+      "tax": 0,
+      "total": 30000
+    },
+    {
+      "id": "10",
+      "invoiceNumber": "INV-010",
+      "clientName": "Client J",
+      "clientEmail": "clientj@example.com",
+      "issueDate": "2025-11-01",
+      "dueDate": "2025-11-15",
+      "amount": 70000,
+      "usdAmount": 840,
+      "exchangeRate": 83.33,
+      "status": "paid",
+      "items": [
+        {
+          "description": "Project Zeta - E-commerce Platform",
+          "quantity": 1,
+          "rate": 70000,
+          "amount": 70000
+        }
+      ],
+      "tax": 0,
+      "total": 70000
+    },
+    {
+      "id": "11",
+      "invoiceNumber": "INV-011",
+      "clientName": "Client K",
+      "clientEmail": "clientk@example.com",
+      "issueDate": "2025-11-10",
+      "dueDate": "2025-11-25",
+      "amount": 50000,
+      "usdAmount": 600,
+      "exchangeRate": 83.33,
+      "status": "paid",
+      "items": [
+        {
+          "description": "Project Eta - API Development",
+          "quantity": 1,
+          "rate": 50000,
+          "amount": 50000
+        }
+      ],
+      "tax": 0,
+      "total": 50000
+    },
+    {
+      "id": "12",
+      "invoiceNumber": "INV-012",
+      "clientName": "Client L",
+      "clientEmail": "clientl@example.com",
+      "issueDate": "2025-12-01",
+      "dueDate": "2025-12-15",
+      "amount": 90000,
+      "usdAmount": 1080,
+      "exchangeRate": 83.33,
+      "status": "paid",
+      "items": [
+        {
+          "description": "Project Theta - Cloud Migration",
+          "quantity": 1,
+          "rate": 90000,
+          "amount": 90000
+        }
+      ],
+      "tax": 0,
+      "total": 90000
+    },
+    {
+      "id": "13",
+      "invoiceNumber": "INV-013",
+      "clientName": "Client M",
+      "clientEmail": "clientm@example.com",
+      "issueDate": "2025-12-10",
+      "dueDate": "2025-12-25",
+      "amount": 65000,
+      "usdAmount": 780,
+      "exchangeRate": 83.33,
+      "status": "paid",
+      "items": [
+        {
+          "description": "Consulting Services",
+          "quantity": 65,
+          "rate": 1000,
+          "amount": 65000
+        }
+      ],
+      "tax": 0,
+      "total": 65000
+    },
+    {
+      "id": "14",
+      "invoiceNumber": "INV-014",
+      "clientName": "Client N",
+      "clientEmail": "clientn@example.com",
+      "issueDate": "2026-01-01",
+      "dueDate": "2026-01-15",
+      "amount": 85000,
+      "usdAmount": 1020,
+      "exchangeRate": 83.33,
+      "status": "sent",
+      "items": [
+        {
+          "description": "Project Iota - AI Integration",
+          "quantity": 1,
+          "rate": 85000,
+          "amount": 85000
+        }
+      ],
+      "tax": 0,
+      "total": 85000
+    },
+    {
+      "id": "15",
+      "invoiceNumber": "INV-015",
+      "clientName": "Client O",
+      "clientEmail": "cliento@example.com",
+      "issueDate": "2026-01-10",
+      "dueDate": "2026-01-25",
+      "amount": 55000,
+      "usdAmount": 660,
+      "exchangeRate": 83.33,
+      "status": "draft",
+      "items": [
+        {
+          "description": "Project Kappa - Data Analytics",
+          "quantity": 1,
+          "rate": 55000,
+          "amount": 55000
+        }
+      ],
+      "tax": 0,
+      "total": 55000
+    }
+  ],
+  "categorySpending": [
+    {
+      "category": "Salaries",
+      "amount": 150000
+    },
+    {
+      "category": "Software Tools",
+      "amount": 58000
+    },
+    {
+      "category": "Office Rent",
+      "amount": 30000
+    },
+    {
+      "category": "Marketing",
+      "amount": 47000
+    },
+    {
+      "category": "Utilities",
+      "amount": 20000
+    }
+  ]
+}

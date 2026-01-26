@@ -1,18 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AccountingService } from '../../_services/accounting.service';
+import { AccountingFilterService } from '../../_services/accounting-filter.service';
 import { Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
-import { finalize } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-accounting-overview',
   templateUrl: './accounting-overview.component.html',
   styleUrl: './accounting-overview.component.scss'
 })
-export class AccountingOverviewComponent implements OnInit {
+export class AccountingOverviewComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   credits: number = 0;
   debits: number = 0;
   balance: number = 0;
+  totalUsdCredits: number = 0;
   isBalancePositive: boolean = true;
   balanceClass: string = 'text-success';
   balanceIcon: string = 'assets/icons/trend-up.svg';
@@ -41,36 +44,97 @@ export class AccountingOverviewComponent implements OnInit {
     domain: ['#F44336', '#FF9800', '#FFC107', '#FF5722', '#E91E63'],
   };
 
-  constructor(private accountingService: AccountingService) {}
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private accountingService: AccountingService,
+    private filterService: AccountingFilterService
+  ) {}
 
   ngOnInit() {
     this.loadSummary();
     this.loadChartData();
+    
+    this.filterService.dateFilter$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.loadSummary();
+      this.loadChartData();
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadSummary() {
+    const filter = this.filterService.getCurrentFilter();
     this.loading = true;
-    this.accountingService.getCreditDebitSummary()
-      .pipe(finalize(() => this.loading = false))
-      .subscribe({
-        next: (res) => {
-          this.credits = res.credits;
-          this.debits = res.debits;
-          this.balance = res.credits - res.debits;
-          this.isBalancePositive = this.balance >= 0;
-          this.balanceClass = this.isBalancePositive ? 'text-success' : 'text-danger';
-          this.balanceIcon = this.isBalancePositive ? 'assets/icons/trend-up.svg' : 'assets/icons/trend-down.svg';
-        },
-        error: (err) => {
-          console.error('Error loading summary:', err);
+    this.accountingService.getTransactions().subscribe({
+      next: (res) => {
+        let transactions = res.data;
+        
+        if (filter.startDate) {
+          const startDate = new Date(filter.startDate);
+          startDate.setHours(0, 0, 0, 0);
+          transactions = transactions.filter(t => {
+            const transDate = new Date(t.date);
+            transDate.setHours(0, 0, 0, 0);
+            return transDate >= startDate;
+          });
         }
-      });
+        if (filter.endDate) {
+          const endDate = new Date(filter.endDate);
+          endDate.setHours(23, 59, 59, 999);
+          transactions = transactions.filter(t => {
+            const transDate = new Date(t.date);
+            return transDate <= endDate;
+          });
+        }
+        
+        const creditTransactions = transactions.filter(t => t.type === 'credit');
+        this.credits = creditTransactions.reduce((sum, t) => sum + t.amount, 0);
+        this.totalUsdCredits = creditTransactions.reduce((sum, t) => {
+          const usdAmount = t.usdAmount ? t.usdAmount : 0;
+          return sum + usdAmount;
+        }, 0);
+        
+        this.debits = transactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
+        this.balance = this.credits - this.debits;
+        this.isBalancePositive = this.balance >= 0;
+        this.balanceClass = this.isBalancePositive ? 'text-success' : 'text-danger';
+        this.balanceIcon = this.isBalancePositive ? 'assets/icons/trend-up.svg' : 'assets/icons/trend-down.svg';
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading summary:', err);
+        this.loading = false;
+      }
+    });
   }
 
   loadChartData() {
+    const filter = this.filterService.getCurrentFilter();
     this.accountingService.getTransactions().subscribe({
       next: (res) => {
-        const transactions = res.data;
+        let transactions = res.data;
+        
+        if (filter.startDate) {
+          const startDate = new Date(filter.startDate);
+          startDate.setHours(0, 0, 0, 0);
+          transactions = transactions.filter(t => {
+            const transDate = new Date(t.date);
+            transDate.setHours(0, 0, 0, 0);
+            return transDate >= startDate;
+          });
+        }
+        if (filter.endDate) {
+          const endDate = new Date(filter.endDate);
+          endDate.setHours(23, 59, 59, 999);
+          transactions = transactions.filter(t => {
+            const transDate = new Date(t.date);
+            return transDate <= endDate;
+          });
+        }
         
         // Group credits by category
         const creditMap = new Map<string, number>();

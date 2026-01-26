@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AccountingService, Invoice } from '../../_services/accounting.service';
+import { AccountingFilterService } from '../../_services/accounting-filter.service';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
-import { finalize } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -23,6 +25,7 @@ export class AccountingInvoicesComponent implements OnInit {
   invoiceSubtotal: number = 0;
   invoiceTotal: number = 0;
   invoiceTax: number = 0;
+  private destroy$ = new Subject<void>();
 
   statusOptions = [
     { value: 'draft', label: 'Draft' },
@@ -33,6 +36,7 @@ export class AccountingInvoicesComponent implements OnInit {
 
   constructor(
     private accountingService: AccountingService,
+    private filterService: AccountingFilterService,
     private fb: FormBuilder
   ) {
     this.invoiceForm = this.fb.group({
@@ -52,15 +56,42 @@ export class AccountingInvoicesComponent implements OnInit {
     this.invoiceForm.get('tax')?.valueChanges.subscribe(() => {
       this.updateInvoiceFormTotals();
     });
+
+    this.filterService.dateFilter$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.loadInvoices();
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadInvoices() {
+    const filter = this.filterService.getCurrentFilter();
     this.loading = true;
     this.accountingService.getInvoices()
       .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: (res) => {
-          this.invoices = res.data;
+          let invoices = res.data;
+          
+          if (filter.startDate) {
+            invoices = invoices.filter(inv => {
+              const issueDate = new Date(inv.issueDate);
+              return issueDate >= filter.startDate!;
+            });
+          }
+          if (filter.endDate) {
+            const endDate = new Date(filter.endDate);
+            endDate.setHours(23, 59, 59, 999);
+            invoices = invoices.filter(inv => {
+              const issueDate = new Date(inv.issueDate);
+              return issueDate <= endDate;
+            });
+          }
+          
+          this.invoices = invoices;
           this.updateInvoiceTotals();
         },
         error: (err) => {

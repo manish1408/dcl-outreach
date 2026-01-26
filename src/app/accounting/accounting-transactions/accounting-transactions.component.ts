@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AccountingService, Transaction } from '../../_services/accounting.service';
+import { AccountingFilterService } from '../../_services/accounting-filter.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { finalize } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-accounting-transactions',
@@ -31,9 +33,11 @@ export class AccountingTransactionsComponent implements OnInit {
   ];
 
   categories: string[] = [];
+  private destroy$ = new Subject<void>();
 
   constructor(
     private accountingService: AccountingService,
+    private filterService: AccountingFilterService,
     private fb: FormBuilder
   ) {
     this.filterForm = this.fb.group({
@@ -50,16 +54,46 @@ export class AccountingTransactionsComponent implements OnInit {
     this.filterForm.valueChanges.subscribe(() => {
       this.applyFilters();
     });
+
+    this.filterService.dateFilter$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.loadTransactions();
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadTransactions() {
+    const filter = this.filterService.getCurrentFilter();
     this.loading = true;
     this.accountingService.getTransactions()
       .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: (res) => {
-          this.transactions = res.data;
-          this.categories = [...new Set(res.data.map(t => t.category))];
+          let transactions = res.data;
+          
+          if (filter.startDate) {
+            const startDate = new Date(filter.startDate);
+            startDate.setHours(0, 0, 0, 0);
+            transactions = transactions.filter(t => {
+              const transDate = new Date(t.date);
+              transDate.setHours(0, 0, 0, 0);
+              return transDate >= startDate;
+            });
+          }
+          if (filter.endDate) {
+            const endDate = new Date(filter.endDate);
+            endDate.setHours(23, 59, 59, 999);
+            transactions = transactions.filter(t => {
+              const transDate = new Date(t.date);
+              return transDate <= endDate;
+            });
+          }
+          
+          this.transactions = transactions;
+          this.categories = [...new Set(transactions.map(t => t.category))];
           this.applyFilters();
         },
         error: (err) => {
@@ -142,11 +176,15 @@ export class AccountingTransactionsComponent implements OnInit {
 
   totalCredits: number = 0;
   totalDebits: number = 0;
+  totalUsdCredits: number = 0;
 
   updateTotals() {
-    this.totalCredits = this.filteredTransactions
-      .filter(t => t.type === 'credit')
-      .reduce((sum, t) => sum + t.amount, 0);
+    const creditTransactions = this.filteredTransactions.filter(t => t.type === 'credit');
+    this.totalCredits = creditTransactions.reduce((sum, t) => sum + t.amount, 0);
+    this.totalUsdCredits = creditTransactions.reduce((sum, t) => {
+      const usdAmount = t.usdAmount ? t.usdAmount : 0;
+      return sum + usdAmount;
+    }, 0);
     
     this.totalDebits = this.filteredTransactions
       .filter(t => t.type === 'debit')
