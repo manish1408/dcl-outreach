@@ -1,0 +1,116 @@
+<div *ngIf="loading" class="d-flex justify-content-center">
+  <div class="spinner-border text-dark" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<ng-container *ngIf="!loading">
+  <app-accounting-nav></app-accounting-nav>
+  <div class="row">
+    <div class="col-12">
+      <h4 class="title">Accounting Overview</h4>
+      <p class="desc">Track your business finances at a glance</p>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="row mt-4">
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h4 class="card-subtitle mb-1 text-body-secondary">Total Credits</h4>
+          <p class="card-desc">Money received</p>
+          <div class="d-flex align-items-center justify-content-between mt-2">
+            <p class="card-text text-success">₹{{ credits | number:'1.0-0' }}</p>
+            <div class="trend-stats">
+              <img src="assets/icons/trend-up.svg" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h4 class="card-subtitle mb-1 text-body-secondary">Total Debits</h4>
+          <p class="card-desc">Money spent</p>
+          <div class="d-flex align-items-center justify-content-between mt-2">
+            <p class="card-text text-danger">₹{{ debits | number:'1.0-0' }}</p>
+            <div class="trend-stats">
+              <img src="assets/icons/trend-down.svg" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h4 class="card-subtitle mb-1 text-body-secondary">Net Balance</h4>
+          <p class="card-desc">Current balance</p>
+          <div class="d-flex align-items-center justify-content-between mt-2">
+            <p class="card-text" [ngClass]="balanceClass">
+              ₹{{ balance | number:'1.0-0' }}
+            </p>
+            <div class="trend-stats">
+              <img [src]="balanceIcon" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="row mt-4">
+    <div class="col-12 col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="title">Credits by Category</h4>
+          <p class="desc">Breakdown of money received</p>
+          <div *ngIf="creditChartData.length > 0">
+            <ngx-charts-pie-chart
+              [scheme]="customColorScheme"
+              [results]="creditChartData"
+              [gradient]="gradient"
+              [legend]="showLegend"
+              [labels]="showLabels"
+              [legendPosition]="legendPosition"
+              [doughnut]="isDoughnut"
+              (select)="onSelect($event)"
+            >
+            </ngx-charts-pie-chart>
+          </div>
+          <div *ngIf="creditChartData.length === 0" class="text-center py-4">
+            <p class="text-muted">No credit data available</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="title">Debits by Category</h4>
+          <p class="desc">Breakdown of money spent</p>
+          <div *ngIf="debitChartData.length > 0">
+            <ngx-charts-pie-chart
+              [scheme]="customColorSchemeDebit"
+              [results]="debitChartData"
+              [gradient]="gradient"
+              [legend]="showLegend"
+              [labels]="showLabels"
+              [legendPosition]="legendPosition"
+              [doughnut]="isDoughnut"
+              (select)="onSelect($event)"
+            >
+            </ngx-charts-pie-chart>
+          </div>
+          <div *ngIf="debitChartData.length === 0" class="text-center py-4">
+            <p class="text-muted">No debit data available</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

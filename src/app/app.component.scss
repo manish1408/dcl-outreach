@@ -108,6 +108,19 @@
   align-items: center;
   justify-content: flex-start;
   gap: 8px;
+  
+  img {
+    width: 25px;
+    height: 25px;
+    filter: brightness(0) invert(1);
+  }
+  
+  i {
+    font-size: 25px;
+    color: #ffffff;
+    width: 25px;
+    text-align: center;
+  }
 }
 
 .sidebar-link[data-bs-toggle="collapse"]::after {

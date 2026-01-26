@@ -1,0 +1,24 @@
+.accounting-nav {
+  margin-bottom: 24px;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 16px;
+}
+
+.nav-pills .nav-link {
+  border-radius: 6px;
+  padding: 8px 16px;
+  margin-right: 8px;
+  color: #6c757d;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.nav-pills .nav-link:hover {
+  background-color: #f8f9fa;
+  color: #495057;
+}
+
+.nav-pills .nav-link.active {
+  background-color: #5DD89D;
+  color: #fff;
+}

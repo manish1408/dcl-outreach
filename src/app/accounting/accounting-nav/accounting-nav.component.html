@@ -1,0 +1,9 @@
+<nav class="accounting-nav">
+  <ul class="nav nav-pills">
+    <li class="nav-item" *ngFor="let item of navItems">
+      <a class="nav-link" [routerLink]="item.path" routerLinkActive="active">
+        {{ item.label }}
+      </a>
+    </li>
+  </ul>
+</nav>

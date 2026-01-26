@@ -1,0 +1,136 @@
+<div *ngIf="loading" class="d-flex justify-content-center">
+  <div class="spinner-border text-dark" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<ng-container *ngIf="!loading">
+  <app-accounting-nav></app-accounting-nav>
+  <div class="row">
+    <div class="col-12">
+      <h4 class="title">Transactions</h4>
+      <p class="desc">View and filter all your financial transactions</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Filters</h5>
+          <form [formGroup]="filterForm">
+            <div class="row g-3">
+              <div class="col-12 col-md-3">
+                <label class="form-label">Transaction Type</label>
+                <select class="form-select" formControlName="type">
+                  <option *ngFor="let option of typeOptions" [value]="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-12 col-md-3">
+                <label class="form-label">Category</label>
+                <select class="form-select" formControlName="category">
+                  <option value="">All Categories</option>
+                  <option *ngFor="let cat of categories" [value]="cat">
+                    {{ cat }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-12 col-md-3">
+                <label class="form-label">Timeline</label>
+                <select class="form-select" formControlName="timeline">
+                  <option *ngFor="let option of timelineOptions" [value]="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-12 col-md-3">
+                <label class="form-label">&nbsp;</label>
+                <button type="button" class="btn btn-outline-secondary w-100" (click)="resetFilters()">
+                  Reset Filters
+                </button>
+              </div>
+            </div>
+            <div class="row g-3 mt-2">
+              <div class="col-12 col-md-6">
+                <label class="form-label">Start Date</label>
+                <input type="date" class="form-control" formControlName="startDate">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">End Date</label>
+                <input type="date" class="form-control" formControlName="endDate">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="row mt-4">
+    <div class="col-12 col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-subtitle mb-1">Total Credits</h5>
+          <p class="card-text text-success">₹{{ totalCredits | number:'1.0-0' }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-subtitle mb-1">Total Debits</h5>
+          <p class="card-text text-danger">₹{{ totalDebits | number:'1.0-0' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transactions Table -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Description</th>
+                  <th>Client</th>
+                  <th class="text-end">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let transaction of filteredTransactions">
+                  <td>{{ transaction.date | date:'shortDate' }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="transaction.type === 'credit' ? 'bg-success' : 'bg-danger'">
+                      {{ transaction.type | titlecase }}
+                    </span>
+                  </td>
+                  <td>{{ transaction.category }}</td>
+                  <td>{{ transaction.description }}</td>
+                  <td>{{ transaction.clientName }}</td>
+                  <td class="text-end" [ngClass]="transaction.type === 'credit' ? 'text-success' : 'text-danger'">
+                    {{ transaction.type === 'credit' ? '+' : '-' }}₹{{ transaction.amount | number:'1.0-0' }}
+                  </td>
+                </tr>
+                <tr *ngIf="filteredTransactions.length === 0">
+                  <td colspan="6" class="text-center py-4">
+                    <p class="text-muted">No transactions found</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

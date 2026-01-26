@@ -1,0 +1,273 @@
+<div *ngIf="loading" class="d-flex justify-content-center">
+  <div class="spinner-border text-dark" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<ng-container *ngIf="!loading">
+  <app-accounting-nav></app-accounting-nav>
+  <div class="row">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+      <div>
+        <h4 class="title">Invoice Management</h4>
+        <p class="desc">Create and manage invoices for your clients</p>
+      </div>
+      <button class="btn btn-primary" (click)="openCreateForm()">
+        <i class="bi bi-plus-circle"></i> Create Invoice
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="row mt-4">
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-subtitle mb-1">Total Invoices</h5>
+          <p class="card-text">₹{{ totalAmount | number:'1.0-0' }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-subtitle mb-1">Paid Amount</h5>
+          <p class="card-text text-success">₹{{ paidAmount | number:'1.0-0' }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-subtitle mb-1">Pending Amount</h5>
+          <p class="card-text text-danger">₹{{ pendingAmount | number:'1.0-0' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invoices Table -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Invoice #</th>
+                  <th>Client</th>
+                  <th>Issue Date</th>
+                  <th>Due Date</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let invoice of invoices">
+                  <td>{{ invoice.invoiceNumber }}</td>
+                  <td>
+                    <div>
+                      <strong>{{ invoice.clientName }}</strong>
+                      <br>
+                      <small class="text-muted">{{ invoice.clientEmail }}</small>
+                    </div>
+                  </td>
+                  <td>{{ invoice.issueDate | date:'shortDate' }}</td>
+                  <td>{{ invoice.dueDate | date:'shortDate' }}</td>
+                  <td>₹{{ invoice.total | number:'1.0-0' }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="statusClassMap[invoice.status] ? statusClassMap[invoice.status] : 'bg-secondary'">
+                      {{ invoice.status | titlecase }}
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <button class="btn btn-sm btn-outline-primary me-2" (click)="viewInvoice(invoice)">
+                      View
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary me-2" (click)="openEditForm(invoice)">
+                      Edit
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="deleteInvoice(invoice)">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="invoices.length === 0">
+                  <td colspan="7" class="text-center py-4">
+                    <p class="text-muted">No invoices found. Create your first invoice!</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Invoice Form Modal -->
+<div class="modal fade" [class.show]="showInvoiceForm" [style.display]="showInvoiceForm ? 'block' : 'none'" tabindex="-1" *ngIf="showInvoiceForm">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ editingInvoice ? 'Edit Invoice' : 'Create Invoice' }}</h5>
+        <button type="button" class="btn-close" (click)="closeForm()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="invoiceForm">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label">Invoice Number</label>
+              <input type="text" class="form-control" formControlName="invoiceNumber" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Status</label>
+              <select class="form-select" formControlName="status">
+                <option *ngFor="let option of statusOptions" [value]="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Client Name</label>
+              <input type="text" class="form-control" formControlName="clientName" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Client Email</label>
+              <input type="email" class="form-control" formControlName="clientEmail" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Issue Date</label>
+              <input type="date" class="form-control" formControlName="issueDate" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Due Date</label>
+              <input type="date" class="form-control" formControlName="dueDate" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Tax (₹)</label>
+              <input type="number" class="form-control" formControlName="tax" min="0">
+            </div>
+          </div>
+          
+          <!-- Invoice Items -->
+          <div class="mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6>Invoice Items</h6>
+              <button type="button" class="btn btn-sm btn-outline-primary" (click)="addInvoiceItem()">
+                Add Item
+              </button>
+            </div>
+            <div formArrayName="items">
+              <div *ngFor="let item of itemsFormArray.controls; let i = index" [formGroupName]="i" class="row g-3 mb-3 border-bottom pb-3">
+                <div class="col-12 col-md-5">
+                  <label class="form-label">Description</label>
+                  <input type="text" class="form-control" formControlName="description" placeholder="Item description">
+                </div>
+                <div class="col-12 col-md-2">
+                  <label class="form-label">Quantity</label>
+                  <input type="number" class="form-control" formControlName="quantity" min="1" (input)="calculateItemAmountByIndex(i)">
+                </div>
+                <div class="col-12 col-md-2">
+                  <label class="form-label">Rate (₹)</label>
+                  <input type="number" class="form-control" formControlName="rate" min="0" (input)="calculateItemAmountByIndex(i)">
+                </div>
+                <div class="col-12 col-md-2">
+                  <label class="form-label">Amount (₹)</label>
+                  <input type="number" class="form-control" formControlName="amount" readonly>
+                </div>
+                <div class="col-12 col-md-1 d-flex align-items-end">
+                  <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeInvoiceItem(i)" [disabled]="itemsFormArray.length === 1">
+                    ×
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 text-end">
+              <strong>Subtotal: ₹{{ invoiceSubtotal | number:'1.0-0' }}</strong><br>
+              <strong>Tax: ₹{{ invoiceTax | number:'1.0-0' }}</strong><br>
+              <strong class="fs-5">Total: ₹{{ invoiceTotal | number:'1.0-0' }}</strong>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="saveInvoice()" [disabled]="!invoiceForm.valid">
+          {{ editingInvoice ? 'Update' : 'Create' }} Invoice
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showInvoiceForm" *ngIf="showInvoiceForm" (click)="closeForm()"></div>
+
+<!-- Invoice Details Modal -->
+<div class="modal fade" [class.show]="showInvoiceDetails" [style.display]="showInvoiceDetails ? 'block' : 'none'" tabindex="-1" *ngIf="showInvoiceDetails && selectedInvoice">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Invoice Details - {{ selectedInvoice.invoiceNumber }}</h5>
+        <button type="button" class="btn-close" (click)="closeDetails()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-6">
+            <strong>Client:</strong> {{ selectedInvoice.clientName }}<br>
+            <strong>Email:</strong> {{ selectedInvoice.clientEmail }}
+          </div>
+          <div class="col-6 text-end">
+            <strong>Issue Date:</strong> {{ selectedInvoice.issueDate | date:'shortDate' }}<br>
+            <strong>Due Date:</strong> {{ selectedInvoice.dueDate | date:'shortDate' }}<br>
+            <span class="badge" [ngClass]="statusClassMap[selectedInvoice.status] ? statusClassMap[selectedInvoice.status] : 'bg-secondary'">
+              {{ selectedInvoice.status | titlecase }}
+            </span>
+          </div>
+        </div>
+        <hr>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Quantity</th>
+              <th>Rate</th>
+              <th class="text-end">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of selectedInvoice.items">
+              <td>{{ item.description }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>₹{{ item.rate | number:'1.0-0' }}</td>
+              <td class="text-end">₹{{ item.amount | number:'1.0-0' }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+              <td class="text-end">₹{{ selectedInvoice.amount | number:'1.0-0' }}</td>
+            </tr>
+            <tr *ngIf="selectedInvoice.tax">
+              <td colspan="3" class="text-end"><strong>Tax:</strong></td>
+              <td class="text-end">₹{{ selectedInvoice.tax | number:'1.0-0' }}</td>
+            </tr>
+            <tr>
+              <td colspan="3" class="text-end"><strong>Total:</strong></td>
+              <td class="text-end"><strong>₹{{ selectedInvoice.total | number:'1.0-0' }}</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeDetails()">Close</button>
+        <button type="button" class="btn btn-primary" (click)="openEditForm(selectedInvoice!)">
+          Edit Invoice
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showInvoiceDetails" *ngIf="showInvoiceDetails" (click)="closeDetails()"></div>

@@ -1,0 +1,45 @@
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.desc {
+  color: #6c757d;
+  margin-bottom: 0;
+}
+
+.card {
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.category-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.category-item {
+  margin-bottom: 16px;
+}
+
+.category-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.category-amount {
+  font-weight: 600;
+  color: #dc3545;
+}
+
+.progress {
+  background-color: #e9ecef;
+  border-radius: 4px;
+}
+
+.progress-bar {
+  background-color: #5DD89D;
+  transition: width 0.3s ease;
+}

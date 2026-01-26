@@ -90,6 +90,7 @@ const routes: Routes = [
   { path: 'loan-automation', loadChildren: () => import('./loan-automation/loan-automation.module').then(m => m.LoanAutomationModule) },
   { path: 'leads/:id', loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule) },
   { path: 'workflowsJab', loadChildren: () => import('./workflows-jab/workflows-jab.module').then(m => m.WorkflowsJabModule) },
+  { path: 'accounting', loadChildren: () => import('./accounting/accounting.module').then(m => m.AccountingModule), canActivate: [AuthGuard] },
 ];
 
 @NgModule({
