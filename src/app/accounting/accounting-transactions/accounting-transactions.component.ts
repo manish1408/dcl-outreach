@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AccountingService, Transaction } from '../../_services/accounting.service';
 import { AccountingFilterService } from '../../_services/accounting-filter.service';
 import { finalize, takeUntil } from 'rxjs';
@@ -24,8 +24,8 @@ export class AccountingTransactionsComponent implements OnInit, OnDestroy {
   
   // Pagination
   pageSize: number = 20;
-  currentPage: number = 0;
-  hasMoreData: boolean = true;
+  currentPage: number = 1;
+  totalPages: number = 1;
 
   constructor(
     private accountingService: AccountingService,
@@ -46,25 +46,9 @@ export class AccountingTransactionsComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  @HostListener('window:scroll', ['$event'])
-  onScroll() {
-    if (this.loading || !this.hasMoreData) {
-      return;
-    }
-
-    const windowHeight = window.innerHeight;
-    const documentHeight = document.documentElement.scrollHeight;
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-
-    if (scrollTop + windowHeight >= documentHeight - 200) {
-      this.loadMoreTransactions();
-    }
-  }
-
   resetPagination() {
-    this.currentPage = 0;
-    this.displayedTransactions = [];
-    this.hasMoreData = true;
+    this.currentPage = 1;
+    this.updateDisplayedTransactions();
   }
 
   loadTransactions() {
@@ -75,7 +59,6 @@ export class AccountingTransactionsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           let transactions = res.data;
-          
           if (filter.startDate) {
             const startDate = new Date(filter.startDate);
             startDate.setHours(0, 0, 0, 0);
@@ -97,7 +80,6 @@ export class AccountingTransactionsComponent implements OnInit, OnDestroy {
           this.allTransactions = transactions;
           this.applySorting();
           this.resetPagination();
-          this.loadMoreTransactions();
         },
         error: (err) => {
           console.error('Error loading transactions:', err);
@@ -105,21 +87,31 @@ export class AccountingTransactionsComponent implements OnInit, OnDestroy {
       });
   }
 
-  loadMoreTransactions() {
-    if (!this.hasMoreData || this.loading) {
-      return;
-    }
-
-    const startIndex = this.currentPage * this.pageSize;
+  updateDisplayedTransactions() {
+    this.totalPages = Math.ceil(this.allTransactions.length / this.pageSize);
+    const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
-    const nextBatch = this.allTransactions.slice(startIndex, endIndex);
+    this.displayedTransactions = this.allTransactions.slice(startIndex, endIndex);
+  }
 
-    if (nextBatch.length > 0) {
-      this.displayedTransactions = [...this.displayedTransactions, ...nextBatch];
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updateDisplayedTransactions();
+    }
+  }
+
+  onPreviousButtonClick() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updateDisplayedTransactions();
+    }
+  }
+
+  onNextButtonClick() {
+    if (this.currentPage < this.totalPages) {
       this.currentPage++;
-      this.hasMoreData = endIndex < this.allTransactions.length;
-    } else {
-      this.hasMoreData = false;
+      this.updateDisplayedTransactions();
     }
   }
 
@@ -141,7 +133,6 @@ export class AccountingTransactionsComponent implements OnInit, OnDestroy {
 
     this.applySorting();
     this.resetPagination();
-    this.loadMoreTransactions();
   }
 
   applySorting() {
@@ -149,7 +140,7 @@ export class AccountingTransactionsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.allTransactions.sort((a, b) => {
+    this.allTransactions.sort((a, b) => { 
       let aValue: any;
       let bValue: any;
 

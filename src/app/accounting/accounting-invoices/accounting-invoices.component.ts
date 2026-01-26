@@ -27,11 +27,21 @@ export class AccountingInvoicesComponent implements OnInit {
   invoiceTax: number = 0;
   private destroy$ = new Subject<void>();
 
+  showLogo: boolean = true;
+  currency: string = 'INR';
+
   statusOptions = [
     { value: 'draft', label: 'Draft' },
     { value: 'sent', label: 'Sent' },
     { value: 'paid', label: 'Paid' },
     { value: 'overdue', label: 'Overdue' }
+  ];
+
+  currencyOptions = [
+    { value: 'INR', label: 'INR (₹)' },
+    { value: 'USD', label: 'USD ($)' },
+    { value: 'EUR', label: 'EUR (€)' },
+    { value: 'GBP', label: 'GBP (£)' }
   ];
 
   constructor(
@@ -43,11 +53,14 @@ export class AccountingInvoicesComponent implements OnInit {
       invoiceNumber: ['', Validators.required],
       clientName: ['', Validators.required],
       clientEmail: ['', [Validators.required, Validators.email]],
+      clientAddress: [''],
       issueDate: ['', Validators.required],
       dueDate: ['', Validators.required],
       status: ['draft', Validators.required],
       items: this.fb.array([this.createInvoiceItem()]),
-      tax: [0]
+      tax: [0],
+      currency: ['INR'],
+      showLogo: [true]
     });
   }
 
@@ -55,6 +68,14 @@ export class AccountingInvoicesComponent implements OnInit {
     this.loadInvoices();
     this.invoiceForm.get('tax')?.valueChanges.subscribe(() => {
       this.updateInvoiceFormTotals();
+    });
+
+    this.invoiceForm.get('showLogo')?.valueChanges.subscribe((value) => {
+      this.showLogo = value;
+    });
+
+    this.invoiceForm.get('currency')?.valueChanges.subscribe((value) => {
+      this.currency = value;
     });
 
     this.filterService.dateFilter$.pipe(takeUntil(this.destroy$)).subscribe(() => {
@@ -113,8 +134,12 @@ export class AccountingInvoicesComponent implements OnInit {
     this.invoiceForm.reset({
       invoiceNumber: this.generateInvoiceNumber(),
       status: 'draft',
-      tax: 0
+      tax: 0,
+      currency: 'INR',
+      showLogo: true
     });
+    this.showLogo = true;
+    this.currency = 'INR';
     this.updateInvoiceFormTotals();
     this.showInvoiceForm = true;
   }
@@ -143,15 +168,25 @@ export class AccountingInvoicesComponent implements OnInit {
       this.addInvoiceItem();
     }
     
-    this.invoiceForm.patchValue({
+    const invoiceData: any = {
       invoiceNumber: invoice.invoiceNumber,
       clientName: invoice.clientName,
       clientEmail: invoice.clientEmail,
       issueDate: this.formatDateForInput(invoice.issueDate),
       dueDate: this.formatDateForInput(invoice.dueDate),
       status: invoice.status,
-      tax: invoice.tax ? invoice.tax : 0
-    });
+      tax: invoice.tax ? invoice.tax : 0,
+      currency: (invoice as any).currency ? (invoice as any).currency : 'INR',
+      showLogo: (invoice as any).showLogo !== undefined ? (invoice as any).showLogo : true
+    };
+
+    if ((invoice as any).clientAddress) {
+      invoiceData.clientAddress = (invoice as any).clientAddress;
+    }
+
+    this.invoiceForm.patchValue(invoiceData);
+    this.showLogo = invoiceData.showLogo;
+    this.currency = invoiceData.currency;
     this.updateInvoiceFormTotals();
     this.showInvoiceForm = true;
   }
@@ -166,15 +201,18 @@ export class AccountingInvoicesComponent implements OnInit {
         amount: item.amount ? item.amount : (item.quantity * item.rate)
       }));
       
-      const invoiceData: Partial<Invoice> = {
+      const invoiceData: any = {
         invoiceNumber: formValue.invoiceNumber,
         clientName: formValue.clientName,
         clientEmail: formValue.clientEmail,
+        clientAddress: formValue.clientAddress,
         issueDate: new Date(formValue.issueDate),
         dueDate: new Date(formValue.dueDate),
         status: formValue.status,
         items: items,
         tax: formValue.tax ? formValue.tax : 0,
+        currency: formValue.currency ? formValue.currency : 'INR',
+        showLogo: formValue.showLogo !== undefined ? formValue.showLogo : true,
         amount: this.calculateTotal(items, formValue.tax || 0),
         total: this.calculateTotal(items, formValue.tax || 0)
       };
@@ -338,6 +376,38 @@ export class AccountingInvoicesComponent implements OnInit {
   calculateItemAmountByIndex(index: number) {
     const itemForm = this.itemsFormArray.at(index) as FormGroup;
     this.calculateItemAmount(itemForm);
+  }
+
+  getInvoiceProperty(invoice: Invoice, property: string): any {
+    return (invoice as any)[property];
+  }
+
+  getInvoiceShowLogo(invoice: Invoice): boolean {
+    const showLogo = (invoice as any).showLogo;
+    return showLogo !== undefined ? showLogo : true;
+  }
+
+  getInvoiceCurrency(invoice: Invoice): string {
+    const currency = (invoice as any).currency;
+    return currency ? currency : 'INR';
+  }
+
+  getInvoiceClientAddress(invoice: Invoice): string {
+    return (invoice as any).clientAddress ? (invoice as any).clientAddress : '';
+  }
+
+  getCurrencySymbol(currency: string): string {
+    switch (currency) {
+      case 'USD':
+        return '$';
+      case 'EUR':
+        return '€';
+      case 'GBP':
+        return '£';
+      case 'INR':
+      default:
+        return '₹';
+    }
   }
 
 }

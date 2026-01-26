@@ -13,9 +13,14 @@ import { environment } from '../../../environments/environment';
 })
 export class AccountingSettingsComponent implements OnInit {
   uploadForm: FormGroup;
-  imgFiles: any[] = [];
-  imgValidation = false;
-  loading = false;
+  transactionFiles: any[] = [];
+  billFiles: any[] = [];
+  transactionValidation = false;
+  billValidation = false;
+  loadingTransactions = false;
+  loadingBills = false;
+  uploadedFiles: any[] = [];
+  loadingFiles = false;
   allowedMimes = [
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'application/vnd.ms-excel',
@@ -33,14 +38,31 @@ export class AccountingSettingsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.getUploadedFiles();
   }
 
-  onSelect(event: any) {
+  getUploadedFiles() {
+    this.loadingFiles = true;
+    this.http.get(`${environment.APIUrl}/accounting/uploaded-files`)
+      .pipe(finalize(() => (this.loadingFiles = false)))
+      .subscribe({
+        next: (res: any) => {
+          if (res.success) {
+            this.uploadedFiles = res.data;
+          }
+        },
+        error: (err) => {
+          this.toastr.error(err?.error?.message || 'Error fetching uploaded files');
+        }
+      });
+  }
+
+  onSelectTransactions(event: any) {
     for (const file of event.addedFiles) {
       if (this.allowedMimes.includes(file.type)) {
         if (file.size <= this.maxSize) {
-          this.imgFiles.push(file);
-          this.imgValidation = false;
+          this.transactionFiles.push(file);
+          this.transactionValidation = false;
         } else {
           this.toastr.error('File size exceeds 10MB limit');
         }
@@ -50,11 +72,34 @@ export class AccountingSettingsComponent implements OnInit {
     }
   }
 
-  onRemove(event: any, file: any) {
+  onSelectBills(event: any) {
+    for (const file of event.addedFiles) {
+      if (this.allowedMimes.includes(file.type)) {
+        if (file.size <= this.maxSize) {
+          this.billFiles.push(file);
+          this.billValidation = false;
+        } else {
+          this.toastr.error('File size exceeds 10MB limit');
+        }
+      } else {
+        this.toastr.error('Only Excel files (.xlsx, .xls, .csv) are allowed');
+      }
+    }
+  }
+
+  onRemoveTransaction(event: any, file: any) {
     event.stopPropagation();
-    const index = this.imgFiles.indexOf(file);
+    const index = this.transactionFiles.indexOf(file);
     if (index > -1) {
-      this.imgFiles.splice(index, 1);
+      this.transactionFiles.splice(index, 1);
+    }
+  }
+
+  onRemoveBill(event: any, file: any) {
+    event.stopPropagation();
+    const index = this.billFiles.indexOf(file);
+    if (index > -1) {
+      this.billFiles.splice(index, 1);
     }
   }
 
@@ -63,34 +108,81 @@ export class AccountingSettingsComponent implements OnInit {
   }
 
   getFileIcon(fileType: string): string {
+    if (fileType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || fileType === 'xlsx') {
+      return 'assets/images/icons8-excel.png';
+    }
+    if (fileType === 'application/vnd.ms-excel' || fileType === 'xls') {
+      return 'assets/images/icons8-excel.png';
+    }
+    if (fileType === 'text/csv' || fileType === 'csv') {
+      return 'assets/images/icons8-excel.png';
+    }
     return 'assets/icons/file-upload.svg';
   }
 
-  onSubmitExcel() {
-    if (this.imgFiles.length > 0) {
-      this.loading = true;
-      const filesToAdd = this.imgFiles.filter((file) => file instanceof File);
+  openFileLink(fileUrl: string) {
+    if (fileUrl) {
+      window.open(fileUrl, '_blank');
+    }
+  }
+
+  onSubmitTransactions() {
+    if (this.transactionFiles.length > 0) {
+      this.loadingTransactions = true;
+      const filesToAdd = this.transactionFiles.filter((file) => file instanceof File);
       const fd = new FormData();
       filesToAdd.forEach((f) => fd.append('file', f));
+      fd.append('type', 'transactions');
 
       this.http.post(`${environment.APIUrl}/accounting/upload-excel`, fd)
-        .pipe(finalize(() => (this.loading = false)))
+        .pipe(finalize(() => (this.loadingTransactions = false)))
         .subscribe({
           next: (res: any) => {
             if (res.success) {
-              this.toastr.success('Excel file uploaded successfully');
-              this.imgFiles = [];
+              this.toastr.success('Transactions file uploaded successfully');
+              this.transactionFiles = [];
+              this.getUploadedFiles();
             } else {
               this.toastr.error(res.message || 'Upload failed');
             }
           },
           error: (err) => {
             this.toastr.error(err?.error?.message || 'Error uploading file');
-            this.loading = false;
+            this.loadingTransactions = false;
           }
         });
     } else {
-      this.imgValidation = true;
+      this.transactionValidation = true;
+    }
+  }
+
+  onSubmitBills() {
+    if (this.billFiles.length > 0) {
+      this.loadingBills = true;
+      const filesToAdd = this.billFiles.filter((file) => file instanceof File);
+      const fd = new FormData();
+      filesToAdd.forEach((f) => fd.append('file', f));
+      fd.append('type', 'bills');
+
+      this.http.post(`${environment.APIUrl}/accounting/upload-excel`, fd)
+        .pipe(finalize(() => (this.loadingBills = false)))
+        .subscribe({
+          next: (res: any) => {
+            if (res.success) {
+              this.toastr.success('Bills file uploaded successfully');
+              this.billFiles = [];
+              this.getUploadedFiles();
+            } else {
+              this.toastr.error(res.message || 'Upload failed');
+            }
+          },
+          error: (err) => {
+            this.toastr.error(err?.error?.message || 'Error uploading file');
+            this.loadingBills = false;
+          }
+        });
+    } else {
+      this.billValidation = true;
     }
   }
 }

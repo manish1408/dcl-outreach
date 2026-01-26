@@ -6,6 +6,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { AccountingOverviewComponent } from './accounting-overview/accounting-overview.component';
 import { AccountingTransactionsComponent } from './accounting-transactions/accounting-transactions.component';
 import { AccountingInvoicesComponent } from './accounting-invoices/accounting-invoices.component';
+import { AccountingBillsComponent } from './accounting-bills/accounting-bills.component';
 import { AccountingNavComponent } from './accounting-nav/accounting-nav.component';
 import { AccountingSettingsComponent } from './accounting-settings/accounting-settings.component';
 import { NgxDropzoneModule } from 'ngx-dropzone';
@@ -15,6 +16,7 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
     AccountingOverviewComponent,
     AccountingTransactionsComponent,
     AccountingInvoicesComponent,
+    AccountingBillsComponent,
     AccountingNavComponent,
     AccountingSettingsComponent
   ],

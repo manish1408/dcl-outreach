@@ -44,3 +44,29 @@
   font-weight: 700;
   margin-bottom: 0;
 }
+
+.dataTables_paginate {
+  float: right;
+  font-family: Outfit, sans-serif;
+  color: #8d8d8d;
+  border: none;
+}
+
+.paginate_button {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 0 5px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f4f4f4;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #6BE3AA;
+    color: #333;
+  }
+}

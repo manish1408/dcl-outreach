@@ -7,14 +7,14 @@
 </div>
 
 <div class="row mt-4">
-  <div class="col-12 col-md-8">
+  <div class="col-12 col-md-6">
     <div class="card shadow-sm">
       <div class="card-body">
-        <h5 class="card-title mb-4">Upload Excel Sheet</h5>
-        <p class="text-muted mb-4">Upload your accounting data in Excel format (.xlsx, .xls, or .csv)</p>
+        <h5 class="card-title mb-4">Upload Transactions</h5>
+        <p class="text-muted mb-4">Upload your transactions data in Excel format (.xlsx, .xls, or .csv)</p>
         
         <ngx-dropzone
-          (change)="onSelect($event)"
+          (change)="onSelectTransactions($event)"
           class="dropzone dropzone-light bg-light-primary"
         >
           <ngx-dropzone-label class="dz-message needsclick">
@@ -28,22 +28,22 @@
           </ngx-dropzone-label>
         </ngx-dropzone>
 
-        <div *ngIf="imgValidation" class="invalid-img mt-2">
+        <div *ngIf="transactionValidation" class="invalid-img mt-2">
           Please select a file to upload
         </div>
 
         <div
-          *ngIf="imgFiles.length > 0"
+          *ngIf="transactionFiles.length > 0"
           class="d-flex align-items-center justify-content-start gap-3 mt-4"
         >
-          <ng-container *ngFor="let f of imgFiles">
+          <ng-container *ngFor="let f of transactionFiles">
             <div class="file-preview">
               <img
                 [src]="getFileIcon(f.type)"
                 class="img-file"
                 alt="File preview"
               />
-              <button (click)="onRemove($event, f)" class="remove-btn">
+              <button (click)="onRemoveTransaction($event, f)" class="remove-btn">
                 <img src="assets/icons/cross-red.svg" />
               </button>
               <div class="file-name">{{ f.name }}</div>
@@ -54,13 +54,130 @@
         <div class="mt-4">
           <button
             class="btn btn-primary"
-            (click)="onSubmitExcel()"
-            [disabled]="loading || imgFiles.length === 0"
+            (click)="onSubmitTransactions()"
+            [disabled]="loadingTransactions || transactionFiles.length === 0"
           >
-            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
-            <span *ngIf="!loading">Upload Excel</span>
-            <span *ngIf="loading">Uploading...</span>
+            <span *ngIf="loadingTransactions" class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <span *ngIf="!loadingTransactions">Upload Transactions</span>
+            <span *ngIf="loadingTransactions">Uploading...</span>
           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title mb-4">Upload Bills</h5>
+        <p class="text-muted mb-4">Upload your bills data in Excel format (.xlsx, .xls, or .csv)</p>
+        
+        <ngx-dropzone
+          (change)="onSelectBills($event)"
+          class="dropzone dropzone-light bg-light-primary"
+        >
+          <ngx-dropzone-label class="dz-message needsclick">
+            <img class="file-img" src="assets/icons/file-upload.svg" />
+            <h5 class="upload-title mt-2">
+              Drag your Excel file here, or browse
+            </h5>
+            <p class="allows-text">
+              Allows XLSX, XLS and CSV. Max size 10MB
+            </p>
+          </ngx-dropzone-label>
+        </ngx-dropzone>
+
+        <div *ngIf="billValidation" class="invalid-img mt-2">
+          Please select a file to upload
+        </div>
+
+        <div
+          *ngIf="billFiles.length > 0"
+          class="d-flex align-items-center justify-content-start gap-3 mt-4"
+        >
+          <ng-container *ngFor="let f of billFiles">
+            <div class="file-preview">
+              <img
+                [src]="getFileIcon(f.type)"
+                class="img-file"
+                alt="File preview"
+              />
+              <button (click)="onRemoveBill($event, f)" class="remove-btn">
+                <img src="assets/icons/cross-red.svg" />
+              </button>
+              <div class="file-name">{{ f.name }}</div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="mt-4">
+          <button
+            class="btn btn-primary"
+            (click)="onSubmitBills()"
+            [disabled]="loadingBills || billFiles.length === 0"
+          >
+            <span *ngIf="loadingBills" class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <span *ngIf="!loadingBills">Upload Bills</span>
+            <span *ngIf="loadingBills">Uploading...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title mb-4">Uploaded Files</h5>
+        <div *ngIf="loadingFiles" class="d-flex justify-content-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        <div *ngIf="!loadingFiles && uploadedFiles.length > 0" class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>File Name</th>
+                <th>Type</th>
+                <th>Uploaded Date</th>
+                <th>File Type</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let file of uploadedFiles">
+                <td>{{ file.fileName }}</td>
+                <td>
+                  <span class="badge" [ngClass]="file.uploadType === 'transactions' ? 'bg-primary' : 'bg-success'">
+                    {{ file.uploadType === 'transactions' ? 'Transactions' : 'Bills' }}
+                  </span>
+                </td>
+                <td>{{ file.uploadedAt | date:'short' }}</td>
+                <td>
+                  <img
+                    [src]="getFileIcon(file.fileType)"
+                    class="file-icon"
+                    alt="File type"
+                  />
+                </td>
+                <td class="text-end">
+                  <a
+                    [href]="file.fileUrl"
+                    target="_blank"
+                    class="btn btn-sm btn-outline-primary"
+                  >
+                    View File
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="!loadingFiles && uploadedFiles.length === 0" class="alert alert-info mt-3" role="alert">
+          No files have been uploaded yet.
         </div>
       </div>
     </div>

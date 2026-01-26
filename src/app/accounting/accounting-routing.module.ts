@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AccountingOverviewComponent } from './accounting-overview/accounting-overview.component';
 import { AccountingTransactionsComponent } from './accounting-transactions/accounting-transactions.component';
 import { AccountingInvoicesComponent } from './accounting-invoices/accounting-invoices.component';
+import { AccountingBillsComponent } from './accounting-bills/accounting-bills.component';
 import { AccountingSettingsComponent } from './accounting-settings/accounting-settings.component';
 
 const routes: Routes = [
@@ -10,6 +11,7 @@ const routes: Routes = [
   { path: 'overview', component: AccountingOverviewComponent },
   { path: 'transactions', component: AccountingTransactionsComponent },
   { path: 'invoices', component: AccountingInvoicesComponent },
+  { path: 'bills', component: AccountingBillsComponent },
   { path: 'settings', component: AccountingSettingsComponent }
 ];
 

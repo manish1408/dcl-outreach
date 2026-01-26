@@ -1,0 +1,111 @@
+<div *ngIf="loading" class="d-flex justify-content-center">
+  <div class="spinner-border text-dark" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<ng-container *ngIf="!loading">
+  <app-accounting-nav></app-accounting-nav>
+  <div class="row">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+      <div>
+        <h4 class="title">Bills Management</h4>
+        <p class="desc">View and manage all uploaded bills</p>
+      </div>
+      <button class="btn btn-primary" (click)="openCreateForm()">
+        <i class="bi bi-plus-circle"></i> Add Bill
+      </button>
+    </div>
+  </div>
+
+  <!-- Bills Table -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Client Name</th>
+                  <th>Bill Date</th>
+                  <th>Uploaded Date</th>
+                  <th>Amount</th>
+                  <th>File Link</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let bill of bills">
+                  <td>{{ bill.clientName }}</td>
+                  <td>{{ bill.billDate | date:'shortDate' }}</td>
+                  <td>{{ bill.uploadedDate | date:'shortDate' }}</td>
+                  <td>₹{{ bill.amount | number:'1.0-0' }}</td>
+                  <td>
+                    <a [href]="bill.fileLink" target="_blank" class="text-primary">
+                      <i class="bi bi-file-earmark"></i> View File
+                    </a>
+                  </td>
+                  <td class="text-end">
+                    <button class="btn btn-sm btn-outline-secondary me-2" (click)="openEditForm(bill)">
+                      Edit
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="deleteBill(bill)">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="bills.length === 0">
+                  <td colspan="6" class="text-center py-4">
+                    <p class="text-muted">No bills found. Add your first bill!</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Bill Form Modal -->
+<div class="modal fade" [class.show]="showBillForm" [style.display]="showBillForm ? 'block' : 'none'" tabindex="-1" *ngIf="showBillForm">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ editingBill ? 'Edit Bill' : 'Add Bill' }}</h5>
+        <button type="button" class="btn-close" (click)="closeForm()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="billForm">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label">Client Name</label>
+              <input type="text" class="form-control" formControlName="clientName" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Amount</label>
+              <input type="number" class="form-control" formControlName="amount" min="0" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Bill Date</label>
+              <input type="date" class="form-control" formControlName="billDate" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">File Link</label>
+              <input type="url" class="form-control" formControlName="fileLink" placeholder="https://..." required>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="saveBill()" [disabled]="!billForm.valid">
+          {{ editingBill ? 'Update' : 'Add' }} Bill
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showBillForm" *ngIf="showBillForm" (click)="closeForm()"></div>

@@ -40,9 +40,19 @@ export interface InvoiceItem {
   amount: number;
 }
 
+export interface Bill {
+  id: string;
+  clientName: string;
+  amount: number;
+  billDate: Date | string;
+  uploadedDate: Date | string;
+  fileLink: string;
+}
+
 interface AccountingData {
   transactions: Transaction[];
   invoices: Invoice[];
+  bills: Bill[];
   categorySpending: { category: string; amount: number }[];
 }
 
@@ -98,6 +108,31 @@ export class AccountingService {
 
   deleteInvoice(id: string): Observable<{ message: string }> {
     return of({ message: 'Invoice deleted successfully' });
+  }
+
+  // Bills
+  getBills(): Observable<{ data: Bill[] }> {
+    return this.accountingData$.pipe(
+      map((data: AccountingData) => ({
+        data: (data.bills ? data.bills : []).map((bill: Bill) => ({
+          ...bill,
+          billDate: new Date(bill.billDate),
+          uploadedDate: new Date(bill.uploadedDate)
+        }))
+      }))
+    );
+  }
+
+  createBill(bill: Partial<Bill>): Observable<{ data: Bill }> {
+    return of({ data: { ...bill, id: Date.now().toString() } as Bill });
+  }
+
+  updateBill(id: string, bill: Partial<Bill>): Observable<{ data: Bill }> {
+    return of({ data: { ...bill, id } as Bill });
+  }
+
+  deleteBill(id: string): Observable<{ message: string }> {
+    return of({ message: 'Bill deleted successfully' });
   }
 
   // Analytics
