@@ -28,7 +28,7 @@
               </span>
             </div>
             <div class="trend-stats">
-              <img src="assets/icons/trend-up.svg" />
+              <i class="fas fa-arrow-circle-up text-success" style="font-size: 24px;"></i>
             </div>
           </div>
         </div>
@@ -40,9 +40,14 @@
           <h4 class="card-subtitle mb-1 text-body-secondary">Total Debits</h4>
           <p class="card-desc">Money spent</p>
           <div class="d-flex align-items-center justify-content-between mt-2">
-            <p class="card-text text-danger">₹{{ debits | number:'1.0-0' }}</p>
+            <div>
+              <p class="card-text text-danger mb-0">₹{{ debits | number:'1.0-0' }}</p>
+              <span class="badge bg-secondary small">
+                ${{ totalUsdDebits | number:'1.0-0' }}
+              </span>
+            </div>
             <div class="trend-stats">
-              <img src="assets/icons/trend-down.svg" />
+              <i class="fas fa-arrow-circle-down text-danger" style="font-size: 24px;"></i>
             </div>
           </div>
         </div>
@@ -54,11 +59,16 @@
           <h4 class="card-subtitle mb-1 text-body-secondary">Net Balance</h4>
           <p class="card-desc">Current balance</p>
           <div class="d-flex align-items-center justify-content-between mt-2">
-            <p class="card-text" [ngClass]="balanceClass">
-              ₹{{ balance | number:'1.0-0' }}
-            </p>
+            <div>
+              <p class="card-text mb-0" [ngClass]="balanceClass">
+                ₹{{ balance | number:'1.0-0' }}
+              </p>
+              <span class="badge bg-secondary small" *ngIf="totalUsdBalance !== 0">
+                ${{ totalUsdBalance | number:'1.0-0' }}
+              </span>
+            </div>
             <div class="trend-stats">
-              <img [src]="balanceIcon" />
+              <i class="fas fa-balance-scale" [ngClass]="balanceClass" style="font-size: 24px;"></i>
             </div>
           </div>
         </div>
@@ -113,6 +123,38 @@
           </div>
           <div *ngIf="debitChartData.length === 0" class="text-center py-4">
             <p class="text-muted">No debit data available</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Credit vs Debit Line Chart -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="title">Credits vs Debits Trend</h4>
+          <p class="desc">Monthly comparison of credits and debits over time</p>
+          <div *ngIf="creditDebitLineChartData.length > 0">
+            <ngx-charts-line-chart
+              [scheme]="customColorSchemeLine"
+              [results]="creditDebitLineChartData"
+              [gradient]="gradient"
+              [xAxis]="showXAxis"
+              [yAxis]="showYAxis"
+              [showXAxisLabel]="showXAxisLabel"
+              [showYAxisLabel]="showYAxisLabel"
+              [xAxisLabel]="xAxisLabel"
+              [yAxisLabel]="yAxisLabel"
+              [legend]="showLegend"
+              [legendPosition]="legendPosition"
+              (select)="onSelect($event)"
+            >
+            </ngx-charts-line-chart>
+          </div>
+          <div *ngIf="creditDebitLineChartData.length === 0" class="text-center py-4">
+            <p class="text-muted">No trend data available</p>
           </div>
         </div>
       </div>

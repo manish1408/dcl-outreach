@@ -9,88 +9,7 @@
   <div class="row">
     <div class="col-12">
       <h4 class="title">Transactions</h4>
-      <p class="desc">View and filter all your financial transactions</p>
-    </div>
-  </div>
-
-  <!-- Filters -->
-  <div class="row mt-4">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title mb-3">Filters</h5>
-          <form [formGroup]="filterForm">
-            <div class="row g-3">
-              <div class="col-12 col-md-3">
-                <label class="form-label">Transaction Type</label>
-                <select class="form-select" formControlName="type">
-                  <option *ngFor="let option of typeOptions" [value]="option.value">
-                    {{ option.label }}
-                  </option>
-                </select>
-              </div>
-              <div class="col-12 col-md-3">
-                <label class="form-label">Category</label>
-                <select class="form-select" formControlName="category">
-                  <option value="">All Categories</option>
-                  <option *ngFor="let cat of categories" [value]="cat">
-                    {{ cat }}
-                  </option>
-                </select>
-              </div>
-              <div class="col-12 col-md-3">
-                <label class="form-label">Timeline</label>
-                <select class="form-select" formControlName="timeline">
-                  <option *ngFor="let option of timelineOptions" [value]="option.value">
-                    {{ option.label }}
-                  </option>
-                </select>
-              </div>
-              <div class="col-12 col-md-3">
-                <label class="form-label">&nbsp;</label>
-                <button type="button" class="btn btn-outline-secondary w-100" (click)="resetFilters()">
-                  Reset Filters
-                </button>
-              </div>
-            </div>
-            <div class="row g-3 mt-2">
-              <div class="col-12 col-md-6">
-                <label class="form-label">Start Date</label>
-                <input type="date" class="form-control" formControlName="startDate">
-              </div>
-              <div class="col-12 col-md-6">
-                <label class="form-label">End Date</label>
-                <input type="date" class="form-control" formControlName="endDate">
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Summary Cards -->
-  <div class="row mt-4">
-    <div class="col-12 col-md-6">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-subtitle mb-1">Total Credits</h5>
-          <div>
-            <p class="card-text text-success mb-0">₹{{ totalCredits | number:'1.0-0' }}</p>
-            <span class="badge bg-secondary small" *ngIf="totalUsdCredits > 0">
-              ${{ totalUsdCredits | number:'1.0-0' }}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-12 col-md-6">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-subtitle mb-1">Total Debits</h5>
-          <p class="card-text text-danger">₹{{ totalDebits | number:'1.0-0' }}</p>
-        </div>
-      </div>
+      <p class="desc">View all your financial transactions</p>
     </div>
   </div>
 
@@ -103,16 +22,34 @@
             <table class="table table-hover">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Type</th>
-                  <th>Category</th>
-                  <th>Description</th>
-                  <th>Client</th>
-                  <th class="text-end">Amount</th>
+                  <th (click)="sort('date')" style="cursor: pointer;">
+                    Date
+                    <i class="fas ms-1" [ngClass]="getSortIcon('date')"></i>
+                  </th>
+                  <th (click)="sort('type')" style="cursor: pointer;">
+                    Type
+                    <i class="fas ms-1" [ngClass]="getSortIcon('type')"></i>
+                  </th>
+                  <th (click)="sort('category')" style="cursor: pointer;">
+                    Category
+                    <i class="fas ms-1" [ngClass]="getSortIcon('category')"></i>
+                  </th>
+                  <th (click)="sort('description')" style="cursor: pointer;">
+                    Description
+                    <i class="fas ms-1" [ngClass]="getSortIcon('description')"></i>
+                  </th>
+                  <th (click)="sort('clientName')" style="cursor: pointer;">
+                    Client
+                    <i class="fas ms-1" [ngClass]="getSortIcon('clientName')"></i>
+                  </th>
+                  <th class="text-end" (click)="sort('amount')" style="cursor: pointer;">
+                    Amount
+                    <i class="fas ms-1" [ngClass]="getSortIcon('amount')"></i>
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let transaction of filteredTransactions">
+                <tr *ngFor="let transaction of displayedTransactions">
                   <td>{{ transaction.date | date:'shortDate' }}</td>
                   <td>
                     <span class="badge" [ngClass]="transaction.type === 'credit' ? 'bg-success' : 'bg-danger'">
@@ -121,7 +58,9 @@
                   </td>
                   <td>{{ transaction.category }}</td>
                   <td>{{ transaction.description }}</td>
-                  <td>{{ transaction.clientName }}</td>
+                  <td>
+                    <span *ngIf="transaction.clientName">{{ transaction.clientName }}</span>
+                  </td>
                   <td class="text-end" [ngClass]="transaction.type === 'credit' ? 'text-success' : 'text-danger'">
                     <div>
                       {{ transaction.type === 'credit' ? '+' : '-' }}₹{{ transaction.amount | number:'1.0-0' }}
@@ -131,13 +70,21 @@
                     </span>
                   </td>
                 </tr>
-                <tr *ngIf="filteredTransactions.length === 0">
+                <tr *ngIf="displayedTransactions.length === 0 && !loading">
                   <td colspan="6" class="text-center py-4">
                     <p class="text-muted">No transactions found</p>
                   </td>
                 </tr>
               </tbody>
             </table>
+            <div *ngIf="loading && displayedTransactions.length > 0" class="text-center py-3">
+              <div class="spinner-border spinner-border-sm text-dark" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+            <div *ngIf="!hasMoreData && displayedTransactions.length > 0" class="text-center py-3">
+              <p class="text-muted small">No more transactions to load</p>
+            </div>
           </div>
         </div>
       </div>

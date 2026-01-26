@@ -16,12 +16,15 @@ export class AccountingOverviewComponent implements OnInit, OnDestroy {
   debits: number = 0;
   balance: number = 0;
   totalUsdCredits: number = 0;
+  totalUsdDebits: number = 0;
+  totalUsdBalance: number = 0;
   isBalancePositive: boolean = true;
   balanceClass: string = 'text-success';
   balanceIcon: string = 'assets/icons/trend-up.svg';
   
   creditChartData: any[] = [];
   debitChartData: any[] = [];
+  creditDebitLineChartData: any[] = [];
   
   // Chart options
   gradient: boolean = true;
@@ -29,6 +32,12 @@ export class AccountingOverviewComponent implements OnInit, OnDestroy {
   showLabels: boolean = true;
   isDoughnut: boolean = true;
   legendPosition: LegendPosition = LegendPosition.Right;
+  showXAxis: boolean = true;
+  showYAxis: boolean = true;
+  showXAxisLabel: boolean = true;
+  showYAxisLabel: boolean = true;
+  xAxisLabel: string = 'Month';
+  yAxisLabel: string = 'Amount (₹)';
   
   customColorScheme: Color = {
     name: 'customScheme',
@@ -44,6 +53,13 @@ export class AccountingOverviewComponent implements OnInit, OnDestroy {
     domain: ['#F44336', '#FF9800', '#FFC107', '#FF5722', '#E91E63'],
   };
 
+  customColorSchemeLine: Color = {
+    name: 'customSchemeLine',
+    selectable: true,
+    group: ScaleType.Ordinal,
+    domain: ['#5DD89D', '#F44336'],
+  };
+
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -54,10 +70,12 @@ export class AccountingOverviewComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadSummary();
     this.loadChartData();
+    this.loadCreditDebitLineChart();
     
     this.filterService.dateFilter$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.loadSummary();
       this.loadChartData();
+      this.loadCreditDebitLineChart();
     });
   }
 
@@ -98,8 +116,18 @@ export class AccountingOverviewComponent implements OnInit, OnDestroy {
           return sum + usdAmount;
         }, 0);
         
-        this.debits = transactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
+        const debitTransactions = transactions.filter(t => t.type === 'debit');
+        this.debits = debitTransactions.reduce((sum, t) => sum + t.amount, 0);
+        this.totalUsdDebits = debitTransactions.reduce((sum, t) => {
+          if (t.usdAmount) {
+            return sum + t.usdAmount;
+          }
+          const exchangeRate = t.exchangeRate ? t.exchangeRate : 83.33;
+          return sum + (t.amount / exchangeRate);
+        }, 0);
+        
         this.balance = this.credits - this.debits;
+        this.totalUsdBalance = this.totalUsdCredits - this.totalUsdDebits;
         this.isBalancePositive = this.balance >= 0;
         this.balanceClass = this.isBalancePositive ? 'text-success' : 'text-danger';
         this.balanceIcon = this.isBalancePositive ? 'assets/icons/trend-up.svg' : 'assets/icons/trend-down.svg';
@@ -136,14 +164,15 @@ export class AccountingOverviewComponent implements OnInit, OnDestroy {
           });
         }
         
-        // Group credits by category
+        // Group credits by client name (category for credits is client name or refund)
         const creditMap = new Map<string, number>();
         transactions
           .filter(t => t.type === 'credit')
           .forEach(t => {
-            const current = creditMap.get(t.category);
+            const categoryName = t.clientName ? t.clientName : t.category;
+            const current = creditMap.get(categoryName);
             const currentValue = current ? current : 0;
-            creditMap.set(t.category, currentValue + t.amount);
+            creditMap.set(categoryName, currentValue + t.amount);
           });
         
         this.creditChartData = Array.from(creditMap.entries()).map(([name, value]) => ({
@@ -168,6 +197,69 @@ export class AccountingOverviewComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error loading chart data:', err);
+      }
+    });
+  }
+
+  loadCreditDebitLineChart() {
+    const filter = this.filterService.getCurrentFilter();
+    this.accountingService.getTransactions().subscribe({
+      next: (res) => {
+        let transactions = res.data;
+        
+        if (filter.startDate) {
+          const startDate = new Date(filter.startDate);
+          startDate.setHours(0, 0, 0, 0);
+          transactions = transactions.filter(t => {
+            const transDate = new Date(t.date);
+            transDate.setHours(0, 0, 0, 0);
+            return transDate >= startDate;
+          });
+        }
+        if (filter.endDate) {
+          const endDate = new Date(filter.endDate);
+          endDate.setHours(23, 59, 59, 999);
+          transactions = transactions.filter(t => {
+            const transDate = new Date(t.date);
+            return transDate <= endDate;
+          });
+        }
+        
+        const monthlyMap = new Map<string, { credits: number; debits: number }>();
+
+        transactions.forEach(t => {
+          const month = new Date(t.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+          if (!monthlyMap.has(month)) {
+            monthlyMap.set(month, { credits: 0, debits: 0 });
+          }
+          const current = monthlyMap.get(month)!;
+          if (t.type === 'credit') {
+            current.credits += t.amount;
+          } else {
+            current.debits += t.amount;
+          }
+        });
+
+        const months = Array.from(monthlyMap.keys()).sort();
+        this.creditDebitLineChartData = [
+          {
+            name: 'Credits',
+            series: months.map(month => ({
+              name: month,
+              value: monthlyMap.get(month)!.credits
+            }))
+          },
+          {
+            name: 'Debits',
+            series: months.map(month => ({
+              name: month,
+              value: monthlyMap.get(month)!.debits
+            }))
+          }
+        ];
+      },
+      error: (err) => {
+        console.error('Error loading credit vs debit line chart:', err);
       }
     });
   }

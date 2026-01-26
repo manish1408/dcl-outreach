@@ -11,8 +11,8 @@ export class AccountingNavComponent implements OnInit {
   navItems = [
     { path: '/accounting/overview', label: 'Overview', icon: 'dashboard' },
     { path: '/accounting/transactions', label: 'Transactions', icon: 'list' },
-    { path: '/accounting/analytics', label: 'Analytics', icon: 'chart' },
-    { path: '/accounting/invoices', label: 'Invoices', icon: 'file' }
+    { path: '/accounting/invoices', label: 'Invoices', icon: 'file' },
+    { path: '/accounting/settings', label: 'Settings', icon: 'settings' }
   ];
 
   dateFilterForm: FormGroup;

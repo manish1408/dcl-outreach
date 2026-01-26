@@ -1,61 +1,42 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { AccountingService, Transaction } from '../../_services/accounting.service';
 import { AccountingFilterService } from '../../_services/accounting-filter.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
 import { finalize, takeUntil } from 'rxjs';
 import { Subject } from 'rxjs';
+
+type SortColumn = 'date' | 'type' | 'category' | 'description' | 'clientName' | 'amount';
+type SortDirection = 'asc' | 'desc' | '';
 
 @Component({
   selector: 'app-accounting-transactions',
   templateUrl: './accounting-transactions.component.html',
   styleUrl: './accounting-transactions.component.scss'
 })
-export class AccountingTransactionsComponent implements OnInit {
+export class AccountingTransactionsComponent implements OnInit, OnDestroy {
   loading: boolean = false;
-  transactions: Transaction[] = [];
-  filteredTransactions: Transaction[] = [];
-  filterForm: FormGroup;
-
-  // Filter options
-  typeOptions = [
-    { value: '', label: 'All Types' },
-    { value: 'credit', label: 'Credits' },
-    { value: 'debit', label: 'Debits' }
-  ];
-
-  timelineOptions = [
-    { value: 'all', label: 'All Time' },
-    { value: 'today', label: 'Today' },
-    { value: 'week', label: 'This Week' },
-    { value: 'month', label: 'This Month' },
-    { value: 'quarter', label: 'This Quarter' },
-    { value: 'year', label: 'This Year' }
-  ];
-
-  categories: string[] = [];
+  allTransactions: Transaction[] = [];
+  displayedTransactions: Transaction[] = [];
   private destroy$ = new Subject<void>();
+
+  // Sorting
+  sortColumn: SortColumn = 'date';
+  sortDirection: SortDirection = 'desc';
+  
+  // Pagination
+  pageSize: number = 20;
+  currentPage: number = 0;
+  hasMoreData: boolean = true;
 
   constructor(
     private accountingService: AccountingService,
-    private filterService: AccountingFilterService,
-    private fb: FormBuilder
-  ) {
-    this.filterForm = this.fb.group({
-      type: [''],
-      category: [''],
-      timeline: ['all'],
-      startDate: [''],
-      endDate: ['']
-    });
-  }
+    private filterService: AccountingFilterService
+  ) {}
 
   ngOnInit() {
     this.loadTransactions();
-    this.filterForm.valueChanges.subscribe(() => {
-      this.applyFilters();
-    });
 
     this.filterService.dateFilter$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.resetPagination();
       this.loadTransactions();
     });
   }
@@ -63,6 +44,27 @@ export class AccountingTransactionsComponent implements OnInit {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll() {
+    if (this.loading || !this.hasMoreData) {
+      return;
+    }
+
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+    if (scrollTop + windowHeight >= documentHeight - 200) {
+      this.loadMoreTransactions();
+    }
+  }
+
+  resetPagination() {
+    this.currentPage = 0;
+    this.displayedTransactions = [];
+    this.hasMoreData = true;
   }
 
   loadTransactions() {
@@ -92,9 +94,10 @@ export class AccountingTransactionsComponent implements OnInit {
             });
           }
           
-          this.transactions = transactions;
-          this.categories = [...new Set(transactions.map(t => t.category))];
-          this.applyFilters();
+          this.allTransactions = transactions;
+          this.applySorting();
+          this.resetPagination();
+          this.loadMoreTransactions();
         },
         error: (err) => {
           console.error('Error loading transactions:', err);
@@ -102,92 +105,103 @@ export class AccountingTransactionsComponent implements OnInit {
       });
   }
 
-  applyFilters() {
-    let filtered = [...this.transactions];
-    const filters = this.filterForm.value;
-
-    // Filter by type
-    if (filters.type) {
-      filtered = filtered.filter(t => t.type === filters.type);
+  loadMoreTransactions() {
+    if (!this.hasMoreData || this.loading) {
+      return;
     }
 
-    // Filter by category
-    if (filters.category) {
-      filtered = filtered.filter(t => t.category === filters.category);
+    const startIndex = this.currentPage * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    const nextBatch = this.allTransactions.slice(startIndex, endIndex);
+
+    if (nextBatch.length > 0) {
+      this.displayedTransactions = [...this.displayedTransactions, ...nextBatch];
+      this.currentPage++;
+      this.hasMoreData = endIndex < this.allTransactions.length;
+    } else {
+      this.hasMoreData = false;
     }
-
-    // Filter by timeline
-    if (filters.timeline && filters.timeline !== 'all') {
-      const now = new Date();
-      let startDate: Date;
-
-      switch (filters.timeline) {
-        case 'today':
-          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          break;
-        case 'week':
-          startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-          break;
-        case 'month':
-          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-          break;
-        case 'quarter':
-          const quarter = Math.floor(now.getMonth() / 3);
-          startDate = new Date(now.getFullYear(), quarter * 3, 1);
-          break;
-        case 'year':
-          startDate = new Date(now.getFullYear(), 0, 1);
-          break;
-        default:
-          startDate = new Date(0);
-      }
-
-      filtered = filtered.filter(t => new Date(t.date) >= startDate);
-    }
-
-    // Filter by date range
-    if (filters.startDate) {
-      const startDate = new Date(filters.startDate);
-      filtered = filtered.filter(t => new Date(t.date) >= startDate);
-    }
-
-    if (filters.endDate) {
-      const endDate = new Date(filters.endDate);
-      endDate.setHours(23, 59, 59, 999);
-      filtered = filtered.filter(t => new Date(t.date) <= endDate);
-    }
-
-    // Sort by date (newest first)
-    filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    this.filteredTransactions = filtered;
-    this.updateTotals();
   }
 
-  resetFilters() {
-    this.filterForm.reset({
-      type: '',
-      category: '',
-      timeline: 'all',
-      startDate: '',
-      endDate: ''
+  sort(column: SortColumn) {
+    if (this.sortColumn === column) {
+      if (this.sortDirection === 'asc') {
+        this.sortDirection = 'desc';
+      } else if (this.sortDirection === 'desc') {
+        this.sortDirection = '';
+        this.sortColumn = 'date';
+        this.sortDirection = 'desc';
+      } else {
+        this.sortDirection = 'asc';
+      }
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+
+    this.applySorting();
+    this.resetPagination();
+    this.loadMoreTransactions();
+  }
+
+  applySorting() {
+    if (!this.sortDirection) {
+      return;
+    }
+
+    this.allTransactions.sort((a, b) => {
+      let aValue: any;
+      let bValue: any;
+
+      switch (this.sortColumn) {
+        case 'date':
+          aValue = new Date(a.date).getTime();
+          bValue = new Date(b.date).getTime();
+          break;
+        case 'type':
+          aValue = a.type;
+          bValue = b.type;
+          break;
+        case 'category':
+          aValue = a.category;
+          bValue = b.category;
+          break;
+        case 'description':
+          aValue = a.description;
+          bValue = b.description;
+          break;
+        case 'clientName':
+          aValue = a.clientName ? a.clientName : '';
+          bValue = b.clientName ? b.clientName : '';
+          break;
+        case 'amount':
+          aValue = a.amount;
+          bValue = b.amount;
+          break;
+        default:
+          return 0;
+      }
+
+      if (aValue < bValue) {
+        return this.sortDirection === 'asc' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return this.sortDirection === 'asc' ? 1 : -1;
+      }
+      return 0;
     });
   }
 
-  totalCredits: number = 0;
-  totalDebits: number = 0;
-  totalUsdCredits: number = 0;
-
-  updateTotals() {
-    const creditTransactions = this.filteredTransactions.filter(t => t.type === 'credit');
-    this.totalCredits = creditTransactions.reduce((sum, t) => sum + t.amount, 0);
-    this.totalUsdCredits = creditTransactions.reduce((sum, t) => {
-      const usdAmount = t.usdAmount ? t.usdAmount : 0;
-      return sum + usdAmount;
-    }, 0);
-    
-    this.totalDebits = this.filteredTransactions
-      .filter(t => t.type === 'debit')
-      .reduce((sum, t) => sum + t.amount, 0);
+  getSortIcon(column: SortColumn): string {
+    if (this.sortColumn !== column) {
+      return 'fa-sort';
+    }
+    if (this.sortDirection === 'asc') {
+      return 'fa-sort-up';
+    }
+    if (this.sortDirection === 'desc') {
+      return 'fa-sort-down';
+    }
+    return 'fa-sort';
   }
 }

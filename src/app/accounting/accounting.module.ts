@@ -5,23 +5,25 @@ import { AccountingRoutingModule } from './accounting-routing.module';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { AccountingOverviewComponent } from './accounting-overview/accounting-overview.component';
 import { AccountingTransactionsComponent } from './accounting-transactions/accounting-transactions.component';
-import { AccountingAnalyticsComponent } from './accounting-analytics/accounting-analytics.component';
 import { AccountingInvoicesComponent } from './accounting-invoices/accounting-invoices.component';
 import { AccountingNavComponent } from './accounting-nav/accounting-nav.component';
+import { AccountingSettingsComponent } from './accounting-settings/accounting-settings.component';
+import { NgxDropzoneModule } from 'ngx-dropzone';
 
 @NgModule({
   declarations: [
     AccountingOverviewComponent,
     AccountingTransactionsComponent,
-    AccountingAnalyticsComponent,
     AccountingInvoicesComponent,
-    AccountingNavComponent
+    AccountingNavComponent,
+    AccountingSettingsComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     NgxChartsModule,
+    NgxDropzoneModule,
     AccountingRoutingModule
   ]
 })
