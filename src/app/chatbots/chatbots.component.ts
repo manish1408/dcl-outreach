@@ -34,7 +34,7 @@ export class ChatbotsComponent {
 
   messages: any[] = [
     // {
-    //   text: 'Hi, welcome to MiloChat! Go ahead and send me a message. 😄',
+    //   text: 'Hi, welcome to Distinct Cloud Labs! Go ahead and send me a message. 😄',
     //   time: '12:45',
     //   isBot: true,
     //   avatar: 'https://image.flaticon.com/icons/svg/327/327779.svg',

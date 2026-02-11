@@ -17,6 +17,7 @@ import { LocalStorageService } from './_services/local-storage.service';
 export class AppComponent {
   isCollapsed = false;
   isLoggedIn = false;
+  showSidebar = true;
   user: any;
   chatbots: any;
   selectedChatbot: any;
@@ -52,6 +53,9 @@ export class AppComponent {
         if (routeUrls.includes(event.urlAfterRedirects)) {
           this.authService.signOut();
           this.isLoggedIn = false;
+          this.showSidebar = false;
+        } else {
+          this.showSidebar = true;
         }
       }
     });
@@ -61,6 +65,7 @@ export class AppComponent {
     this.createChatbotForm = this.fb.group({
       chatbotName: ['', Validators.required],
     });
+    this.showSidebar = !routeUrls.includes(this.router.url);
     this.isLoggedIn = this.authService.isAuthenticated();
     if (this.isLoggedIn) {
       this.getAllChatbots();
@@ -93,10 +98,13 @@ export class AppComponent {
       });
   }
 
-  async signOut(): Promise<void> {
+  signOut(): void {
     this.authService.signOut();
     this.isLoggedIn = false;
-    this.router.navigate(['/login']);
+    this.eventService.dispatchEvent({ type: 'LOGOUT' });
+    this.router.navigate(['/login']).catch(() => {
+      window.location.href = '/login';
+    });
   }
 
   toggleSidebar() {

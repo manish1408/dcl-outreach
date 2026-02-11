@@ -48,7 +48,6 @@ export class SigninComponent {
   onSubmit(): void {
     this.loginForm.markAllAsTouched();
     if (this.loginForm.valid) {
-      console.log(this.loginForm.value.terms);
       if (!this.loginForm.value.terms) {
         this.toastr.error('Please agree to Terms of Service.');
         return;
@@ -60,44 +59,30 @@ export class SigninComponent {
       };
 
       this.authService
-        .login(reqObj)
+        .signin(reqObj)
         .pipe(finalize(() => (this.loading = false)))
         .subscribe({
           next: (res) => {
-            if (res.result) {
+            if (res.success) {
               this.localStorageService.setItem(
                 'MILO-USER-TOKEN',
-                res.data.authToken 
+                res.data.token
               );
               this.localStorageService.setItem(
                 'MILO-USER',
                 JSON.stringify(res.data.user)
               );
 
-              const storedChatbot = localStorage.getItem('selectedChatbot')
-                ? localStorage.getItem('selectedChatbot')
-                : res?.data?.user?.chatbots[0] ?? {};
-
-              localStorage.setItem(
-                'selectedChatbot',
-                JSON.stringify(storedChatbot)
-              );
-
               this.eventService.dispatchEvent({ type: 'LOGIN_CHANGE' });
-              this.router.navigate(['/dashboard'], {
-                queryParams: { id: storedChatbot?.chatbotId },
-              });
+              this.router.navigate(['/dashboard']);
             } else {
-              this.toastr.error(res.msg);
+              this.toastr.error(res.msg || 'Signin failed');
             }
           },
           error: (err) => {
-            console.log(err);
-            this.toastr.error(err.error.msg);
+            this.toastr.error(err.error?.msg || err.error?.message || 'An error occurred during signin');
           },
         });
-    } else {
-      console.log('Form is invalid');
     }
   }
 }

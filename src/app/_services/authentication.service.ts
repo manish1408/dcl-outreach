@@ -8,6 +8,7 @@ import { LocalStorageService } from './local-storage.service';
 })
 export class AuthenticationService {
   private _url = `${environment['APIUrl']}/auth`;
+  private _dclUrl = `${environment['API_DCLERP']}/auth`;
   constructor(
     private http: HttpClient,
     private localStorageService: LocalStorageService
@@ -15,6 +16,12 @@ export class AuthenticationService {
 
   login(data: any) {
     return this.http.post<any>(`${this._url}/login`, data);
+  }
+  signin(data: any) {
+    return this.http.post<any>(`${this._dclUrl}/signin`, data);
+  }
+  signup(data: any) {
+    return this.http.post<any>(`${this._dclUrl}/signup`, data);
   }
   createAccount(data: any) {
     return this.http.post<any>(`${this._url}/create-account`, data);

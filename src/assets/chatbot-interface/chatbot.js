@@ -1,7 +1,7 @@
 (function () {
   let threadId = "";
   let welcomeMessage =
-    "Hi, welcome to MiloChat! Go ahead and send me a message.";
+    "Hi, welcome to Distinct Cloud Labs! Go ahead and send me a message.";
   let aiMessageBackgroundColor = "#f7f7f7";
   let userMessageBackgroundColor = "#579ffb";
   let chatWindowBackgroundColor = "#ffffff";

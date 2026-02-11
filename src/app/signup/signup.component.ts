@@ -7,9 +7,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthenticationService } from '../_services/authentication.service';
-import { Route, Router } from '@angular/router';
+import { LocalStorageService } from '../_services/local-storage.service';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs';
+import { EventService } from '../_services/event.service';
+
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -26,7 +29,9 @@ export class SignupComponent {
     private router: Router,
     private fb: FormBuilder,
     private authService: AuthenticationService,
-    private toastr: ToastrService
+    private localStorageService: LocalStorageService,
+    private toastr: ToastrService,
+    private eventService: EventService<any>
   ) {}
 
   ngOnInit(): void {
@@ -102,33 +107,42 @@ export class SignupComponent {
         return;
       }
       this.loading = true;
+      const countryCode = this.selectedCountry?.phone[0] ? this.selectedCountry.phone[0] : '';
+      const phoneNumber = this.signupForm.value.phone;
+      const formattedPhoneNumber = countryCode && phoneNumber ? `${countryCode}${phoneNumber}` : phoneNumber;
+      
       const reqObj = {
         name: this.signupForm.value.name,
         email: this.signupForm.value.email,
-        phone: `${this.selectedCountry?.phone[0]} ${this.signupForm.value.phone}`,
+        phoneNumber: formattedPhoneNumber,
         password: this.signupForm.value.password,
       };
 
       this.authService
-        .createAccount(reqObj)
+        .signup(reqObj)
         .pipe(finalize(() => (this.loading = false)))
         .subscribe({
           next: (res) => {
-            if (res.result) {
-              this.router.navigate(['/verify-email'], {
-                queryParams: { email: reqObj?.email },
-              });
+            if (res.success) {
+              this.localStorageService.setItem(
+                'MILO-USER-TOKEN',
+                res.data.token
+              );
+              this.localStorageService.setItem(
+                'MILO-USER',
+                JSON.stringify(res.data.user)
+              );
+
+              this.eventService.dispatchEvent({ type: 'LOGIN_CHANGE' });
+              this.router.navigate(['/dashboard']);
             } else {
-              this.toastr.error(res.msg);
+              this.toastr.error(res.msg || 'Signup failed');
             }
           },
           error: (err) => {
-            console.log(err);
-            this.toastr.error(err.error.msg);
+            this.toastr.error(err.error?.msg || err.error?.message || 'An error occurred during signup');
           },
         });
-    } else {
-      console.log('Form is invalid');
     }
   }
 }

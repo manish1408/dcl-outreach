@@ -39,8 +39,7 @@ export class JwtInterceptor implements HttpInterceptor {
     // return next.handle(request);
     return next.handle(request).pipe(
       catchError((err: HttpErrorResponse) => {
-        console.error('err: ', err);
-        if (err.error.err_msg === AUTHORIZATION_ERROR || err.status === 401) {
+        if (err.error?.err_msg === AUTHORIZATION_ERROR || err.status === 401) {
           this.toastr.error('Token Expired');
           this.authService.signOut();
           this.router.navigate(['/login']);

@@ -20,12 +20,12 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Promise<boolean> {
-    return true;
-    // if (this.localStorageService.getItem('MILO-USER-TOKEN') !== null) {
-    //   return true;
-    // }
+    const token = this.localStorageService.getItem('MILO-USER-TOKEN');
+    if (token !== null && token !== undefined) {
+      return true;
+    }
 
-    // await this.router.navigate(['/login']);
-    // return false;
+    await this.router.navigate(['/login']);
+    return false;
   }
 }

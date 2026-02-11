@@ -3,14 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './_guards/auth.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'leads/inbound', pathMatch: 'full' },
-  // {
-  //   path: '',
-  //   loadChildren: () =>
-  //     import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
-  //   canActivate: [AuthGuard],
-  // },
-
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   {
     path: 'dashboard',
     loadChildren: () =>
@@ -79,17 +72,18 @@ const routes: Routes = [
       import('./change-password/change-password.module').then(
         (m) => m.ChangePasswordModule
       ),
+    canActivate: [AuthGuard],
   },
-  { path: 'all-chatbots', loadChildren: () => import('./all-chatbots/all-chatbots.module').then(m => m.AllChatbotsModule) },
-  { path: 'all-users', loadChildren: () => import('./all-users/all-users.module').then(m => m.AllUsersModule) },
-  { path: 'installation', loadChildren: () => import('./installation/installation.module').then(m => m.InstallationModule) },
-  { path: 'workflows', loadChildren: () => import('./workflows/workflows.module').then(m => m.WorkflowsModule) },
-  { path: 'guidance', loadChildren: () => import('./guidance/guidance.module').then(m => m.GuidanceModule) },
-  { path: 'conversations', loadChildren: () => import('./conversations/conversations.module').then(m => m.ConversationsModule) },
-  { path: 'interactions', loadChildren: () => import('./interactions/interactions.module').then(m => m.InteractionsModule) },
-  { path: 'loan-automation', loadChildren: () => import('./loan-automation/loan-automation.module').then(m => m.LoanAutomationModule) },
-  { path: 'leads/:id', loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule) },
-  { path: 'workflowsJab', loadChildren: () => import('./workflows-jab/workflows-jab.module').then(m => m.WorkflowsJabModule) },
+  { path: 'all-chatbots', loadChildren: () => import('./all-chatbots/all-chatbots.module').then(m => m.AllChatbotsModule), canActivate: [AuthGuard] },
+  { path: 'all-users', loadChildren: () => import('./all-users/all-users.module').then(m => m.AllUsersModule), canActivate: [AuthGuard] },
+  { path: 'installation', loadChildren: () => import('./installation/installation.module').then(m => m.InstallationModule), canActivate: [AuthGuard] },
+  { path: 'workflows', loadChildren: () => import('./workflows/workflows.module').then(m => m.WorkflowsModule), canActivate: [AuthGuard] },
+  { path: 'guidance', loadChildren: () => import('./guidance/guidance.module').then(m => m.GuidanceModule), canActivate: [AuthGuard] },
+  { path: 'conversations', loadChildren: () => import('./conversations/conversations.module').then(m => m.ConversationsModule), canActivate: [AuthGuard] },
+  { path: 'interactions', loadChildren: () => import('./interactions/interactions.module').then(m => m.InteractionsModule), canActivate: [AuthGuard] },
+  { path: 'loan-automation', loadChildren: () => import('./loan-automation/loan-automation.module').then(m => m.LoanAutomationModule), canActivate: [AuthGuard] },
+  { path: 'leads/:id', loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule), canActivate: [AuthGuard] },
+  { path: 'workflowsJab', loadChildren: () => import('./workflows-jab/workflows-jab.module').then(m => m.WorkflowsJabModule), canActivate: [AuthGuard] },
   { path: 'accounting', loadChildren: () => import('./accounting/accounting.module').then(m => m.AccountingModule), canActivate: [AuthGuard] },
 ];
 
