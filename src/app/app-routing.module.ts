@@ -50,6 +50,7 @@ const routes: Routes = [
   },
   { path: 'leads/:id', loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule), canActivate: [AuthGuard] },
   { path: 'accounting', loadChildren: () => import('./accounting/accounting.module').then(m => m.AccountingModule), canActivate: [AuthGuard] },
+  { path: 'job-leads', loadChildren: () => import('./job-leads/job-leads.module').then(m => m.JobLeadsModule), canActivate: [AuthGuard] },
 ];
 
 @NgModule({

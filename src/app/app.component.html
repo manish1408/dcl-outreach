@@ -6,7 +6,7 @@
         <!-- Sidebar Navigation -->
 
         <div class="d-flex align-items-center justify-content-between">
-         <span style="font-size: 18px; color: #fff;">Customer portal</span>
+         <span class="sidebar-title">Customer portal</span>
           <img
             src="assets/icons/arrow-square-left.svg"
             (click)="toggleSidebar()"
@@ -17,34 +17,6 @@
         <ul class="sidebar-nav mt-4">
           <li class="sidebar-item">
             <a
-              routerLink="/leads/inbound"
-              routerLinkActive="active-link"
-              class="sidebar-link"
-              #rla="routerLinkActive"
-            >
-            <img
-            src="assets/icons/dashboard.svg
-            "
-          />
-              Inbound
-            </a>
-          </li>
-          <li class="sidebar-item">
-            <a
-              routerLink="/leads/outbound"
-              routerLinkActive="active-link"
-              class="sidebar-link"
-              #rla="routerLinkActive"
-            >
-            <img
-            src="assets/icons/dashboard.svg
-            "
-          />
-              Outbound
-            </a>
-          </li>
-          <li class="sidebar-item">
-            <a
               routerLink="/accounting"
               routerLinkActive="active-link"
               class="sidebar-link"
@@ -52,6 +24,16 @@
             >
             <i class="fas fa-dollar-sign"></i>
               Accounting
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a
+              routerLink="/job-leads"
+              routerLinkActive="active-link"
+              class="sidebar-link"
+            >
+            <i class="fas fa-briefcase"></i>
+              Job Leads
             </a>
           </li>
         </ul>

@@ -486,3 +486,407 @@ input:checked + .slider {
 .modal-content {
   border-radius: var(--bs-modal-border-radius);
 }
+
+/* ============================================
+   ERP-STYLE GLOBAL REDUCTIONS
+   Compact, professional styling for ERP applications
+   ============================================ */
+
+/* Sidebar Width Reduction */
+#sidebar {
+  max-width: 200px !important;
+  min-width: 200px !important;
+}
+
+#sidebar.collapsed {
+  margin-left: -200px !important;
+}
+
+.main .content {
+  margin-left: 200px !important;
+}
+
+.collapsed + .main .content {
+  margin-left: 0px !important;
+}
+
+.main .top-nav {
+  width: calc(100% - 200px) !important;
+  margin-left: 200px !important;
+}
+
+.collapsed + .main .top-nav {
+  width: calc(100% - 0px) !important;
+  margin-left: 0px !important;
+}
+
+/* Sidebar Link Sizes */
+.sidebar-item .sidebar-link {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.875rem !important;
+  gap: 6px !important;
+  
+  img {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  
+  i {
+    font-size: 18px !important;
+    width: 18px !important;
+  }
+}
+
+.sidebar-menu-title {
+  font-size: 12px !important;
+  padding: 8px 0 !important;
+}
+
+/* Form Controls - Reduced Sizes */
+.form-control {
+  padding: 6px 10px !important;
+  font-size: 0.875rem !important;
+  line-height: 1.4 !important;
+  border-radius: 6px !important;
+  min-height: 32px !important;
+}
+
+.form-select {
+  padding: 6px 10px !important;
+  font-size: 0.875rem !important;
+  line-height: 1.4 !important;
+  min-height: 32px !important;
+  background-position: right 0.5rem center !important;
+  background-size: 14px 10px !important;
+}
+
+.form-label {
+  font-size: 0.8125rem !important;
+  margin-bottom: 0.375rem !important;
+  font-weight: 600 !important;
+}
+
+textarea.form-control {
+  padding: 6px 10px !important;
+  font-size: 0.875rem !important;
+  line-height: 1.4 !important;
+}
+
+/* Input Fields (Generic) */
+.input-field input {
+  height: 32px !important;
+  padding: 0 10px !important;
+  font-size: 0.875rem !important;
+  border-radius: 6px !important;
+}
+
+/* Buttons - Reduced Sizes */
+.btn {
+  padding: 6px 12px !important;
+  font-size: 0.875rem !important;
+  line-height: 1.4 !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  min-height: 32px !important;
+}
+
+.btn-sm {
+  padding: 4px 8px !important;
+  font-size: 0.8125rem !important;
+  min-height: 28px !important;
+}
+
+.btn-lg {
+  padding: 8px 16px !important;
+  font-size: 0.9375rem !important;
+  min-height: 36px !important;
+}
+
+/* Tables - Compact ERP Style */
+.table {
+  font-size: 0.8125rem !important;
+  border-radius: 6px !important;
+}
+
+.table td,
+.table th {
+  padding: 6px 8px !important;
+  font-size: 0.8125rem !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+}
+
+.table th {
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  padding: 8px !important;
+}
+
+.table-sm td,
+.table-sm th {
+  padding: 4px 6px !important;
+  font-size: 0.75rem !important;
+}
+
+/* Typography - Reduced Sizes */
+.title {
+  font-size: 18px !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+}
+
+.desc {
+  font-size: 0.8125rem !important;
+}
+
+h1 {
+  font-size: 28px !important;
+  line-height: 1.3 !important;
+}
+
+h2 {
+  font-size: 24px !important;
+  line-height: 1.3 !important;
+}
+
+h3 {
+  font-size: 20px !important;
+  line-height: 1.3 !important;
+}
+
+h4 {
+  font-size: 18px !important;
+  line-height: 1.3 !important;
+}
+
+h5 {
+  font-size: 16px !important;
+  line-height: 1.3 !important;
+}
+
+h6 {
+  font-size: 14px !important;
+  line-height: 1.3 !important;
+}
+
+p {
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+}
+
+/* Navigation */
+.nav-pills .nav-link {
+  font-size: 0.875rem !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+}
+
+.nav-tabs .nav-link {
+  font-size: 0.875rem !important;
+  padding: 8px 12px !important;
+}
+
+#tabs .nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+  font-size: 0.875rem !important;
+}
+
+#tabs .nav-tabs .nav-link {
+  font-size: 0.875rem !important;
+}
+
+/* Dropdowns */
+.dropdown-item {
+  padding: 6px 12px !important;
+  font-size: 0.8125rem !important;
+  font-weight: 400 !important;
+}
+
+.dropdown-menu {
+  border-radius: 6px !important;
+  font-size: 0.8125rem !important;
+}
+
+.user-drop {
+  width: 180px !important;
+  
+  .dropdown-item {
+    padding: 8px 12px !important;
+    font-size: 0.8125rem !important;
+    gap: 8px !important;
+  }
+}
+
+/* Badges */
+.badge {
+  padding: 3px 8px !important;
+  font-size: 0.75rem !important;
+  border-radius: 4px !important;
+  font-weight: 500 !important;
+}
+
+/* Cards */
+.card {
+  border-radius: 6px !important;
+}
+
+.card-title {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+}
+
+.card-subtitle {
+  font-size: 0.8125rem !important;
+}
+
+.card-text {
+  font-size: 0.875rem !important;
+}
+
+/* Header */
+.header__area {
+  padding: 10px 0 !important;
+}
+
+.header__dropdown button h4 {
+  font-size: 0.9375rem !important;
+  line-height: 1.3 !important;
+  margin-right: 10px !important;
+}
+
+.header__dropdown button h4 span {
+  font-size: 0.75rem !important;
+}
+
+.profile-dropdown h4 {
+  font-size: 0.875rem !important;
+}
+
+.profile-dropdown img {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.avatar-img {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+/* Sidebar Card */
+.sidebar-card {
+  padding: 16px !important;
+  border-radius: 8px !important;
+  
+  img {
+    width: 18px !important;
+    height: 24px !important;
+    margin-bottom: 6px !important;
+  }
+  
+  h2 {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+  }
+}
+
+/* Generic Form Box */
+.generic-form-box {
+  padding: 40px 30px 50px !important;
+  border-radius: 12px !important;
+  
+  .title {
+    font-size: 20px !important;
+  }
+  
+  .input-field input {
+    height: 36px !important;
+    padding: 0 12px !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* Modal */
+.modal-header {
+  padding: 12px 16px !important;
+}
+
+.modal-body {
+  padding: 16px !important;
+  font-size: 0.875rem !important;
+}
+
+.modal-footer {
+  padding: 12px 16px !important;
+}
+
+/* Chat Drop Button */
+.chat-drop-btn {
+  font-size: 0.875rem !important;
+  padding: 8px 12px !important;
+  min-width: 300px !important;
+  border-radius: 6px !important;
+}
+
+/* Footer Text */
+.footer-text p {
+  font-size: 0.75rem !important;
+}
+
+/* Collapse Arrow */
+.collapse-arrow {
+  width: 28px !important;
+  height: 28px !important;
+  top: 12px !important;
+}
+
+/* Additional ERP-style adjustments */
+body {
+  font-size: 0.875rem !important;
+}
+
+small,
+.small {
+  font-size: 0.75rem !important;
+}
+
+strong,
+b {
+  font-weight: 600 !important;
+}
+
+/* Input groups */
+.input-group-text {
+  padding: 6px 10px !important;
+  font-size: 0.875rem !important;
+  border-radius: 6px !important;
+}
+
+/* Select elements */
+select.form-control,
+select.form-select {
+  font-size: 0.875rem !important;
+  padding: 6px 10px !important;
+}
+
+/* Textarea */
+textarea {
+  font-size: 0.875rem !important;
+  padding: 6px 10px !important;
+  line-height: 1.4 !important;
+}
+
+/* Pagination */
+.pagination {
+  font-size: 0.8125rem !important;
+  
+  .page-link {
+    padding: 4px 8px !important;
+    font-size: 0.8125rem !important;
+  }
+}
+
+.paginate_button {
+  padding: 6px 12px !important;
+  font-size: 0.8125rem !important;
+  border-radius: 4px !important;
+}
