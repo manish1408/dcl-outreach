@@ -85,10 +85,12 @@
             <table class="table table-hover">
               <thead>
                 <tr>
-                  <th>Title</th>
+                  <th>Company</th>
+                  <th>Job Title</th>
                   <th>Role</th>
                   <th>Type</th>
                   <th>Compensation</th>
+                  <th>Company Size</th>
                   <th>Remote</th>
                   <th>Updated</th>
                   <th class="text-end">Actions</th>
@@ -96,6 +98,16 @@
               </thead>
               <tbody>
                 <tr *ngFor="let job of jobs">
+                  <td>
+                    <div>
+                      <strong>{{ job.companyName }}</strong>
+                      <div *ngIf="job.companyBadges && job.companyBadges.length > 0" class="mt-1">
+                        <span *ngFor="let badge of job.companyBadges" class="badge bg-primary me-1" style="font-size: 0.7rem;">
+                          {{ badge }}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
                   <td>
                     <div>
                       <strong>{{ job.title }}</strong>
@@ -110,6 +122,10 @@
                   <td>
                     <div *ngIf="job.compensation">{{ job.compensation }}</div>
                     <div *ngIf="!job.compensation" class="text-muted">-</div>
+                  </td>
+                  <td>
+                    <span *ngIf="job.companySize" class="badge bg-light text-dark">{{ formatCompanySize(job.companySize) }}</span>
+                    <span *ngIf="!job.companySize" class="text-muted">-</span>
                   </td>
                   <td>
                     <span class="badge" [ngClass]="job.remote ? 'bg-success' : 'bg-warning'">
@@ -130,7 +146,7 @@
                   </td>
                 </tr>
                 <tr *ngIf="jobs.length === 0 && !loading">
-                  <td colspan="7" class="text-center py-4">
+                  <td colspan="9" class="text-center py-4">
                     <p class="text-muted">No jobs found</p>
                   </td>
                 </tr>
@@ -166,6 +182,7 @@
       </div>
       <div class="modal-body">
         <form [formGroup]="jobForm">
+          <h6 class="mb-3">Job Information</h6>
           <div class="row g-3">
             <div class="col-12 col-md-6">
               <label class="form-label">Job ID</label>
@@ -214,6 +231,45 @@
               <textarea class="form-control" formControlName="description" rows="5"></textarea>
             </div>
           </div>
+
+          <hr class="my-4">
+
+          <h6 class="mb-3">Company Information</h6>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label">Company Name</label>
+              <input type="text" class="form-control" formControlName="companyName">
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Company Slug</label>
+              <input type="text" class="form-control" formControlName="companySlug">
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Company Size</label>
+              <select class="form-select" formControlName="companySize">
+                <option value="">Select Size</option>
+                <option value="SIZE_1_10">1-10</option>
+                <option value="SIZE_11_50">11-50</option>
+                <option value="SIZE_51_200">51-200</option>
+                <option value="SIZE_201_500">201-500</option>
+                <option value="SIZE_501_1000">501-1000</option>
+                <option value="SIZE_1001_PLUS">1001+</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Startup ID</label>
+              <input type="text" class="form-control" formControlName="startupId">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Company Description (High Concept)</label>
+              <textarea class="form-control" formControlName="highConcept" rows="3"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Company Badges (comma-separated)</label>
+              <input type="text" class="form-control" formControlName="companyBadgesInput" placeholder="e.g., Actively Hiring, B2B, Growth Stage">
+              <small class="text-muted">Enter badges separated by commas</small>
+            </div>
+          </div>
         </form>
       </div>
       <div class="modal-footer">
@@ -239,7 +295,27 @@
         <div class="row">
           <div class="col-12 mb-3">
             <h4>{{ selectedJob.title }}</h4>
+            <p class="text-muted mb-0" *ngIf="selectedJob.companyName">
+              <strong>Company:</strong> {{ selectedJob.companyName }}
+            </p>
           </div>
+          
+          <div class="col-12 mb-3" *ngIf="selectedJob.highConcept">
+            <strong>Company Description:</strong>
+            <div class="mt-2 p-3 bg-light rounded">{{ selectedJob.highConcept }}</div>
+          </div>
+
+          <div class="col-12 mb-3" *ngIf="selectedJob.companyBadges && selectedJob.companyBadges.length > 0">
+            <strong>Company Badges:</strong>
+            <div class="mt-2">
+              <span *ngFor="let badge of selectedJob.companyBadges" class="badge bg-primary me-2">
+                {{ badge }}
+              </span>
+            </div>
+          </div>
+
+          <div class="col-12"><hr></div>
+
           <div class="col-12 col-md-6 mb-3">
             <strong>Job ID:</strong> {{ selectedJob.id }}
           </div>
@@ -264,6 +340,15 @@
           <div class="col-12 col-md-6 mb-3" *ngIf="selectedJob.equity">
             <strong>Equity:</strong> {{ selectedJob.equity }}
           </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedJob.companySize">
+            <strong>Company Size:</strong> {{ formatCompanySize(selectedJob.companySize) }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedJob.companySlug">
+            <strong>Company Slug:</strong> {{ selectedJob.companySlug }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedJob.startupId">
+            <strong>Startup ID:</strong> {{ selectedJob.startupId }}
+          </div>
           <div class="col-12 col-md-6 mb-3">
             <strong>Created:</strong> {{ selectedJob.createdAt | date:'medium' }}
           </div>
@@ -271,8 +356,8 @@
             <strong>Updated:</strong> {{ selectedJob.updatedAt | date:'medium' }}
           </div>
           <div class="col-12 mb-3" *ngIf="selectedJob.description">
-            <strong>Description:</strong>
-            <div class="mt-2 p-3 bg-light rounded" [innerHTML]="selectedJob.description"></div>
+            <strong>Job Description:</strong>
+            <div class="mt-2 p-3 bg-light rounded job-description" [innerHTML]="formatDescription(selectedJob.description)"></div>
           </div>
         </div>
       </div>

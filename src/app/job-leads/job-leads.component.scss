@@ -45,3 +45,52 @@
   font-size: 0.875rem;
   padding: 0.35em 0.65em;
 }
+
+.job-description {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #212529;
+  
+  p {
+    margin-bottom: 0.75rem;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  ul {
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
+    
+    li {
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  
+  strong {
+    font-weight: 600;
+    color: #072032;
+  }
+  
+  em {
+    font-style: italic;
+  }
+  
+  code {
+    background-color: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.875em;
+    font-family: 'Courier New', monospace;
+  }
+  
+  br {
+    line-height: 1.5;
+  }
+}

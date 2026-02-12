@@ -63,8 +63,85 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
       jobType: [''],
       compensation: [''],
       equity: [''],
-      remote: [false]
+      remote: [false],
+      companyName: [''],
+      companySlug: [''],
+      companySize: [''],
+      highConcept: [''],
+      companyBadgesInput: [''],
+      startupId: ['']
     });
+  }
+
+  formatCompanySize(size: string): string {
+    if (!size) return '';
+    const sizeMap: { [key: string]: string } = {
+      'SIZE_1_10': '1-10',
+      'SIZE_11_50': '11-50',
+      'SIZE_51_200': '51-200',
+      'SIZE_201_500': '201-500',
+      'SIZE_501_1000': '501-1000',
+      'SIZE_1001_PLUS': '1001+'
+    };
+    return sizeMap[size] || size;
+  }
+
+  formatDescription(description: string): string {
+    if (!description) return '';
+    
+    let formatted = description;
+    
+    formatted = formatted.replace(/\r\n/g, '\n');
+    formatted = formatted.replace(/\r/g, '\n');
+    
+    const lines = formatted.split('\n');
+    const result: string[] = [];
+    let inList = false;
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      
+      if (!line) {
+        if (inList) {
+          result.push('</ul>');
+          inList = false;
+        }
+        result.push('<br>');
+        continue;
+      }
+      
+      const isListItem = /^[-*•]\s/.test(line) || /^\d+\.\s/.test(line);
+      const content = line.replace(/^[-*•]\s/, '').replace(/^\d+\.\s/, '');
+      
+      if (isListItem) {
+        if (!inList) {
+          result.push('<ul>');
+          inList = true;
+        }
+        const formattedContent = this.formatInlineMarkdown(content);
+        result.push(`<li>${formattedContent}</li>`);
+      } else {
+        if (inList) {
+          result.push('</ul>');
+          inList = false;
+        }
+        const formattedContent = this.formatInlineMarkdown(line);
+        result.push(`<p>${formattedContent}</p>`);
+      }
+    }
+    
+    if (inList) {
+      result.push('</ul>');
+    }
+    
+    return result.join('');
+  }
+
+  private formatInlineMarkdown(text: string): string {
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/`(.*?)`/g, '<code>$1</code>');
   }
 
   ngOnInit() {
@@ -155,6 +232,10 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
   openJobForm(job?: any) {
     if (job) {
       this.editingJob = job;
+      const companyBadgesInput = job.companyBadges && Array.isArray(job.companyBadges) 
+        ? job.companyBadges.join(', ') 
+        : '';
+      
       this.jobForm.patchValue({
         id: job.id,
         title: job.title,
@@ -164,7 +245,13 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
         jobType: job.jobType,
         compensation: job.compensation,
         equity: job.equity,
-        remote: job.remote
+        remote: job.remote,
+        companyName: job.companyName,
+        companySlug: job.companySlug,
+        companySize: job.companySize,
+        highConcept: job.highConcept,
+        companyBadgesInput: companyBadgesInput,
+        startupId: job.startupId
       });
     } else {
       this.editingJob = null;
@@ -179,7 +266,8 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
     this.showJobForm = false;
     this.editingJob = null;
     this.jobForm.reset({
-      remote: false
+      remote: false,
+      companyBadgesInput: ''
     });
   }
 
@@ -188,7 +276,29 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const jobData = this.jobForm.value;
+    const formValue = this.jobForm.value;
+    const companyBadges = formValue.companyBadgesInput 
+      ? formValue.companyBadgesInput.split(',').map((badge: string) => badge.trim()).filter((badge: string) => badge.length > 0)
+      : [];
+
+    const jobData = {
+      id: formValue.id,
+      title: formValue.title,
+      slug: formValue.slug,
+      description: formValue.description,
+      primaryRoleTitle: formValue.primaryRoleTitle,
+      jobType: formValue.jobType,
+      compensation: formValue.compensation,
+      equity: formValue.equity,
+      remote: formValue.remote,
+      companyName: formValue.companyName,
+      companySlug: formValue.companySlug,
+      companySize: formValue.companySize,
+      highConcept: formValue.highConcept,
+      companyBadges: companyBadges,
+      startupId: formValue.startupId
+    };
+    
     this.loading = true;
 
     if (this.editingJob) {
