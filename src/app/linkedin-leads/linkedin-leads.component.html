@@ -1,0 +1,240 @@
+<div *ngIf="loading" class="d-flex justify-content-center">
+  <div class="spinner-border text-dark" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<ng-container *ngIf="!loading">
+  <!-- Search -->
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex flex-wrap align-items-end gap-2">
+        <div class="flex-grow-1" style="min-width: 200px;">
+          <input type="text" class="form-control" [(ngModel)]="filters.search" (keyup.enter)="applyFilters()"
+            placeholder="Search by name, email, or company...">
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary" (click)="applyFilters()">
+            <i class="fas fa-search"></i> Search
+          </button>
+          <button class="btn btn-outline-secondary" (click)="resetFilters()">
+            <i class="fas fa-times"></i> Clear
+          </button>
+        </div>
+        <div class="ms-auto">
+          <button class="btn btn-danger" (click)="deleteAllLeads()" [disabled]="deletingAll || leads.length === 0">
+            <i class="fas fa-trash-alt"></i> {{ deletingAll ? 'Deleting...' : 'Delete All' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leads Table -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th (click)="sortBy('name')" class="cursor-pointer">
+                Name
+                <i class="fas ms-1" [ngClass]="getSortIcon('name')"></i>
+              </th>
+              <th (click)="sortBy('position')" class="cursor-pointer">
+                Position
+                <i class="fas ms-1" [ngClass]="getSortIcon('position')"></i>
+              </th>
+              <th (click)="sortBy('company')" class="cursor-pointer">
+                Company
+                <i class="fas ms-1" [ngClass]="getSortIcon('company')"></i>
+              </th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Location</th>
+              <th>LinkedIn</th>
+              <th (click)="sortBy('updatedAt')" class="cursor-pointer">
+                Updated
+                <i class="fas ms-1" [ngClass]="getSortIcon('updatedAt')"></i>
+              </th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let lead of leads">
+              <td>
+                <div class="d-flex align-items-center">
+                  <img *ngIf="lead.profilePictureUrl" [src]="lead.profilePictureUrl" [alt]="lead.name" class="rounded me-2"
+                    style="width: 32px; height: 32px; object-fit: cover;">
+                  <div>
+                    {{ lead.name }}
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>
+                  {{ lead.position }}
+                </div>
+              </td>
+              <td>
+                <div>
+                  {{ lead.company }}
+                </div>
+              </td>
+              <td>
+                <div>
+                  {{ lead.email }}
+                </div>
+              </td>
+              <td>
+                <div>
+                  {{ lead.phone }}
+                </div>
+              </td>
+              <td>
+                <div>
+                  {{ lead.location }}
+                </div>
+              </td>
+              <td>
+                <a *ngIf="lead.linkedInProfileUrl" [href]="lead.linkedInProfileUrl" target="_blank" rel="noopener noreferrer" class="text-primary">
+                  <i class="fab fa-linkedin"></i>
+                </a>
+                <span *ngIf="!lead.linkedInProfileUrl" class="text-muted">-</span>
+              </td>
+              <td>{{ lead.updatedAt | date:'dd-MM-yyyy hh:mm a' }}</td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="viewLeadDetails(lead)" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteLead(lead._id)" title="Delete">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="leads.length === 0 && !loading">
+              <td colspan="9" class="text-center py-4">
+                <p class="text-muted">No leads found</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="row mt-3" *ngIf="leads.length > 0">
+        <div class="col-12 text-center">
+          <div *ngIf="loadingMore" class="py-3">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <span class="ms-2 text-muted">Loading more leads...</span>
+          </div>
+          <div *ngIf="!hasMore && !loadingMore" class="py-3">
+            <p class="text-muted mb-0">No more leads to load</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Lead Details Modal -->
+<div class="modal fade" [class.show]="showLeadDetails" [style.display]="showLeadDetails ? 'block' : 'none'" tabindex="-1"
+  *ngIf="showLeadDetails && selectedLead">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Lead Details</h5>
+        <button type="button" class="btn-close" (click)="closeLeadDetails()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12 mb-3">
+            <div class="d-flex align-items-center">
+              <img *ngIf="selectedLead.profilePictureUrl" [src]="selectedLead.profilePictureUrl" [alt]="selectedLead.name" class="rounded me-3"
+                style="width: 80px; height: 80px; object-fit: cover;">
+              <div>
+                <h4>{{ selectedLead.name }}</h4>
+                <p class="text-muted mb-0" *ngIf="selectedLead.position">
+                  {{ selectedLead.position }}
+                </p>
+                <p class="text-muted mb-0" *ngIf="selectedLead.company">
+                  <strong>Company:</strong> {{ selectedLead.company }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 mb-3" *ngIf="selectedLead.summary">
+            <strong>Summary:</strong>
+            <div class="mt-2 p-3 bg-light rounded" [innerHTML]="formatDescription(selectedLead.summary)"></div>
+          </div>
+
+          <div class="col-12">
+            <hr>
+          </div>
+
+          <div class="col-12 col-md-6 mb-3">
+            <strong>Lead ID:</strong> {{ selectedLead._id }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.entityUrn">
+            <strong>Entity URN:</strong> {{ selectedLead.entityUrn }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.objectUrn">
+            <strong>Object URN:</strong> {{ selectedLead.objectUrn }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.email">
+            <strong>Email:</strong> {{ selectedLead.email }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.phone">
+            <strong>Phone:</strong> {{ selectedLead.phone }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.location">
+            <strong>Location:</strong> {{ selectedLead.location }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.degree !== null && selectedLead.degree !== undefined">
+            <strong>Degree:</strong> {{ selectedLead.degree }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.connectionDegree !== null && selectedLead.connectionDegree !== undefined">
+            <strong>Connection Degree:</strong> {{ selectedLead.connectionDegree }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.wellfoundJobId">
+            <strong>Wellfound Job ID:</strong> {{ selectedLead.wellfoundJobId }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.companyUrn">
+            <strong>Company URN:</strong> {{ selectedLead.companyUrn }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.companyLinkedInUrl">
+            <strong>Company LinkedIn:</strong> <a [href]="selectedLead.companyLinkedInUrl" target="_blank"
+              rel="noopener noreferrer">{{ selectedLead.companyLinkedInUrl }}</a>
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.scrapedAt">
+            <strong>Scraped At:</strong> {{ selectedLead.scrapedAt | date:'medium' }}
+          </div>
+          <div class="col-12 col-md-6 mb-3">
+            <strong>Created:</strong> {{ selectedLead.createdAt | date:'medium' }}
+          </div>
+          <div class="col-12 col-md-6 mb-3">
+            <strong>Updated:</strong> {{ selectedLead.updatedAt | date:'medium' }}
+          </div>
+
+          <div class="col-12">
+            <hr>
+          </div>
+
+          <div class="col-12 mb-3" *ngIf="selectedLead.linkedInProfileUrl">
+            <strong>LinkedIn Profile:</strong>
+            <div class="mt-2">
+              <a [href]="selectedLead.linkedInProfileUrl" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">
+                <i class="fab fa-linkedin"></i> View LinkedIn Profile
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeLeadDetails()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showLeadDetails" *ngIf="showLeadDetails" (click)="closeLeadDetails()"></div>

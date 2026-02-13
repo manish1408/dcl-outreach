@@ -1,19 +1,19 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { WellfoundJobsService } from '../_services/wellfound-jobs.service';
+import { LinkedInLeadsService } from '../_services/linkedin-leads.service';
 import { finalize, takeUntil } from 'rxjs';
 import { Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-job-leads',
-  templateUrl: './job-leads.component.html',
-  styleUrl: './job-leads.component.scss'
+  selector: 'app-linkedin-leads',
+  templateUrl: './linkedin-leads.component.html',
+  styleUrl: './linkedin-leads.component.scss'
 })
-export class JobLeadsComponent implements OnInit, OnDestroy {
+export class LinkedInLeadsComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   loadingMore: boolean = false;
   deletingAll: boolean = false;
-  jobs: any[] = [];
+  leads: any[] = [];
   filters: any = {
     page: 1,
     limit: 20,
@@ -23,36 +23,13 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
   };
   total: number = 0;
   hasMore: boolean = false;
-  showJobDetails: boolean = false;
-  selectedJob: any = null;
+  showLeadDetails: boolean = false;
+  selectedLead: any = null;
   private destroy$ = new Subject<void>();
 
   constructor(
-    private wellfoundJobsService: WellfoundJobsService
+    private linkedinLeadsService: LinkedInLeadsService
   ) {
-  }
-
-  formatCompanySize(size: string): string {
-    if (!size) return '';
-    const sizeMap: { [key: string]: string } = {
-      'SIZE_1_10': '1-10',
-      'SIZE_11_50': '11-50',
-      'SIZE_51_200': '51-200',
-      'SIZE_201_500': '201-500',
-      'SIZE_501_1000': '501-1000',
-      'SIZE_1001_PLUS': '1001+'
-    };
-    return sizeMap[size] || size;
-  }
-
-  formatCurrency(amount: number | null): string {
-    if (!amount) return '-';
-    if (amount >= 1000000) {
-      return '$' + (amount / 1000000).toFixed(1) + 'M';
-    } else if (amount >= 1000) {
-      return '$' + (amount / 1000).toFixed(1) + 'K';
-    }
-    return '$' + amount.toLocaleString();
   }
 
   trimName(name: string): string {
@@ -123,7 +100,7 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.loadJobs();
+    this.loadLeads();
   }
 
   ngOnDestroy() {
@@ -143,16 +120,28 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
     const scrollPercentage = (scrollTop + windowHeight) / documentHeight;
 
     if (scrollPercentage > 0.9) {
-      this.loadMoreJobs();
+      this.loadMoreLeads();
     }
   }
 
-  loadJobs() {
+  loadLeads() {
     this.filters.page = 1;
-    this.jobs = [];
+    this.leads = [];
     this.loading = true;
     window.scrollTo(0, 0);
-    this.wellfoundJobsService.getJobs(this.filters)
+    
+    const filters: any = {
+      page: this.filters.page,
+      limit: this.filters.limit,
+      sortBy: this.filters.sortBy,
+      sortOrder: this.filters.sortOrder
+    };
+
+    if (this.filters.search) {
+      filters.name = this.filters.search;
+    }
+
+    this.linkedinLeadsService.getLeads(filters)
       .pipe(
         finalize(() => this.loading = false),
         takeUntil(this.destroy$)
@@ -160,7 +149,7 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           if (response.success) {
-            this.jobs = response.data.jobs;
+            this.leads = response.data.leads;
             this.total = response.data.total;
             this.hasMore = response.data.hasMore;
           }
@@ -169,13 +158,13 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Failed to load jobs'
+            text: 'Failed to load leads'
           });
         }
       });
   }
 
-  loadMoreJobs() {
+  loadMoreLeads() {
     if (this.loadingMore || !this.hasMore) {
       return;
     }
@@ -183,7 +172,18 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
     this.loadingMore = true;
     this.filters.page++;
     
-    this.wellfoundJobsService.getJobs(this.filters)
+    const filters: any = {
+      page: this.filters.page,
+      limit: this.filters.limit,
+      sortBy: this.filters.sortBy,
+      sortOrder: this.filters.sortOrder
+    };
+
+    if (this.filters.search) {
+      filters.name = this.filters.search;
+    }
+    
+    this.linkedinLeadsService.getLeads(filters)
       .pipe(
         finalize(() => this.loadingMore = false),
         takeUntil(this.destroy$)
@@ -191,7 +191,7 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           if (response.success) {
-            this.jobs = [...this.jobs, ...response.data.jobs];
+            this.leads = [...this.leads, ...response.data.leads];
             this.total = response.data.total;
             this.hasMore = response.data.hasMore;
           }
@@ -201,23 +201,23 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Failed to load more jobs'
+            text: 'Failed to load more leads'
           });
         }
       });
   }
 
-  viewJobDetails(job: any) {
-    this.selectedJob = job;
-    this.showJobDetails = true;
+  viewLeadDetails(lead: any) {
+    this.selectedLead = lead;
+    this.showLeadDetails = true;
   }
 
-  closeJobDetails() {
-    this.showJobDetails = false;
-    this.selectedJob = null;
+  closeLeadDetails() {
+    this.showLeadDetails = false;
+    this.selectedLead = null;
   }
 
-  deleteJob(jobId: string) {
+  deleteLead(leadId: string) {
     Swal.fire({
       title: 'Are you sure?',
       text: 'This action cannot be undone',
@@ -229,7 +229,7 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loading = true;
-        this.wellfoundJobsService.deleteJob(jobId)
+        this.linkedinLeadsService.deleteLead(leadId)
           .pipe(
             finalize(() => this.loading = false),
             takeUntil(this.destroy$)
@@ -240,16 +240,16 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
                 Swal.fire({
                   icon: 'success',
                   title: 'Deleted',
-                  text: 'Job deleted successfully'
+                  text: 'Lead deleted successfully'
                 });
-                this.loadJobs();
+                this.loadLeads();
               }
             },
             error: (error) => {
               Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Failed to delete job'
+                text: 'Failed to delete lead'
               });
             }
           });
@@ -257,10 +257,10 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteAllJobs() {
+  deleteAllLeads() {
     Swal.fire({
-      title: 'Delete All Jobs?',
-      html: '<strong>WARNING:</strong> This will permanently delete <strong>ALL</strong> jobs from the database.<br><br>This action cannot be undone.',
+      title: 'Delete All Leads?',
+      html: '<strong>WARNING:</strong> This will permanently delete <strong>ALL</strong> leads from the database.<br><br>This action cannot be undone.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -272,7 +272,7 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
       if (result.isConfirmed) {
         Swal.fire({
           title: 'Are you absolutely sure?',
-          html: 'This is your <strong>last chance</strong> to cancel.<br><br>All jobs will be permanently deleted.',
+          html: 'This is your <strong>last chance</strong> to cancel.<br><br>All leads will be permanently deleted.',
           icon: 'error',
           showCancelButton: true,
           confirmButtonColor: '#d33',
@@ -283,7 +283,7 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
         }).then((doubleConfirm) => {
           if (doubleConfirm.isConfirmed) {
             this.deletingAll = true;
-            this.wellfoundJobsService.deleteAllJobs()
+            this.linkedinLeadsService.deleteAllLeads()
               .pipe(
                 finalize(() => this.deletingAll = false),
                 takeUntil(this.destroy$)
@@ -294,13 +294,13 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
                     Swal.fire({
                       icon: 'success',
                       title: 'Deleted',
-                      text: `Successfully deleted ${response.data.deletedCount} job(s)`
+                      text: `Successfully deleted ${response.data.deletedCount} lead(s)`
                     });
-                    this.loadJobs();
+                    this.loadLeads();
                   }
                 },
                 error: (error) => {
-                  const errorMessage = error.error?.error || error.error?.message || 'Failed to delete all jobs';
+                  const errorMessage = error.error?.error || error.error?.message || 'Failed to delete all leads';
                   Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -315,7 +315,7 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
   }
 
   applyFilters() {
-    this.loadJobs();
+    this.loadLeads();
   }
 
   resetFilters() {
@@ -326,7 +326,7 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
       sortOrder: 'desc',
       search: ''
     };
-    this.loadJobs();
+    this.loadLeads();
   }
 
   sortBy(column: string) {
@@ -336,7 +336,7 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
       this.filters.sortBy = column;
       this.filters.sortOrder = 'asc';
     }
-    this.loadJobs();
+    this.loadLeads();
   }
 
   getSortIcon(column: string): string {

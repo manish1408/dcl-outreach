@@ -5,57 +5,26 @@
 </div>
 
 <ng-container *ngIf="!loading">
+  <!-- Search -->
   <div class="row">
-    <div class="col-12 d-flex justify-content-between align-items-center">
-      <div>
-        <h4 class="title">Job Leads</h4>
-        <p class="desc">Manage Wellfound job listings</p>
-      </div>
-      <div class="d-flex gap-2">
-        <button class="btn btn-danger" (click)="deleteAllJobs()" [disabled]="deletingAll || jobs.length === 0">
-          <i class="fas fa-trash-alt"></i> {{ deletingAll ? 'Deleting...' : 'Delete All' }}
-        </button>
-        <button class="btn btn-primary" (click)="openJobForm()">
-          <i class="bi bi-plus-circle"></i> Add Job
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Filters -->
-  <div class="row mt-4">
     <div class="col-12">
-      <div class="card">
-        <div class="card-body">
-          <div class="row g-3">
-            <div class="col-12 col-md-3">
-              <label class="form-label">Role Title</label>
-              <select class="form-select" [(ngModel)]="filters.primaryRoleTitle" (change)="applyFilters()">
-                <option value="">All Roles</option>
-                <option *ngFor="let role of roleOptions" [value]="role">{{ role }}</option>
-              </select>
-            </div>
-            <div class="col-12 col-md-3">
-              <label class="form-label">Job Type</label>
-              <select class="form-select" [(ngModel)]="filters.jobType" (change)="applyFilters()">
-                <option value="">All Types</option>
-                <option *ngFor="let type of jobTypeOptions" [value]="type">{{ type }}</option>
-              </select>
-            </div>
-            <div class="col-12 col-md-3">
-              <label class="form-label">Remote</label>
-              <select class="form-select" [(ngModel)]="filters.remote" (change)="applyFilters()">
-                <option [value]="null">All</option>
-                <option [value]="true">Remote</option>
-                <option [value]="false">On-site</option>
-              </select>
-            </div>
-            <div class="col-12 col-md-3 d-flex align-items-end">
-              <button class="btn btn-outline-secondary w-100" (click)="resetFilters()">
-                Reset Filters
-              </button>
-            </div>
-          </div>
+      <div class="d-flex flex-wrap align-items-end gap-2">
+        <div class="flex-grow-1" style="min-width: 200px;">
+          <input type="text" class="form-control" [(ngModel)]="filters.search" (keyup.enter)="applyFilters()"
+            placeholder="Search by job title or company name...">
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary" (click)="applyFilters()">
+            <i class="fas fa-search"></i> Search
+          </button>
+          <button class="btn btn-outline-secondary" (click)="resetFilters()">
+            <i class="fas fa-times"></i> Clear
+          </button>
+        </div>
+        <div class="ms-auto">
+          <button class="btn btn-danger" (click)="deleteAllJobs()" [disabled]="deletingAll || jobs.length === 0">
+            <i class="fas fa-trash-alt"></i> {{ deletingAll ? 'Deleting...' : 'Delete All' }}
+          </button>
         </div>
       </div>
     </div>
@@ -64,107 +33,116 @@
   <!-- Jobs Table -->
   <div class="row mt-4">
     <div class="col-12">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-              <strong>Total Jobs: {{ total }}</strong>
-            </div>
-            <div class="d-flex gap-2">
-              <select class="form-select form-select-sm" [(ngModel)]="filters.sortBy" (change)="changeSortBy(filters.sortBy)">
-                <option value="updatedAt">Sort by Updated</option>
-                <option value="createdAt">Sort by Created</option>
-                <option value="title">Sort by Title</option>
-              </select>
-              <button class="btn btn-sm btn-outline-secondary" (click)="changeSortOrder()">
-                <i class="fas" [ngClass]="filters.sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"></i>
-              </button>
-            </div>
-          </div>
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>Company</th>
-                  <th>Job Title</th>
-                  <th>Role</th>
-                  <th>Type</th>
-                  <th>Compensation</th>
-                  <th>Company Size</th>
-                  <th>Remote</th>
-                  <th>Updated</th>
-                  <th class="text-end">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let job of jobs">
-                  <td>
-                    <div>
-                      <strong>{{ job.companyName }}</strong>
-                      <div *ngIf="job.companyBadges && job.companyBadges.length > 0" class="mt-1">
-                        <span *ngFor="let badge of job.companyBadges" class="badge bg-primary me-1" style="font-size: 0.7rem;">
-                          {{ badge }}
-                        </span>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div>
-                      <strong>{{ job.title }}</strong>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="badge bg-info">{{ job.primaryRoleTitle }}</span>
-                  </td>
-                  <td>
-                    <span class="badge bg-secondary">{{ job.jobType }}</span>
-                  </td>
-                  <td>
-                    <div *ngIf="job.compensation">{{ job.compensation }}</div>
-                    <div *ngIf="!job.compensation" class="text-muted">-</div>
-                  </td>
-                  <td>
-                    <span *ngIf="job.companySize" class="badge bg-light text-dark">{{ formatCompanySize(job.companySize) }}</span>
-                    <span *ngIf="!job.companySize" class="text-muted">-</span>
-                  </td>
-                  <td>
-                    <span class="badge" [ngClass]="job.remote ? 'bg-success' : 'bg-warning'">
-                      {{ job.remote ? 'Remote' : 'On-site' }}
-                    </span>
-                  </td>
-                  <td>{{ job.updatedAt | date:'shortDate' }}</td>
-                  <td class="text-end">
-                    <button class="btn btn-sm btn-outline-primary me-2" (click)="viewJobDetails(job)">
-                      View
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary me-2" (click)="openJobForm(job)">
-                      Edit
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" (click)="deleteJob(job.id)">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-                <tr *ngIf="jobs.length === 0 && !loading">
-                  <td colspan="9" class="text-center py-4">
-                    <p class="text-muted">No jobs found</p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="row mt-3" *ngIf="jobs.length > 0">
-            <div class="col-12 text-center">
-              <div *ngIf="loadingMore" class="py-3">
-                <div class="spinner-border spinner-border-sm text-primary" role="status">
-                  <span class="visually-hidden">Loading...</span>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th (click)="sortBy('companyName')" class="cursor-pointer">
+                Company
+                <i class="fas ms-1" [ngClass]="getSortIcon('companyName')"></i>
+              </th>
+              <th (click)="sortBy('title')" class="cursor-pointer">
+                Job Title
+                <i class="fas ms-1" [ngClass]="getSortIcon('title')"></i>
+              </th>
+              <th (click)="sortBy('primaryRoleTitle')" class="cursor-pointer">
+                Role
+                <i class="fas ms-1" [ngClass]="getSortIcon('primaryRoleTitle')"></i>
+              </th>
+              <th nowrap="true" (click)="sortBy('companySize')" class="cursor-pointer">
+                Company Size
+                <i class="fas ms-1" [ngClass]="getSortIcon('companySize')"></i>
+              </th>
+              <th>Website</th>
+              <th>LinkedIn</th>
+              <th>Team</th>
+              <th (click)="sortBy('updatedAt')" class="cursor-pointer">
+                Updated
+                <i class="fas ms-1" [ngClass]="getSortIcon('updatedAt')"></i>
+              </th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let job of jobs">
+              <td>
+                <div>
+                  {{ job.companyName }}
                 </div>
-                <span class="ms-2 text-muted">Loading more jobs...</span>
-              </div>
-              <div *ngIf="!hasMore && !loadingMore" class="py-3">
-                <p class="text-muted mb-0">No more jobs to load</p>
-              </div>
+              </td>
+              <td>
+                <div>
+                  {{ job.title }}
+                </div>
+              </td>
+              <td>
+                <span class="badge bg-info">{{ job.primaryRoleTitle }}</span>
+              </td>
+              <td>
+                <span *ngIf="job.companySize" class="badge bg-light text-dark">{{ formatCompanySize(job.companySize)
+                  }}</span>
+                <span *ngIf="!job.companySize" class="text-muted">-</span>
+              </td>
+              <td>
+                <a *ngIf="job.companyUrl" [href]="job.companyUrl" target="_blank" rel="noopener noreferrer" class="text-primary">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+                <span *ngIf="!job.companyUrl" class="text-muted">-</span>
+              </td>
+              <td>
+                <a *ngIf="job.companyLinkedInUrl" [href]="job.companyLinkedInUrl" target="_blank" rel="noopener noreferrer" class="text-primary">
+                  <i class="fab fa-linkedin"></i>
+                </a>
+                <span *ngIf="!job.companyLinkedInUrl" class="text-muted">-</span>
+              </td>
+              <td>
+                <div *ngIf="job.companyFounders && job.companyFounders.length > 0" class="d-flex flex-wrap gap-1">
+                  <ng-container *ngFor="let founder of job.companyFounders">
+                    <a *ngIf="founder.linkedinUrl"
+                       [href]="founder.linkedinUrl" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       class="badge bg-secondary text-decoration-none"
+                       [title]="founder.name">
+                      {{ trimName(founder.name) }}
+                    </a>
+                    <span *ngIf="!founder.linkedinUrl"
+                          class="badge bg-secondary"
+                          [title]="founder.name">
+                      {{ trimName(founder.name) }}
+                    </span>
+                  </ng-container>
+                </div>
+                <span *ngIf="!job.companyFounders || job.companyFounders.length === 0" class="text-muted">-</span>
+              </td>
+              <td>{{ job.updatedAt | date:'dd-MM-yyyy hh:mm a' }}</td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="viewJobDetails(job)" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteJob(job.id)" title="Delete">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="jobs.length === 0 && !loading">
+              <td colspan="9" class="text-center py-4">
+                <p class="text-muted">No jobs found</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="row mt-3" *ngIf="jobs.length > 0">
+        <div class="col-12 text-center">
+          <div *ngIf="loadingMore" class="py-3">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
             </div>
+            <span class="ms-2 text-muted">Loading more jobs...</span>
+          </div>
+          <div *ngIf="!hasMore && !loadingMore" class="py-3">
+            <p class="text-muted mb-0">No more jobs to load</p>
           </div>
         </div>
       </div>
@@ -172,120 +150,10 @@
   </div>
 </ng-container>
 
-<!-- Job Form Modal -->
-<div class="modal fade" [class.show]="showJobForm" [style.display]="showJobForm ? 'block' : 'none'" tabindex="-1" *ngIf="showJobForm">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">{{ editingJob ? 'Edit Job' : 'Add Job' }}</h5>
-        <button type="button" class="btn-close" (click)="closeJobForm()"></button>
-      </div>
-      <div class="modal-body">
-        <form [formGroup]="jobForm">
-          <h6 class="mb-3">Job Information</h6>
-          <div class="row g-3">
-            <div class="col-12 col-md-6">
-              <label class="form-label">Job ID</label>
-              <input type="text" class="form-control" formControlName="id" [readonly]="editingJob">
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="form-label">Slug</label>
-              <input type="text" class="form-control" formControlName="slug">
-            </div>
-            <div class="col-12">
-              <label class="form-label">Title</label>
-              <input type="text" class="form-control" formControlName="title" required>
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="form-label">Primary Role Title</label>
-              <select class="form-select" formControlName="primaryRoleTitle" required>
-                <option value="">Select Role</option>
-                <option *ngFor="let role of roleOptions" [value]="role">{{ role }}</option>
-              </select>
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="form-label">Job Type</label>
-              <select class="form-select" formControlName="jobType" required>
-                <option value="">Select Type</option>
-                <option *ngFor="let type of jobTypeOptions" [value]="type">{{ type }}</option>
-              </select>
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="form-label">Compensation</label>
-              <input type="text" class="form-control" formControlName="compensation" placeholder="e.g., ₹5L – ₹8L">
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="form-label">Equity</label>
-              <input type="text" class="form-control" formControlName="equity" placeholder="e.g., 0.0% – 0.01%">
-            </div>
-            <div class="col-12">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" formControlName="remote" id="remoteCheck">
-                <label class="form-check-label" for="remoteCheck">
-                  Remote
-                </label>
-              </div>
-            </div>
-            <div class="col-12">
-              <label class="form-label">Description</label>
-              <textarea class="form-control" formControlName="description" rows="5"></textarea>
-            </div>
-          </div>
-
-          <hr class="my-4">
-
-          <h6 class="mb-3">Company Information</h6>
-          <div class="row g-3">
-            <div class="col-12 col-md-6">
-              <label class="form-label">Company Name</label>
-              <input type="text" class="form-control" formControlName="companyName">
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="form-label">Company Slug</label>
-              <input type="text" class="form-control" formControlName="companySlug">
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="form-label">Company Size</label>
-              <select class="form-select" formControlName="companySize">
-                <option value="">Select Size</option>
-                <option value="SIZE_1_10">1-10</option>
-                <option value="SIZE_11_50">11-50</option>
-                <option value="SIZE_51_200">51-200</option>
-                <option value="SIZE_201_500">201-500</option>
-                <option value="SIZE_501_1000">501-1000</option>
-                <option value="SIZE_1001_PLUS">1001+</option>
-              </select>
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="form-label">Startup ID</label>
-              <input type="text" class="form-control" formControlName="startupId">
-            </div>
-            <div class="col-12">
-              <label class="form-label">Company Description (High Concept)</label>
-              <textarea class="form-control" formControlName="highConcept" rows="3"></textarea>
-            </div>
-            <div class="col-12">
-              <label class="form-label">Company Badges (comma-separated)</label>
-              <input type="text" class="form-control" formControlName="companyBadgesInput" placeholder="e.g., Actively Hiring, B2B, Growth Stage">
-              <small class="text-muted">Enter badges separated by commas</small>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeJobForm()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="saveJob()" [disabled]="!jobForm.valid || loading">
-          {{ editingJob ? 'Update' : 'Save' }} Job
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal-backdrop fade" [class.show]="showJobForm" *ngIf="showJobForm" (click)="closeJobForm()"></div>
-
 <!-- Job Details Modal -->
-<div class="modal fade" [class.show]="showJobDetails" [style.display]="showJobDetails ? 'block' : 'none'" tabindex="-1" *ngIf="showJobDetails && selectedJob">
-  <div class="modal-dialog modal-lg">
+<div class="modal fade" [class.show]="showJobDetails" [style.display]="showJobDetails ? 'block' : 'none'" tabindex="-1"
+  *ngIf="showJobDetails && selectedJob">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Job Details</h5>
@@ -299,7 +167,7 @@
               <strong>Company:</strong> {{ selectedJob.companyName }}
             </p>
           </div>
-          
+
           <div class="col-12 mb-3" *ngIf="selectedJob.highConcept">
             <strong>Company Description:</strong>
             <div class="mt-2 p-3 bg-light rounded">{{ selectedJob.highConcept }}</div>
@@ -314,7 +182,9 @@
             </div>
           </div>
 
-          <div class="col-12"><hr></div>
+          <div class="col-12">
+            <hr>
+          </div>
 
           <div class="col-12 col-md-6 mb-3">
             <strong>Job ID:</strong> {{ selectedJob.id }}
@@ -329,7 +199,7 @@
             <strong>Type:</strong> <span class="badge bg-secondary">{{ selectedJob.jobType }}</span>
           </div>
           <div class="col-12 col-md-6 mb-3">
-            <strong>Remote:</strong> 
+            <strong>Remote:</strong>
             <span class="badge" [ngClass]="selectedJob.remote ? 'bg-success' : 'bg-warning'">
               {{ selectedJob.remote ? 'Remote' : 'On-site' }}
             </span>
@@ -349,23 +219,115 @@
           <div class="col-12 col-md-6 mb-3" *ngIf="selectedJob.startupId">
             <strong>Startup ID:</strong> {{ selectedJob.startupId }}
           </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedJob.companyTotalRaised">
+            <strong>Total Raised:</strong> {{ formatCurrency(selectedJob.companyTotalRaised) }}
+          </div>
+          <div class="col-12 mb-3" *ngIf="selectedJob.companyLocations && selectedJob.companyLocations.length > 0">
+            <strong>Locations:</strong>
+            <div class="mt-1">
+              <span *ngFor="let location of selectedJob.companyLocations" class="badge bg-secondary me-1">
+                {{ location }}
+              </span>
+            </div>
+          </div>
           <div class="col-12 col-md-6 mb-3">
             <strong>Created:</strong> {{ selectedJob.createdAt | date:'medium' }}
           </div>
           <div class="col-12 col-md-6 mb-3">
             <strong>Updated:</strong> {{ selectedJob.updatedAt | date:'medium' }}
           </div>
+
+          <div class="col-12">
+            <hr>
+          </div>
+
+          <div class="col-12 mb-3"
+            *ngIf="selectedJob.companyUrl || selectedJob.companyBlogUrl || selectedJob.companyLinkedInUrl || selectedJob.companyTwitterUrl || selectedJob.companyFacebookUrl || selectedJob.companyInstagramUrl">
+            <strong>Company URLs:</strong>
+            <div class="mt-2">
+              <div *ngIf="selectedJob.companyUrl" class="mb-2">
+                <strong>Website:</strong> <a [href]="selectedJob.companyUrl" target="_blank"
+                  rel="noopener noreferrer">{{ selectedJob.companyUrl }}</a>
+              </div>
+              <div *ngIf="selectedJob.companyBlogUrl" class="mb-2">
+                <strong>Blog:</strong> <a [href]="selectedJob.companyBlogUrl" target="_blank"
+                  rel="noopener noreferrer">{{ selectedJob.companyBlogUrl }}</a>
+              </div>
+              <div *ngIf="selectedJob.companyLinkedInUrl" class="mb-2">
+                <strong>LinkedIn:</strong> <a [href]="selectedJob.companyLinkedInUrl" target="_blank"
+                  rel="noopener noreferrer">{{ selectedJob.companyLinkedInUrl }}</a>
+              </div>
+              <div *ngIf="selectedJob.companyTwitterUrl" class="mb-2">
+                <strong>Twitter:</strong> <a [href]="selectedJob.companyTwitterUrl" target="_blank"
+                  rel="noopener noreferrer">{{ selectedJob.companyTwitterUrl }}</a>
+              </div>
+              <div *ngIf="selectedJob.companyFacebookUrl" class="mb-2">
+                <strong>Facebook:</strong> <a [href]="selectedJob.companyFacebookUrl" target="_blank"
+                  rel="noopener noreferrer">{{ selectedJob.companyFacebookUrl }}</a>
+              </div>
+              <div *ngIf="selectedJob.companyInstagramUrl" class="mb-2">
+                <strong>Instagram:</strong> <a [href]="selectedJob.companyInstagramUrl" target="_blank"
+                  rel="noopener noreferrer">{{ selectedJob.companyInstagramUrl }}</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 mb-3" *ngIf="selectedJob.companyFounders && selectedJob.companyFounders.length > 0">
+            <strong>Company Founders:</strong>
+            <div class="mt-2">
+              <div *ngFor="let founder of selectedJob.companyFounders" class="card mb-2">
+                <div class="card-body p-3">
+                  <div>
+                    <h6 class="mb-1">{{ founder.name }}</h6>
+                    <div *ngIf="founder.role" class="text-muted mb-1">{{ founder.role }}</div>
+                    <div *ngIf="founder.bio" class="mb-2" [innerHTML]="founder.bio"></div>
+                    <div class="d-flex gap-2">
+                      <a *ngIf="founder.linkedinUrl" [href]="founder.linkedinUrl" target="_blank"
+                        rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
+                        <i class="fab fa-linkedin"></i> LinkedIn
+                      </a>
+                      <span *ngIf="founder.slug" class="text-muted small">Slug: {{ founder.slug }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 mb-3" *ngIf="selectedJob.companyTeamMembers && selectedJob.companyTeamMembers.length > 0">
+            <strong>Company Team Members:</strong>
+            <div class="mt-2">
+              <div *ngFor="let member of selectedJob.companyTeamMembers" class="card mb-2">
+                <div class="card-body p-3">
+                  <div class="d-flex align-items-start">
+                    <img *ngIf="member.avatarUrl" [src]="member.avatarUrl" [alt]="member.name" class="rounded me-3"
+                      style="width: 60px; height: 60px; object-fit: cover;">
+                    <div class="flex-grow-1">
+                      <h6 class="mb-1">{{ member.name }}</h6>
+                      <div *ngIf="member.role" class="text-muted mb-1">{{ member.role }}</div>
+                      <div *ngIf="member.bio" class="mb-2" [innerHTML]="member.bio"></div>
+                      <div class="d-flex gap-2">
+                        <a *ngIf="member.linkedinUrl" [href]="member.linkedinUrl" target="_blank"
+                          rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
+                          <i class="fab fa-linkedin"></i> LinkedIn
+                        </a>
+                        <span *ngIf="member.slug" class="text-muted small">Slug: {{ member.slug }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="col-12 mb-3" *ngIf="selectedJob.description">
             <strong>Job Description:</strong>
-            <div class="mt-2 p-3 bg-light rounded job-description" [innerHTML]="formatDescription(selectedJob.description)"></div>
+            <div class="mt-2 p-3 bg-light rounded job-description"
+              [innerHTML]="formatDescription(selectedJob.description)"></div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeJobDetails()">Close</button>
-        <button type="button" class="btn btn-primary" (click)="openJobForm(selectedJob); closeJobDetails()">
-          Edit Job
-        </button>
       </div>
     </div>
   </div>
