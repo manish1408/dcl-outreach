@@ -345,4 +345,17 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
     }
     return this.filters.sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
+
+  getLeadScrapingStatusBadgeClass(status: string): string {
+    if (!status) return 'bg-secondary';
+    
+    const statusLower = status.toLowerCase();
+    if (statusLower === 'not scraped') return 'bg-secondary';
+    if (statusLower === 'scraped') return 'bg-info';
+    if (statusLower === 'found') return 'bg-primary';
+    if (statusLower === 'reviewed') return 'bg-success';
+    if (statusLower === 'needs review') return 'bg-warning';
+    
+    return 'bg-secondary';
+  }
 }

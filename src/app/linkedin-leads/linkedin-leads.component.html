@@ -50,7 +50,7 @@
                 <i class="fas ms-1" [ngClass]="getSortIcon('company')"></i>
               </th>
               <th>Email</th>
-              <th>Phone</th>
+              <th>Wellfound Job ID</th>
               <th>Location</th>
               <th>LinkedIn</th>
               <th (click)="sortBy('updatedAt')" class="cursor-pointer">
@@ -72,8 +72,8 @@
                 </div>
               </td>
               <td>
-                <div>
-                  {{ lead.position }}
+                <div [title]="lead.position">
+                  {{ trimPosition(lead.position) }}
                 </div>
               </td>
               <td>
@@ -88,7 +88,7 @@
               </td>
               <td>
                 <div>
-                  {{ lead.phone }}
+                  {{ lead.wellfoundJobId }}
                 </div>
               </td>
               <td>
@@ -97,10 +97,9 @@
                 </div>
               </td>
               <td>
-                <a *ngIf="lead.linkedInProfileUrl" [href]="lead.linkedInProfileUrl" target="_blank" rel="noopener noreferrer" class="text-primary">
+                <a *ngIf="getLinkedInUrl(lead)" [href]="getLinkedInUrl(lead)" target="_blank" rel="noopener noreferrer" class="text-primary">
                   <i class="fab fa-linkedin"></i>
                 </a>
-                <span *ngIf="!lead.linkedInProfileUrl" class="text-muted">-</span>
               </td>
               <td>{{ lead.updatedAt | date:'dd-MM-yyyy hh:mm a' }}</td>
               <td class="text-end">
@@ -221,10 +220,10 @@
             <hr>
           </div>
 
-          <div class="col-12 mb-3" *ngIf="selectedLead.linkedInProfileUrl">
+          <div class="col-12 mb-3" *ngIf="getLinkedInUrl(selectedLead)">
             <strong>LinkedIn Profile:</strong>
             <div class="mt-2">
-              <a [href]="selectedLead.linkedInProfileUrl" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">
+              <a [href]="getLinkedInUrl(selectedLead)" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">
                 <i class="fab fa-linkedin"></i> View LinkedIn Profile
               </a>
             </div>

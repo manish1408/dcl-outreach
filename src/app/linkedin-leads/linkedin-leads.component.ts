@@ -41,6 +41,23 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
     return parts[0] + ' ' + parts[parts.length - 1].charAt(0) + '.';
   }
 
+  trimPosition(position: string, maxLength: number = 50): string {
+    if (!position) return '';
+    if (position.length <= maxLength) return position;
+    return position.substring(0, maxLength).trim() + '...';
+  }
+
+  getLinkedInUrl(lead: any): string {
+    if (lead.entityUrn) {
+      const match = lead.entityUrn.match(/\(([^,]+),/);
+      if (match && match[1]) {
+        return `https://www.linkedin.com/in/${match[1]}`;
+      }
+    }
+    
+    return '';
+  }
+
   formatDescription(description: string): string {
     if (!description) return '';
     
