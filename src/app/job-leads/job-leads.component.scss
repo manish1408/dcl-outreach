@@ -65,6 +65,17 @@
   padding: 0.35em 0.65em;
 }
 
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+.job-title-cell {
+  max-width: 300px;
+}
+
 .job-description {
   font-size: 0.875rem;
   line-height: 1.6;
