@@ -29,17 +29,11 @@ export class ChatService {
   updateArticle(data: any) {
     return this.http.put<any>(`${this._url}/update-article`, data);
   }
-  getAllChatbots(): Observable<any> {
-    return this.http.get(`${this._url}/get-all-chatbots`);
-  }
   createChatbot(data: any) {
     return this.http.post<any>(`${this._url}/create-chatbot`, data);
   }
   deleteChatbot(chatbotId:string) {
     return this.http.delete<any>(`${this._url}/delete-chatbot?chatbotId=${chatbotId}`);
-  }
-  getAllChatbotDetails(): Observable<any> {
-    return this.http.get(`${this._url}/get-all-chatbots`);
   }
   updateChannel(data: any) {
     return this.http.put<any>(`${this._url}/update-chatbot-channels`, data);

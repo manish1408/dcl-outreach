@@ -68,15 +68,8 @@ export class AppComponent {
     this.showSidebar = !routeUrls.includes(this.router.url);
     this.isLoggedIn = this.authService.isAuthenticated();
     if (this.isLoggedIn) {
-      this.getAllChatbots();
       this.startWatchingAppEvents();
     }
-  }
-  getAllChatbots() {
-    this.chatService.getAllChatbots().subscribe((res: any) => {
-      console.log(res);
-      this.chatbots = res.data;
-    });
   }
 
   startWatchingAppEvents() {
@@ -85,7 +78,6 @@ export class AppComponent {
       .subscribe((e: any) => {
         if (e.type === 'LOGIN_CHANGE' || e.type === 'PROFILE_UPDATED') {
           console.log('check app user ', this.user);
-          this.getAllChatbots();
           this.isLoggedIn = this.authService.isAuthenticated();
           this.user = this.userService.getUserDetails();
           const storedChatbot = localStorage.getItem('selectedChatbot');
