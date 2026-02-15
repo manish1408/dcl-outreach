@@ -76,6 +76,22 @@
   max-width: 300px;
 }
 
+.company-logo {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.company-logo-modal {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
 .job-description {
   font-size: 0.875rem;
   line-height: 1.6;

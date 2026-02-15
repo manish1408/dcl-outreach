@@ -70,8 +70,13 @@
           <tbody>
             <tr *ngFor="let job of jobs">
               <td>
-                <div>
-                  {{ job.companyName }}
+                <div class="d-flex align-items-center gap-2">
+                  <img *ngIf="job.companyProfileUrl" 
+                       [src]="job.companyProfileUrl" 
+                       [alt]="job.companyName" 
+                       class="company-logo"
+                       (error)="$any($event.target).style.display='none'">
+                  <span>{{ job.companyName }}</span>
                 </div>
               </td>
               <td>
@@ -172,10 +177,19 @@
       <div class="modal-body">
         <div class="row">
           <div class="col-12 mb-3">
-            <h4>{{ selectedJob.title }}</h4>
-            <p class="text-muted mb-0" *ngIf="selectedJob.companyName">
-              <strong>Company:</strong> {{ selectedJob.companyName }}
-            </p>
+            <div class="d-flex align-items-center gap-3 mb-2">
+              <img *ngIf="selectedJob.companyProfileUrl" 
+                   [src]="selectedJob.companyProfileUrl" 
+                   [alt]="selectedJob.companyName" 
+                   class="company-logo-modal"
+                   (error)="$any($event.target).style.display='none'">
+              <div>
+                <h4 class="mb-0">{{ selectedJob.title }}</h4>
+                <p class="text-muted mb-0" *ngIf="selectedJob.companyName">
+                  <strong>Company:</strong> {{ selectedJob.companyName }}
+                </p>
+              </div>
+            </div>
           </div>
 
           <div class="col-12 mb-3" *ngIf="selectedJob.highConcept">
