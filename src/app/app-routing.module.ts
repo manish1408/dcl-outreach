@@ -52,6 +52,7 @@ const routes: Routes = [
   { path: 'accounting', loadChildren: () => import('./accounting/accounting.module').then(m => m.AccountingModule), canActivate: [AuthGuard] },
   { path: 'job-leads', loadChildren: () => import('./job-leads/job-leads.module').then(m => m.JobLeadsModule), canActivate: [AuthGuard] },
   { path: 'linkedin-leads', loadChildren: () => import('./linkedin-leads/linkedin-leads.module').then(m => m.LinkedInLeadsModule), canActivate: [AuthGuard] },
+  { path: 'linkedin-job-leads', loadChildren: () => import('./linkedin-job-leads/linkedin-job-leads.module').then(m => m.LinkedInJobLeadsModule), canActivate: [AuthGuard] },
 ];
 
 @NgModule({
