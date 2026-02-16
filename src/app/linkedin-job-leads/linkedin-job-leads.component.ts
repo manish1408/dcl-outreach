@@ -112,6 +112,39 @@ export class LinkedInJobLeadsComponent implements OnInit, OnDestroy {
     return '';
   }
 
+  trimName(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(' ');
+    if (parts.length <= 2) {
+      return name;
+    }
+    return parts[0] + ' ' + parts[parts.length - 1].charAt(0) + '.';
+  }
+
+  getLeadScrapingStatusBadgeClass(status: string): string {
+    if (!status) return 'bg-secondary';
+    
+    const statusLower = status.toLowerCase();
+    if (statusLower === 'not scraped') return 'bg-secondary';
+    if (statusLower === 'scraped') return 'bg-info';
+    if (statusLower === 'found') return 'bg-primary';
+    if (statusLower === 'reviewed') return 'bg-success';
+    if (statusLower === 'needs review') return 'bg-warning';
+    
+    return 'bg-secondary';
+  }
+
+  getQualificationStatusBadgeClass(status: string): string {
+    if (!status) return 'bg-secondary';
+    
+    const statusLower = status.toLowerCase();
+    if (statusLower === 'pending') return 'bg-warning';
+    if (statusLower === 'qualified') return 'bg-success';
+    if (statusLower === 'not qualified') return 'bg-danger';
+    
+    return 'bg-secondary';
+  }
+
   ngOnInit() {
     this.loadJobs();
   }
