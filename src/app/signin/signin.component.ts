@@ -74,7 +74,7 @@ export class SigninComponent {
               );
 
               this.eventService.dispatchEvent({ type: 'LOGIN_CHANGE' });
-              this.router.navigate(['/dashboard']);
+              this.router.navigate(['/job-leads']);
             } else {
               this.toastr.error(res.msg || 'Signin failed');
             }
