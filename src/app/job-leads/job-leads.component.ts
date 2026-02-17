@@ -365,4 +365,34 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
     }
     return companyFounders.some(founder => founder.name === name);
   }
+
+  getGreenQualifiedLeads(job: any): any[] {
+    const greenLeads: any[] = [];
+    const addedNames = new Set<string>();
+    
+    if (job.companyFounders && job.companyFounders.length > 0) {
+      job.companyFounders.forEach((founder: any) => {
+        if (founder.name && !addedNames.has(founder.name)) {
+          greenLeads.push(founder);
+          addedNames.add(founder.name);
+        }
+      });
+    }
+    
+    if (job.companyTeamMembers && job.companyTeamMembers.length > 0) {
+      job.companyTeamMembers.forEach((member: any) => {
+        if (member.name && this.isFounder(member.name, job.companyFounders || []) && !addedNames.has(member.name)) {
+          greenLeads.push(member);
+          addedNames.add(member.name);
+        }
+      });
+    }
+    
+    return greenLeads;
+  }
+
+  getRemainingGreenLeadsCount(job: any): number {
+    const allGreenLeads = this.getGreenQualifiedLeads(job);
+    return Math.max(0, allGreenLeads.length - 3);
+  }
 }

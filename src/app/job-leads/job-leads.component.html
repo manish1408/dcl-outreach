@@ -114,44 +114,28 @@
               </td>
               <td>
                 <div class="d-flex flex-wrap gap-1">
-                  <ng-container *ngIf="job.companyFounders && job.companyFounders.length > 0">
-                    <ng-container *ngFor="let founder of job.companyFounders">
-                      <a *ngIf="founder.linkedinUrl"
-                         [href]="founder.linkedinUrl" 
+                  <ng-container *ngIf="getGreenQualifiedLeads(job).length > 0">
+                    <ng-container *ngFor="let lead of getGreenQualifiedLeads(job).slice(0, 3)">
+                      <a *ngIf="lead.linkedinUrl"
+                         [href]="lead.linkedinUrl" 
                          target="_blank" 
                          rel="noopener noreferrer"
                          class="badge bg-success text-decoration-none"
-                         [title]="founder.name">
-                        {{ trimName(founder.name) }}
+                         [title]="lead.name">
+                        {{ trimName(lead.name) }}
                       </a>
-                      <span *ngIf="!founder.linkedinUrl"
+                      <span *ngIf="!lead.linkedinUrl"
                             class="badge bg-success"
-                            [title]="founder.name">
-                        {{ trimName(founder.name) }}
+                            [title]="lead.name">
+                        {{ trimName(lead.name) }}
                       </span>
                     </ng-container>
-                  </ng-container>
-                  <ng-container *ngIf="job.companyTeamMembers && job.companyTeamMembers.length > 0">
-                    <ng-container *ngFor="let member of job.companyTeamMembers">
-                      <a *ngIf="member.linkedinUrl"
-                         [href]="member.linkedinUrl" 
-                         target="_blank" 
-                         rel="noopener noreferrer"
-                         class="badge text-decoration-none"
-                         [ngClass]="isFounder(member.name, job.companyFounders) ? 'bg-success' : 'bg-secondary'"
-                         [title]="member.name">
-                        {{ trimName(member.name) }}
-                      </a>
-                      <span *ngIf="!member.linkedinUrl"
-                            class="badge"
-                            [ngClass]="isFounder(member.name, job.companyFounders) ? 'bg-success' : 'bg-secondary'"
-                            [title]="member.name">
-                        {{ trimName(member.name) }}
-                      </span>
-                    </ng-container>
+                    <span *ngIf="getRemainingGreenLeadsCount(job) > 0" class="badge bg-success">
+                      +{{ getRemainingGreenLeadsCount(job) }} more
+                    </span>
                   </ng-container>
                 </div>
-                <span *ngIf="(!job.companyFounders || job.companyFounders.length === 0) && (!job.companyTeamMembers || job.companyTeamMembers.length === 0)" class="text-muted">-</span>
+                <span *ngIf="getGreenQualifiedLeads(job).length === 0" class="text-muted">-</span>
               </td>
               <td>
                 <span *ngIf="job.leadScrapingStatus" class="badge" [ngClass]="getLeadScrapingStatusBadgeClass(job.leadScrapingStatus)">
