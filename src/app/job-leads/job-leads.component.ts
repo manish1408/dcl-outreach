@@ -358,4 +358,11 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
     
     return 'bg-secondary';
   }
+
+  isFounder(name: string, companyFounders: any[]): boolean {
+    if (!name || !companyFounders || companyFounders.length === 0) {
+      return false;
+    }
+    return companyFounders.some(founder => founder.name === name);
+  }
 }
