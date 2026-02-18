@@ -107,24 +107,29 @@
                 <span *ngIf="!getJobUrl(job) && !job.companyLinkedInUrl" class="text-muted">-</span>
               </td>
               <td>
-                <div *ngIf="job.companyFounders && job.companyFounders.length > 0" class="d-flex flex-wrap gap-1">
-                  <ng-container *ngFor="let founder of job.companyFounders">
-                    <a *ngIf="founder.linkedinUrl"
-                       [href]="founder.linkedinUrl" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="badge bg-secondary text-decoration-none"
-                       [title]="founder.name">
-                      {{ trimName(founder.name) }}
-                    </a>
-                    <span *ngIf="!founder.linkedinUrl"
-                          class="badge bg-secondary"
-                          [title]="founder.name">
-                      {{ trimName(founder.name) }}
+                <div class="d-flex flex-wrap gap-1">
+                  <ng-container *ngIf="getGreenQualifiedLeads(job).length > 0">
+                    <ng-container *ngFor="let lead of getGreenQualifiedLeads(job).slice(0, 3)">
+                      <a *ngIf="lead.linkedinUrl"
+                         [href]="lead.linkedinUrl" 
+                         target="_blank" 
+                         rel="noopener noreferrer"
+                         class="badge bg-success text-decoration-none"
+                         [title]="lead.name">
+                        {{ trimName(lead.name) }}
+                      </a>
+                      <span *ngIf="!lead.linkedinUrl"
+                            class="badge bg-success"
+                            [title]="lead.name">
+                        {{ trimName(lead.name) }}
+                      </span>
+                    </ng-container>
+                    <span *ngIf="getRemainingGreenLeadsCount(job) > 0" class="badge bg-success">
+                      +{{ getRemainingGreenLeadsCount(job) }} more
                     </span>
                   </ng-container>
                 </div>
-                <span *ngIf="!job.companyFounders || job.companyFounders.length === 0" class="text-muted">-</span>
+                <span *ngIf="getGreenQualifiedLeads(job).length === 0" class="text-muted">-</span>
               </td>
               <td>
                 <span *ngIf="job.leadScrapingStatus" class="badge" [ngClass]="getLeadScrapingStatusBadgeClass(job.leadScrapingStatus)">
