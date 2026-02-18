@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { LinkedInLeadsService } from '../_services/linkedin-leads.service';
-import { finalize, takeUntil } from 'rxjs';
+import { finalize, takeUntil, forkJoin } from 'rxjs';
 import { Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 
@@ -25,6 +25,8 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
   hasMore: boolean = false;
   showLeadDetails: boolean = false;
   selectedLead: any = null;
+  selectedLeads: Set<string> = new Set();
+  approvingAll: boolean = false;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -55,6 +57,26 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
       }
     }
     
+    return '';
+  }
+
+  getJobId(lead: any): string {
+    if (lead.wellfoundJobId) {
+      return lead.wellfoundJobId;
+    }
+    if (lead.linkedInJobId) {
+      return lead.linkedInJobId;
+    }
+    return '';
+  }
+
+  getJobIdType(lead: any): string {
+    if (lead.wellfoundJobId) {
+      return 'wellfound';
+    }
+    if (lead.linkedInJobId) {
+      return 'linkedin';
+    }
     return '';
   }
 
@@ -144,6 +166,7 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
   loadLeads() {
     this.filters.page = 1;
     this.leads = [];
+    this.selectedLeads.clear();
     this.loading = true;
     window.scrollTo(0, 0);
     
@@ -361,5 +384,131 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
       return 'fa-sort text-muted';
     }
     return this.filters.sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
+  }
+
+  approveLead(lead: any) {
+    Swal.fire({
+      title: 'Approve Lead?',
+      text: `Are you sure you want to approve ${lead.name}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, approve'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.linkedinLeadsService.updateLead(lead._id, { isApproved: true })
+          .pipe(
+            takeUntil(this.destroy$)
+          )
+          .subscribe({
+            next: (response) => {
+              if (response.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Approved',
+                  text: 'Lead approved successfully'
+                });
+                lead.isApproved = true;
+                this.selectedLeads.delete(lead._id);
+              }
+            },
+            error: (error) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to approve lead'
+              });
+            }
+          });
+      }
+    });
+  }
+
+  toggleLeadSelection(lead: any, event: any) {
+    if (event.target.checked) {
+      this.selectedLeads.add(lead._id);
+    } else {
+      this.selectedLeads.delete(lead._id);
+    }
+  }
+
+  isLeadSelected(lead: any): boolean {
+    return this.selectedLeads.has(lead._id);
+  }
+
+  toggleSelectAll(event: any) {
+    if (event.target.checked) {
+      this.leads.forEach(lead => {
+        if (!lead.isApproved) {
+          this.selectedLeads.add(lead._id);
+        }
+      });
+    } else {
+      this.selectedLeads.clear();
+    }
+  }
+
+  isAllSelected(): boolean {
+    const unapprovedLeads = this.leads.filter(lead => !lead.isApproved);
+    if (unapprovedLeads.length === 0) {
+      return false;
+    }
+    return unapprovedLeads.every(lead => this.selectedLeads.has(lead._id));
+  }
+
+  approveAllSelected() {
+    const selectedCount = this.selectedLeads.size;
+    if (selectedCount === 0) {
+      return;
+    }
+
+    Swal.fire({
+      title: 'Approve All Selected?',
+      text: `Are you sure you want to approve ${selectedCount} lead(s)?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, approve all'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.approvingAll = true;
+        const leadIds = Array.from(this.selectedLeads);
+        const approveObservables = leadIds.map(leadId => 
+          this.linkedinLeadsService.updateLead(leadId, { isApproved: true })
+        );
+
+        forkJoin(approveObservables)
+          .pipe(
+            finalize(() => this.approvingAll = false),
+            takeUntil(this.destroy$)
+          )
+          .subscribe({
+            next: (responses) => {
+              const successCount = responses.filter(r => r && r.success).length;
+              this.leads.forEach(lead => {
+                if (this.selectedLeads.has(lead._id)) {
+                  lead.isApproved = true;
+                }
+              });
+              this.selectedLeads.clear();
+              
+              Swal.fire({
+                icon: 'success',
+                title: 'Approved',
+                text: `Successfully approved ${successCount} lead(s)`
+              });
+            },
+            error: (error) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to approve some leads'
+              });
+            }
+          });
+      }
+    });
   }
 }

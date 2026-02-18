@@ -138,10 +138,31 @@
                 <span *ngIf="getGreenQualifiedLeads(job).length === 0" class="text-muted">-</span>
               </td>
               <td>
-                <span *ngIf="job.leadScrapingStatus" class="badge" [ngClass]="getLeadScrapingStatusBadgeClass(job.leadScrapingStatus)">
-                  {{ job.leadScrapingStatus }}
-                </span>
-                <span *ngIf="!job.leadScrapingStatus" class="text-muted">-</span>
+                <div *ngIf="editingStatusJobId === job.id" class="d-flex align-items-center gap-1">
+                  <select class="form-select form-select-sm" 
+                          [value]="job.leadScrapingStatus || 'Not Scraped'"
+                          (change)="updateLeadScrapingStatus(job, $any($event.target).value)"
+                          style="min-width: 150px;"
+                          #statusSelect>
+                    <option *ngFor="let status of leadScrapingStatusOptions" [value]="status">
+                      {{ status }}
+                    </option>
+                  </select>
+                  <button class="btn btn-sm btn-outline-secondary" (click)="cancelEditingStatus()" title="Cancel">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                <div *ngIf="editingStatusJobId !== job.id" 
+                     class="d-flex align-items-center gap-1"
+                     style="cursor: pointer;"
+                     (click)="startEditingStatus(job, $event)"
+                     title="Click to edit">
+                  <span *ngIf="job.leadScrapingStatus" class="badge" [ngClass]="getLeadScrapingStatusBadgeClass(job.leadScrapingStatus)">
+                    {{ job.leadScrapingStatus }}
+                  </span>
+                  <span *ngIf="!job.leadScrapingStatus" class="text-muted">-</span>
+                  <i class="fas fa-edit text-muted" style="font-size: 0.75rem; opacity: 0.6;"></i>
+                </div>
               </td>
               <td>{{ job.updatedAt | date:'dd-MM-yyyy hh:mm a' }}</td>
               <td class="text-end">
@@ -188,174 +209,120 @@
         <button type="button" class="btn-close" (click)="closeJobDetails()"></button>
       </div>
       <div class="modal-body">
-        <div class="row">
-          <div class="col-12 mb-3">
-            <div class="d-flex align-items-center gap-3 mb-2">
-              <img *ngIf="selectedJob.companyProfileUrl" 
-                   [src]="selectedJob.companyProfileUrl" 
-                   [alt]="selectedJob.companyName" 
-                   class="company-logo-modal"
-                   (error)="$any($event.target).style.display='none'">
-              <div>
-                <h4 class="mb-0">{{ selectedJob.title }}</h4>
-                <p class="text-muted mb-0" *ngIf="selectedJob.companyName">
-                  <strong>Company:</strong> {{ selectedJob.companyName }}
-                </p>
+        <!-- Header Section -->
+        <div class="job-header-section mb-4">
+          <div class="d-flex align-items-start gap-3">
+            <img *ngIf="selectedJob.companyProfileUrl" 
+                 [src]="selectedJob.companyProfileUrl" 
+                 [alt]="selectedJob.companyName" 
+                 class="company-logo-modal"
+                 (error)="$any($event.target).style.display='none'">
+            <div class="flex-grow-1">
+              <h4 class="mb-2">{{ selectedJob.title }}</h4>
+              <p class="text-muted mb-2" *ngIf="selectedJob.companyName">
+                <i class="fas fa-building me-2"></i>{{ selectedJob.companyName }}
+              </p>
+              <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span *ngIf="selectedJob.primaryRoleTitle" class="badge bg-info">{{ selectedJob.primaryRoleTitle }}</span>
+                <span *ngIf="selectedJob.jobType" class="badge bg-secondary">{{ selectedJob.jobType }}</span>
+                <span class="badge" [ngClass]="selectedJob.remote ? 'bg-success' : 'bg-warning'">
+                  <i class="fas me-1" [ngClass]="selectedJob.remote ? 'fa-home' : 'fa-building'"></i>
+                  {{ selectedJob.remote ? 'Remote' : 'On-site' }}
+                </span>
+                <span *ngIf="selectedJob.leadScrapingStatus" class="badge" [ngClass]="getLeadScrapingStatusBadgeClass(selectedJob.leadScrapingStatus)">
+                  {{ selectedJob.leadScrapingStatus }}
+                </span>
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="col-12 mb-3" *ngIf="selectedJob.highConcept">
-            <strong>Company Description:</strong>
-            <div class="mt-2 p-3 bg-light rounded">{{ selectedJob.highConcept }}</div>
-          </div>
-
-          <div class="col-12 mb-3" *ngIf="selectedJob.companyBadges && selectedJob.companyBadges.length > 0">
-            <strong>Company Badges:</strong>
-            <div class="mt-2">
-              <span *ngFor="let badge of selectedJob.companyBadges" class="badge bg-primary me-2">
-                {{ badge }}
-              </span>
+        <div class="row g-4">
+          <!-- Left Column -->
+          <div class="col-12 col-lg-8">
+            <!-- Company Description -->
+            <div class="info-card mb-3" *ngIf="selectedJob.highConcept">
+              <h6 class="section-title mb-3">
+                <i class="fas fa-info-circle me-2"></i>Company Description
+              </h6>
+              <p class="mb-0">{{ selectedJob.highConcept }}</p>
             </div>
-          </div>
 
-          <div class="col-12">
-            <hr>
-          </div>
-
-          <div class="col-12 col-md-6 mb-3">
-            <strong>Job ID:</strong> {{ selectedJob.id }}
-          </div>
-          <div class="col-12 col-md-6 mb-3">
-            <strong>Slug:</strong> {{ selectedJob.slug }}
-          </div>
-          <div class="col-12 col-md-6 mb-3">
-            <strong>Role:</strong> <span class="badge bg-info">{{ selectedJob.primaryRoleTitle }}</span>
-          </div>
-          <div class="col-12 col-md-6 mb-3">
-            <strong>Type:</strong> <span class="badge bg-secondary">{{ selectedJob.jobType }}</span>
-          </div>
-          <div class="col-12 col-md-6 mb-3">
-            <strong>Remote:</strong>
-            <span class="badge" [ngClass]="selectedJob.remote ? 'bg-success' : 'bg-warning'">
-              {{ selectedJob.remote ? 'Remote' : 'On-site' }}
-            </span>
-          </div>
-          <div class="col-12 col-md-6 mb-3">
-            <strong>Lead Scraping Status:</strong>
-            <span *ngIf="selectedJob.leadScrapingStatus" class="badge ms-2" [ngClass]="getLeadScrapingStatusBadgeClass(selectedJob.leadScrapingStatus)">
-              {{ selectedJob.leadScrapingStatus }}
-            </span>
-            <span *ngIf="!selectedJob.leadScrapingStatus" class="text-muted ms-2">-</span>
-          </div>
-          <div class="col-12 col-md-6 mb-3" *ngIf="selectedJob.compensation">
-            <strong>Compensation:</strong> {{ selectedJob.compensation }}
-          </div>
-          <div class="col-12 col-md-6 mb-3" *ngIf="selectedJob.equity">
-            <strong>Equity:</strong> {{ selectedJob.equity }}
-          </div>
-          <div class="col-12 col-md-6 mb-3" *ngIf="selectedJob.companySize">
-            <strong>Company Size:</strong> {{ formatCompanySize(selectedJob.companySize) }}
-          </div>
-          <div class="col-12 col-md-6 mb-3" *ngIf="selectedJob.companySlug">
-            <strong>Company Slug:</strong> {{ selectedJob.companySlug }}
-          </div>
-          <div class="col-12 col-md-6 mb-3" *ngIf="selectedJob.startupId">
-            <strong>Startup ID:</strong> {{ selectedJob.startupId }}
-          </div>
-          <div class="col-12 col-md-6 mb-3" *ngIf="selectedJob.companyTotalRaised">
-            <strong>Total Raised:</strong> {{ formatCurrency(selectedJob.companyTotalRaised) }}
-          </div>
-          <div class="col-12 mb-3" *ngIf="selectedJob.companyLocations && selectedJob.companyLocations.length > 0">
-            <strong>Locations:</strong>
-            <div class="mt-1">
-              <span *ngFor="let location of selectedJob.companyLocations" class="badge bg-secondary me-1">
-                {{ location }}
-              </span>
+            <!-- Job Description -->
+            <div class="info-card mb-3" *ngIf="selectedJob.description">
+              <h6 class="section-title mb-3">
+                <i class="fas fa-file-alt me-2"></i>Job Description
+              </h6>
+              <div class="job-description" [innerHTML]="formatDescription(selectedJob.description)"></div>
             </div>
-          </div>
-          <div class="col-12 col-md-6 mb-3">
-            <strong>Created:</strong> {{ selectedJob.createdAt | date:'medium' }}
-          </div>
-          <div class="col-12 col-md-6 mb-3">
-            <strong>Updated:</strong> {{ selectedJob.updatedAt | date:'medium' }}
-          </div>
 
-          <div class="col-12">
-            <hr>
-          </div>
-
-          <div class="col-12 mb-3"
-            *ngIf="selectedJob.companyUrl || selectedJob.companyBlogUrl || selectedJob.companyLinkedInUrl || selectedJob.companyTwitterUrl || selectedJob.companyFacebookUrl || selectedJob.companyInstagramUrl">
-            <strong>Company URLs:</strong>
-            <div class="mt-2">
-              <div *ngIf="selectedJob.companyUrl" class="mb-2">
-                <strong>Website:</strong> <a [href]="selectedJob.companyUrl" target="_blank"
-                  rel="noopener noreferrer">{{ selectedJob.companyUrl }}</a>
-              </div>
-              <div *ngIf="selectedJob.companyBlogUrl" class="mb-2">
-                <strong>Blog:</strong> <a [href]="selectedJob.companyBlogUrl" target="_blank"
-                  rel="noopener noreferrer">{{ selectedJob.companyBlogUrl }}</a>
-              </div>
-              <div *ngIf="selectedJob.companyLinkedInUrl" class="mb-2">
-                <strong>LinkedIn:</strong> <a [href]="selectedJob.companyLinkedInUrl" target="_blank"
-                  rel="noopener noreferrer">{{ selectedJob.companyLinkedInUrl }}</a>
-              </div>
-              <div *ngIf="selectedJob.companyTwitterUrl" class="mb-2">
-                <strong>Twitter:</strong> <a [href]="selectedJob.companyTwitterUrl" target="_blank"
-                  rel="noopener noreferrer">{{ selectedJob.companyTwitterUrl }}</a>
-              </div>
-              <div *ngIf="selectedJob.companyFacebookUrl" class="mb-2">
-                <strong>Facebook:</strong> <a [href]="selectedJob.companyFacebookUrl" target="_blank"
-                  rel="noopener noreferrer">{{ selectedJob.companyFacebookUrl }}</a>
-              </div>
-              <div *ngIf="selectedJob.companyInstagramUrl" class="mb-2">
-                <strong>Instagram:</strong> <a [href]="selectedJob.companyInstagramUrl" target="_blank"
-                  rel="noopener noreferrer">{{ selectedJob.companyInstagramUrl }}</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12 mb-3" *ngIf="selectedJob.companyFounders && selectedJob.companyFounders.length > 0">
-            <strong>Company Founders:</strong>
-            <div class="mt-2">
-              <div *ngFor="let founder of selectedJob.companyFounders" class="card mb-2">
-                <div class="card-body p-3">
-                  <div>
-                    <h6 class="mb-1">{{ founder.name }}</h6>
-                    <div *ngIf="founder.role" class="text-muted mb-1">{{ founder.role }}</div>
-                    <div *ngIf="founder.bio" class="mb-2" [innerHTML]="founder.bio"></div>
-                    <div class="d-flex gap-2">
-                      <a *ngIf="founder.linkedinUrl" [href]="founder.linkedinUrl" target="_blank"
-                        rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
-                        <i class="fab fa-linkedin"></i> LinkedIn
-                      </a>
-                      <span *ngIf="founder.slug" class="text-muted small">Slug: {{ founder.slug }}</span>
+            <!-- Company Founders -->
+            <div class="info-card mb-3" *ngIf="selectedJob.companyFounders && selectedJob.companyFounders.length > 0">
+              <h6 class="section-title mb-3">
+                <i class="fas fa-users me-2"></i>Company Founders ({{ selectedJob.companyFounders.length }})
+              </h6>
+              <div class="founders-list">
+                <div *ngFor="let founder of selectedJob.companyFounders" class="founder-card mb-3">
+                  <div class="d-flex align-items-start gap-3">
+                    <div class="founder-avatar-placeholder" *ngIf="!founder.avatarUrl">
+                      <i class="fas fa-user"></i>
+                    </div>
+                    <img *ngIf="founder.avatarUrl" 
+                         [src]="founder.avatarUrl" 
+                         [alt]="founder.name" 
+                         class="founder-avatar"
+                         (error)="$any($event.target).style.display='none'">
+                    <div class="flex-grow-1">
+                      <h6 class="mb-1">{{ founder.name }}</h6>
+                      <div *ngIf="founder.role" class="text-muted mb-2 small">
+                        <i class="fas fa-briefcase me-1"></i>{{ founder.role }}
+                      </div>
+                      <div *ngIf="founder.bio" class="founder-bio mb-2 small text-muted" [innerHTML]="founder.bio"></div>
+                      <div class="d-flex gap-2 flex-wrap">
+                        <a *ngIf="founder.linkedinUrl" 
+                           [href]="founder.linkedinUrl" 
+                           target="_blank"
+                           rel="noopener noreferrer" 
+                           class="btn btn-sm btn-outline-primary">
+                          <i class="fab fa-linkedin me-1"></i>LinkedIn
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="col-12 mb-3" *ngIf="selectedJob.companyTeamMembers && selectedJob.companyTeamMembers.length > 0">
-            <strong>Company Team Members:</strong>
-            <div class="mt-2">
-              <div *ngFor="let member of selectedJob.companyTeamMembers" class="card mb-2">
-                <div class="card-body p-3">
-                  <div class="d-flex align-items-start">
-                    <img *ngIf="member.avatarUrl" [src]="member.avatarUrl" [alt]="member.name" class="rounded me-3"
-                      style="width: 60px; height: 60px; object-fit: cover;">
+            <!-- Company Team Members -->
+            <div class="info-card mb-3" *ngIf="selectedJob.companyTeamMembers && selectedJob.companyTeamMembers.length > 0">
+              <h6 class="section-title mb-3">
+                <i class="fas fa-user-friends me-2"></i>Company Team Members ({{ selectedJob.companyTeamMembers.length }})
+              </h6>
+              <div class="team-members-list">
+                <div *ngFor="let member of selectedJob.companyTeamMembers" class="team-member-card mb-3">
+                  <div class="d-flex align-items-start gap-3">
+                    <div class="member-avatar-placeholder" *ngIf="!member.avatarUrl">
+                      <i class="fas fa-user"></i>
+                    </div>
+                    <img *ngIf="member.avatarUrl" 
+                         [src]="member.avatarUrl" 
+                         [alt]="member.name" 
+                         class="member-avatar"
+                         (error)="$any($event.target).style.display='none'">
                     <div class="flex-grow-1">
                       <h6 class="mb-1">{{ member.name }}</h6>
-                      <div *ngIf="member.role" class="text-muted mb-1">{{ member.role }}</div>
-                      <div *ngIf="member.bio" class="mb-2" [innerHTML]="member.bio"></div>
-                      <div class="d-flex gap-2">
-                        <a *ngIf="member.linkedinUrl" [href]="member.linkedinUrl" target="_blank"
-                          rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
-                          <i class="fab fa-linkedin"></i> LinkedIn
+                      <div *ngIf="member.role" class="text-muted mb-2 small">
+                        <i class="fas fa-briefcase me-1"></i>{{ member.role }}
+                      </div>
+                      <div *ngIf="member.bio" class="member-bio mb-2 small text-muted" [innerHTML]="member.bio"></div>
+                      <div class="d-flex gap-2 flex-wrap">
+                        <a *ngIf="member.linkedinUrl" 
+                           [href]="member.linkedinUrl" 
+                           target="_blank"
+                           rel="noopener noreferrer" 
+                           class="btn btn-sm btn-outline-primary">
+                          <i class="fab fa-linkedin me-1"></i>LinkedIn
                         </a>
-                        <span *ngIf="member.slug" class="text-muted small">Slug: {{ member.slug }}</span>
                       </div>
                     </div>
                   </div>
@@ -363,10 +330,134 @@
               </div>
             </div>
           </div>
-          <div class="col-12 mb-3" *ngIf="selectedJob.description">
-            <strong>Job Description:</strong>
-            <div class="mt-2 p-3 bg-light rounded job-description"
-              [innerHTML]="formatDescription(selectedJob.description)"></div>
+
+          <!-- Right Column -->
+          <div class="col-12 col-lg-4">
+            <!-- Job Details Card -->
+            <div class="info-card mb-3">
+              <h6 class="section-title mb-3">
+                <i class="fas fa-info me-2"></i>Job Details
+              </h6>
+              <div class="detail-item mb-2" *ngIf="selectedJob.compensation">
+                <div class="detail-label">Compensation</div>
+                <div class="detail-value">{{ selectedJob.compensation }}</div>
+              </div>
+              <div class="detail-item mb-2" *ngIf="selectedJob.equity">
+                <div class="detail-label">Equity</div>
+                <div class="detail-value">{{ selectedJob.equity }}</div>
+              </div>
+              <div class="detail-item mb-2" *ngIf="selectedJob.companySize">
+                <div class="detail-label">Company Size</div>
+                <div class="detail-value">{{ formatCompanySize(selectedJob.companySize) }}</div>
+              </div>
+              <div class="detail-item mb-2" *ngIf="selectedJob.companyLocations && selectedJob.companyLocations.length > 0">
+                <div class="detail-label">Locations</div>
+                <div class="detail-value">
+                  <span *ngFor="let location of selectedJob.companyLocations" class="badge bg-secondary me-1 mb-1">
+                    {{ location }}
+                  </span>
+                </div>
+              </div>
+              <div class="detail-item mb-2" *ngIf="selectedJob.companyTotalRaised">
+                <div class="detail-label">Total Raised</div>
+                <div class="detail-value">{{ formatCurrency(selectedJob.companyTotalRaised) }}</div>
+              </div>
+            </div>
+
+            <!-- Company Badges -->
+            <div class="info-card mb-3" *ngIf="selectedJob.companyBadges && selectedJob.companyBadges.length > 0">
+              <h6 class="section-title mb-3">
+                <i class="fas fa-award me-2"></i>Company Badges
+              </h6>
+              <div class="d-flex flex-wrap gap-2">
+                <span *ngFor="let badge of selectedJob.companyBadges" class="badge bg-primary">
+                  {{ badge }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Company URLs -->
+            <div class="info-card mb-3"
+                 *ngIf="selectedJob.companyUrl || selectedJob.companyBlogUrl || selectedJob.companyLinkedInUrl || selectedJob.companyTwitterUrl || selectedJob.companyFacebookUrl || selectedJob.companyInstagramUrl">
+              <h6 class="section-title mb-3">
+                <i class="fas fa-link me-2"></i>Company Links
+              </h6>
+              <div class="url-list">
+                <a *ngIf="selectedJob.companyUrl" 
+                   [href]="selectedJob.companyUrl" 
+                   target="_blank"
+                   rel="noopener noreferrer" 
+                   class="url-item mb-2">
+                  <i class="fas fa-globe me-2"></i>Website
+                </a>
+                <a *ngIf="selectedJob.companyLinkedInUrl" 
+                   [href]="selectedJob.companyLinkedInUrl" 
+                   target="_blank"
+                   rel="noopener noreferrer" 
+                   class="url-item mb-2">
+                  <i class="fab fa-linkedin me-2"></i>LinkedIn
+                </a>
+                <a *ngIf="selectedJob.companyBlogUrl" 
+                   [href]="selectedJob.companyBlogUrl" 
+                   target="_blank"
+                   rel="noopener noreferrer" 
+                   class="url-item mb-2">
+                  <i class="fas fa-blog me-2"></i>Blog
+                </a>
+                <a *ngIf="selectedJob.companyTwitterUrl" 
+                   [href]="selectedJob.companyTwitterUrl" 
+                   target="_blank"
+                   rel="noopener noreferrer" 
+                   class="url-item mb-2">
+                  <i class="fab fa-twitter me-2"></i>Twitter
+                </a>
+                <a *ngIf="selectedJob.companyFacebookUrl" 
+                   [href]="selectedJob.companyFacebookUrl" 
+                   target="_blank"
+                   rel="noopener noreferrer" 
+                   class="url-item mb-2">
+                  <i class="fab fa-facebook me-2"></i>Facebook
+                </a>
+                <a *ngIf="selectedJob.companyInstagramUrl" 
+                   [href]="selectedJob.companyInstagramUrl" 
+                   target="_blank"
+                   rel="noopener noreferrer" 
+                   class="url-item mb-2">
+                  <i class="fab fa-instagram me-2"></i>Instagram
+                </a>
+              </div>
+            </div>
+
+            <!-- System Information -->
+            <div class="info-card mb-3">
+              <h6 class="section-title mb-3">
+                <i class="fas fa-database me-2"></i>System Information
+              </h6>
+              <div class="detail-item mb-2">
+                <div class="detail-label">Job ID</div>
+                <div class="detail-value small text-muted font-monospace">{{ selectedJob.id }}</div>
+              </div>
+              <div class="detail-item mb-2" *ngIf="selectedJob.slug">
+                <div class="detail-label">Slug</div>
+                <div class="detail-value small text-muted font-monospace">{{ selectedJob.slug }}</div>
+              </div>
+              <div class="detail-item mb-2" *ngIf="selectedJob.companySlug">
+                <div class="detail-label">Company Slug</div>
+                <div class="detail-value small text-muted font-monospace">{{ selectedJob.companySlug }}</div>
+              </div>
+              <div class="detail-item mb-2" *ngIf="selectedJob.startupId">
+                <div class="detail-label">Startup ID</div>
+                <div class="detail-value small text-muted font-monospace">{{ selectedJob.startupId }}</div>
+              </div>
+              <div class="detail-item mb-2">
+                <div class="detail-label">Created</div>
+                <div class="detail-value small text-muted">{{ selectedJob.createdAt | date:'medium' }}</div>
+              </div>
+              <div class="detail-item mb-2">
+                <div class="detail-label">Updated</div>
+                <div class="detail-value small text-muted">{{ selectedJob.updatedAt | date:'medium' }}</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
