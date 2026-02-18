@@ -140,16 +140,20 @@
               <td>
                 <div *ngIf="editingStatusJobId === job.id" class="d-flex align-items-center gap-1">
                   <select class="form-select form-select-sm" 
-                          [value]="job.leadScrapingStatus || 'Not Scraped'"
-                          (change)="updateLeadScrapingStatus(job, $any($event.target).value)"
-                          style="min-width: 150px;"
+                          [value]="selectedStatusForEdit"
+                          (change)="onStatusChange($any($event.target).value)"
+                          style="min-width: auto; width: auto; padding: 0.25rem 0.5rem; font-size: 0.7rem; height: auto; line-height: 1.5;"
                           #statusSelect>
+                    <option value="">Select</option>
                     <option *ngFor="let status of leadScrapingStatusOptions" [value]="status">
                       {{ status }}
                     </option>
                   </select>
-                  <button class="btn btn-sm btn-outline-secondary" (click)="cancelEditingStatus()" title="Cancel">
-                    <i class="fas fa-times"></i>
+                  <button class="btn btn-sm btn-success p-1" (click)="updateLeadScrapingStatus(job)" title="Save" style="min-width: auto; width: auto; height: auto; line-height: 1;">
+                    <i class="fas fa-check" style="font-size: 0.75rem;"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-secondary p-1" (click)="cancelEditingStatus()" title="Cancel" style="min-width: auto; width: auto; height: auto; line-height: 1;">
+                    <i class="fas fa-times" style="font-size: 0.75rem;"></i>
                   </button>
                 </div>
                 <div *ngIf="editingStatusJobId !== job.id" 

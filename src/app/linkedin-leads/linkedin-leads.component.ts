@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { LinkedInLeadsService } from '../_services/linkedin-leads.service';
-import { finalize, takeUntil, forkJoin } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs';
 import { Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 
@@ -27,6 +27,9 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
   selectedLead: any = null;
   selectedLeads: Set<string> = new Set();
   approvingAll: boolean = false;
+  editingStatusLeadId: string | null = null;
+  selectedStatusForEdit: string = '';
+  leadScrapingStatusOptions: string[] = ['Not Scraped', 'Scraped', 'Found', 'Reviewed', 'Needs Review'];
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -386,6 +389,72 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
     return this.filters.sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 
+  getLeadScrapingStatusBadgeClass(status: string): string {
+    if (!status) return 'bg-secondary';
+    
+    const statusLower = status.toLowerCase();
+    if (statusLower === 'not scraped') return 'bg-secondary';
+    if (statusLower === 'scraped') return 'bg-info';
+    if (statusLower === 'found') return 'bg-primary';
+    if (statusLower === 'reviewed') return 'bg-success';
+    if (statusLower === 'needs review') return 'bg-warning';
+    
+    return 'bg-secondary';
+  }
+
+  startEditingStatus(lead: any, event: Event) {
+    event.stopPropagation();
+    this.editingStatusLeadId = lead._id;
+    this.selectedStatusForEdit = lead.leadScrapingStatus ? lead.leadScrapingStatus : 'Not Scraped';
+  }
+
+  cancelEditingStatus() {
+    this.editingStatusLeadId = null;
+    this.selectedStatusForEdit = '';
+  }
+
+  onStatusChange(newStatus: string) {
+    this.selectedStatusForEdit = newStatus;
+  }
+
+  updateLeadScrapingStatus(lead: any) {
+    if (lead.leadScrapingStatus === this.selectedStatusForEdit) {
+      this.editingStatusLeadId = null;
+      this.selectedStatusForEdit = '';
+      return;
+    }
+
+    const updates = { leadScrapingStatus: this.selectedStatusForEdit };
+    
+    this.linkedinLeadsService.updateLead(lead._id, updates)
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            lead.leadScrapingStatus = this.selectedStatusForEdit;
+            lead.updatedAt = response.data.updatedAt ? response.data.updatedAt : new Date().toISOString();
+            this.editingStatusLeadId = null;
+            this.selectedStatusForEdit = '';
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to update lead scraping status'
+            });
+          }
+        },
+        error: (error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to update lead scraping status'
+          });
+        }
+      });
+  }
+
   approveLead(lead: any) {
     Swal.fire({
       title: 'Approve Lead?',
@@ -397,27 +466,34 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
       confirmButtonText: 'Yes, approve'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.linkedinLeadsService.updateLead(lead._id, { isApproved: true })
+        this.linkedinLeadsService.approveLead(lead._id)
           .pipe(
             takeUntil(this.destroy$)
           )
           .subscribe({
             next: (response) => {
-              if (response.success) {
+              if (response.success && response.data) {
+                Object.assign(lead, response.data);
+                this.selectedLeads.delete(lead._id);
                 Swal.fire({
                   icon: 'success',
                   title: 'Approved',
-                  text: 'Lead approved successfully'
+                  text: 'Lead approved and pushed to campaign successfully'
                 });
-                lead.isApproved = true;
-                this.selectedLeads.delete(lead._id);
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: response.error || 'Failed to approve lead'
+                });
               }
             },
             error: (error) => {
+              const errorMessage = error.error?.error || error.message || 'Failed to approve lead';
               Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Failed to approve lead'
+                text: errorMessage
               });
             }
           });
@@ -475,36 +551,67 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
       if (result.isConfirmed) {
         this.approvingAll = true;
         const leadIds = Array.from(this.selectedLeads);
-        const approveObservables = leadIds.map(leadId => 
-          this.linkedinLeadsService.updateLead(leadId, { isApproved: true })
-        );
-
-        forkJoin(approveObservables)
+        
+        this.linkedinLeadsService.approveBatchLeads(leadIds)
           .pipe(
             finalize(() => this.approvingAll = false),
             takeUntil(this.destroy$)
           )
           .subscribe({
-            next: (responses) => {
-              const successCount = responses.filter(r => r && r.success).length;
-              this.leads.forEach(lead => {
-                if (this.selectedLeads.has(lead._id)) {
-                  lead.isApproved = true;
+            next: (response) => {
+              if (response.success && response.data) {
+                const { approved, failed, errors } = response.data;
+                
+                const approvedLeadIds = new Set(leadIds);
+                if (errors && errors.length > 0) {
+                  errors.forEach((error: any) => {
+                    approvedLeadIds.delete(error.leadId);
+                  });
                 }
-              });
-              this.selectedLeads.clear();
-              
-              Swal.fire({
-                icon: 'success',
-                title: 'Approved',
-                text: `Successfully approved ${successCount} lead(s)`
-              });
+                
+                this.leads.forEach(lead => {
+                  if (approvedLeadIds.has(lead._id)) {
+                    lead.isApproved = true;
+                    lead.isCampaignPushed = true;
+                  }
+                });
+                
+                this.selectedLeads.clear();
+                
+                let message = `Successfully approved ${approved} lead(s)`;
+                if (failed > 0) {
+                  message += `. ${failed} lead(s) failed to approve.`;
+                  if (errors && errors.length > 0) {
+                    const errorMessages = errors.map((e: any) => `${e.leadId}: ${e.error}`).join('\n');
+                    Swal.fire({
+                      icon: 'warning',
+                      title: 'Partial Success',
+                      html: `${message}<br><br><small>Errors:<br>${errorMessages}</small>`,
+                      width: '600px'
+                    });
+                    return;
+                  }
+                }
+                
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Approved',
+                  text: message
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: response.error || 'Failed to approve leads'
+                });
+              }
             },
             error: (error) => {
+              const errorMessage = error.error?.error || error.message || 'Failed to approve leads';
               Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Failed to approve some leads'
+                text: errorMessage
               });
             }
           });

@@ -53,4 +53,12 @@ export class LinkedInLeadsService {
       params: userId ? params : undefined
     });
   }
+
+  approveLead(leadId: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${leadId}/approve`, {});
+  }
+
+  approveBatchLeads(leadIds: string[]): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/approve-batch`, { leadIds });
+  }
 }

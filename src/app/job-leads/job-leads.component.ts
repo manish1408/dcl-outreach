@@ -26,6 +26,7 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
   showJobDetails: boolean = false;
   selectedJob: any = null;
   editingStatusJobId: string | null = null;
+  selectedStatusForEdit: string = '';
   leadScrapingStatusOptions: string[] = ['Not Scraped', 'Scraped', 'Found', 'Reviewed', 'Needs Review'];
   private destroy$ = new Subject<void>();
 
@@ -401,19 +402,26 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
   startEditingStatus(job: any, event: Event) {
     event.stopPropagation();
     this.editingStatusJobId = job.id;
+    this.selectedStatusForEdit = job.leadScrapingStatus ? job.leadScrapingStatus : 'Not Scraped';
   }
 
   cancelEditingStatus() {
     this.editingStatusJobId = null;
+    this.selectedStatusForEdit = '';
   }
 
-  updateLeadScrapingStatus(job: any, newStatus: string) {
-    if (job.leadScrapingStatus === newStatus) {
+  onStatusChange(newStatus: string) {
+    this.selectedStatusForEdit = newStatus;
+  }
+
+  updateLeadScrapingStatus(job: any) {
+    if (job.leadScrapingStatus === this.selectedStatusForEdit) {
       this.editingStatusJobId = null;
+      this.selectedStatusForEdit = '';
       return;
     }
 
-    const updates = { leadScrapingStatus: newStatus };
+    const updates = { leadScrapingStatus: this.selectedStatusForEdit };
     
     this.wellfoundJobsService.updateJob(job.id, updates)
       .pipe(
@@ -422,9 +430,10 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           if (response.success) {
-            job.leadScrapingStatus = newStatus;
-            job.updatedAt = response.data.updatedAt || new Date().toISOString();
+            job.leadScrapingStatus = this.selectedStatusForEdit;
+            job.updatedAt = response.data.updatedAt ? response.data.updatedAt : new Date().toISOString();
             this.editingStatusJobId = null;
+            this.selectedStatusForEdit = '';
           } else {
             Swal.fire({
               icon: 'error',

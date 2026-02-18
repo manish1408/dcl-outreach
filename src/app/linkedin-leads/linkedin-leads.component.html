@@ -68,6 +68,10 @@
               <th>Location</th>
               <th>LinkedIn</th>
               <th>Campaign Status</th>
+              <th (click)="sortBy('leadScrapingStatus')" class="cursor-pointer">
+                Lead Scraping Status
+                <i class="fas ms-1" [ngClass]="getSortIcon('leadScrapingStatus')"></i>
+              </th>
               <th (click)="sortBy('updatedAt')" class="cursor-pointer">
                 Updated
                 <i class="fas ms-1" [ngClass]="getSortIcon('updatedAt')"></i>
@@ -138,6 +142,37 @@
                   </div>
                 </div>
               </td>
+              <td>
+                <div *ngIf="editingStatusLeadId === lead._id" class="d-flex align-items-center gap-1">
+                  <select class="form-select form-select-sm" 
+                          [value]="selectedStatusForEdit"
+                          (change)="onStatusChange($any($event.target).value)"
+                          style="min-width: auto; width: auto; padding: 0.25rem 0.5rem; font-size: 0.7rem; height: auto; line-height: 1.5;"
+                          #statusSelect>
+                    <option value="">Select</option>
+                    <option *ngFor="let status of leadScrapingStatusOptions" [value]="status">
+                      {{ status }}
+                    </option>
+                  </select>
+                  <button class="btn btn-sm btn-success p-1" (click)="updateLeadScrapingStatus(lead)" title="Save" style="min-width: auto; width: auto; height: auto; line-height: 1;">
+                    <i class="fas fa-check" style="font-size: 0.75rem;"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-secondary p-1" (click)="cancelEditingStatus()" title="Cancel" style="min-width: auto; width: auto; height: auto; line-height: 1;">
+                    <i class="fas fa-times" style="font-size: 0.75rem;"></i>
+                  </button>
+                </div>
+                <div *ngIf="editingStatusLeadId !== lead._id" 
+                     class="d-flex align-items-center gap-1"
+                     style="cursor: pointer;"
+                     (click)="startEditingStatus(lead, $event)"
+                     title="Click to edit">
+                  <span *ngIf="lead.leadScrapingStatus" class="badge" [ngClass]="getLeadScrapingStatusBadgeClass(lead.leadScrapingStatus)">
+                    {{ lead.leadScrapingStatus }}
+                  </span>
+                  <span *ngIf="!lead.leadScrapingStatus" class="text-muted">-</span>
+                  <i class="fas fa-edit text-muted" style="font-size: 0.75rem; opacity: 0.6;"></i>
+                </div>
+              </td>
               <td>{{ lead.updatedAt | date:'dd-MM-yyyy hh:mm a' }}</td>
               <td class="text-end">
                 <button class="btn btn-sm btn-outline-primary me-2" (click)="viewLeadDetails(lead)" title="View Details">
@@ -149,7 +184,7 @@
               </td>
             </tr>
             <tr *ngIf="leads.length === 0 && !loading">
-              <td colspan="11" class="text-center py-4">
+              <td colspan="12" class="text-center py-4">
                 <p class="text-muted">No leads found</p>
               </td>
             </tr>
