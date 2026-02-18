@@ -25,6 +25,9 @@ export class LinkedInJobLeadsComponent implements OnInit, OnDestroy {
   hasMore: boolean = false;
   showJobDetails: boolean = false;
   selectedJob: any = null;
+  editingStatusJobId: string | null = null;
+  selectedStatusForEdit: string = '';
+  leadScrapingStatusOptions: string[] = ['Not Scraped', 'Scraped', 'Found', 'Reviewed', 'Needs Review'];
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -427,5 +430,58 @@ export class LinkedInJobLeadsComponent implements OnInit, OnDestroy {
   getRemainingGreenLeadsCount(job: any): number {
     const allGreenLeads = this.getGreenQualifiedLeads(job);
     return Math.max(0, allGreenLeads.length - 3);
+  }
+
+  startEditingStatus(job: any, event: Event) {
+    event.stopPropagation();
+    this.editingStatusJobId = job.id;
+    this.selectedStatusForEdit = job.leadScrapingStatus ? job.leadScrapingStatus : 'Not Scraped';
+  }
+
+  cancelEditingStatus() {
+    this.editingStatusJobId = null;
+    this.selectedStatusForEdit = '';
+  }
+
+  onStatusChange(newStatus: string) {
+    this.selectedStatusForEdit = newStatus;
+  }
+
+  updateLeadScrapingStatus(job: any) {
+    if (job.leadScrapingStatus === this.selectedStatusForEdit) {
+      this.editingStatusJobId = null;
+      this.selectedStatusForEdit = '';
+      return;
+    }
+
+    const updates = { leadScrapingStatus: this.selectedStatusForEdit };
+    
+    this.linkedInJobsService.updateJob(job.id, updates)
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            job.leadScrapingStatus = this.selectedStatusForEdit;
+            job.updatedAt = response.data.updatedAt ? response.data.updatedAt : new Date().toISOString();
+            this.editingStatusJobId = null;
+            this.selectedStatusForEdit = '';
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to update lead scraping status'
+            });
+          }
+        },
+        error: (error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to update lead scraping status'
+          });
+        }
+      });
   }
 }
