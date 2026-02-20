@@ -30,14 +30,22 @@
           </div>
         </div>
         <div class="ms-auto d-flex gap-2">
-          <button class="btn btn-success" (click)="approveAllSelected()" [disabled]="approvingAll || selectedLeads.size === 0">
-            <i class="fas fa-check"></i> {{ approvingAll ? 'Approving...' : 'Approve All' }}
-          </button>
           <div class="btn-group">
-            <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" [disabled]="(deletingAll || deletingSelected) || leads.length === 0">
-              <i class="fas fa-trash-alt"></i> Delete
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
+              [disabled]="(approvingAll || deletingAll || deletingSelected) || leads.length === 0">
+              <i class="fas fa-tasks"></i> Actions
             </button>
             <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item text-success"
+                   (click)="$event.preventDefault(); approveAllSelected()"
+                   [class.disabled]="approvingAll || selectedLeads.size === 0"
+                   [style.pointer-events]="(approvingAll || selectedLeads.size === 0) ? 'none' : 'auto'"
+                   [style.opacity]="(approvingAll || selectedLeads.size === 0) ? '0.6' : '1'">
+                  <i class="fas fa-check me-2"></i> {{ approvingAll ? 'Approving...' : 'Approve All' }} ({{ selectedLeads.size }})
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
               <li>
                 <a class="dropdown-item" 
                    (click)="$event.preventDefault(); deleteSelectedLeads()" 
@@ -86,9 +94,7 @@
                 Company
                 <i class="fas ms-1" [ngClass]="getSortIcon('company')"></i>
               </th>
-              <th>Email</th>
               <th>Job ID</th>
-              <th>Location</th>
               <th>LinkedIn</th>
               <th>Campaign Status</th>
               <th (click)="sortBy('updatedAt')" class="cursor-pointer">
@@ -123,11 +129,6 @@
                 </div>
               </td>
               <td>
-                <div>
-                  {{ lead.email }}
-                </div>
-              </td>
-              <td>
                 <div *ngIf="getJobId(lead)">
                   <span class="badge" [ngClass]="getJobIdType(lead) === 'wellfound' ? 'bg-primary' : 'bg-info'">
                     {{ getJobId(lead) }}
@@ -135,14 +136,11 @@
                 </div>
               </td>
               <td>
-                <div>
-                  {{ lead.location }}
-                </div>
-              </td>
-              <td>
-                <a *ngIf="getLinkedInUrl(lead)" [href]="getLinkedInUrl(lead)" target="_blank" rel="noopener noreferrer" class="text-primary">
+                <a *ngIf="lead.linkedInProfileUrl" [href]="lead.linkedInProfileUrl" target="_blank" rel="noopener noreferrer"
+                  class="text-primary text-decoration-none">
                   <i class="fab fa-linkedin"></i>
                 </a>
+                <span *ngIf="!lead.linkedInProfileUrl" class="text-muted">-</span>
               </td>
               <td>
                 <div *ngIf="!lead.isApproved">
@@ -172,7 +170,7 @@
               </td>
             </tr>
             <tr *ngIf="leads.length === 0 && !loading">
-              <td colspan="12" class="text-center py-4">
+              <td colspan="9" class="text-center py-4">
                 <p class="text-muted">No leads found</p>
               </td>
             </tr>
@@ -247,9 +245,6 @@
           <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.phone">
             <strong>Phone:</strong> {{ selectedLead.phone }}
           </div>
-          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.location">
-            <strong>Location:</strong> {{ selectedLead.location }}
-          </div>
           <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.degree !== null && selectedLead.degree !== undefined">
             <strong>Degree:</strong> {{ selectedLead.degree }}
           </div>
@@ -304,11 +299,11 @@
             <hr>
           </div>
 
-          <div class="col-12 mb-3" *ngIf="getLinkedInUrl(selectedLead)">
+          <div class="col-12 mb-3" *ngIf="selectedLead.linkedInProfileUrl">
             <strong>LinkedIn Profile:</strong>
             <div class="mt-2">
-              <a [href]="getLinkedInUrl(selectedLead)" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">
-                <i class="fab fa-linkedin"></i> View LinkedIn Profile
+              <a [href]="selectedLead.linkedInProfileUrl" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">
+                <i class="fab fa-linkedin"></i>
               </a>
             </div>
           </div>

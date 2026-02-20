@@ -68,17 +68,6 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
     return position.substring(0, maxLength).trim() + '...';
   }
 
-  getLinkedInUrl(lead: any): string {
-    if (lead.entityUrn) {
-      const match = lead.entityUrn.match(/\(([^,]+),/);
-      if (match && match[1]) {
-        return `https://www.linkedin.com/in/${match[1]}`;
-      }
-    }
-    
-    return '';
-  }
-
   getJobId(lead: any): string {
     if (lead.wellfoundJobId) {
       return lead.wellfoundJobId;
