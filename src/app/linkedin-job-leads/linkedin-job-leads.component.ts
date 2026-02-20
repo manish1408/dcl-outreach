@@ -27,6 +27,8 @@ export class LinkedInJobLeadsComponent implements OnInit, OnDestroy {
   selectedJob: any = null;
   editingStatusJobId: string | null = null;
   selectedStatusForEdit: string = '';
+  showNotQualifiedReasonModal: boolean = false;
+  selectedNotQualifiedReasonJob: any = null;
   leadScrapingStatusOptions: string[] = ['Not Scraped', 'Scraped', 'Found', 'Reviewed', 'Needs Review'];
   private destroy$ = new Subject<void>();
 
@@ -436,6 +438,22 @@ export class LinkedInJobLeadsComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     this.editingStatusJobId = job.id;
     this.selectedStatusForEdit = job.leadScrapingStatus ? job.leadScrapingStatus : 'Not Scraped';
+  }
+
+  onStatusCellClick(job: any, event: Event) {
+    event.stopPropagation();
+    this.startEditingStatus(job, event);
+  }
+
+  openNotQualifiedReasonModal(job: any, event: Event) {
+    event.stopPropagation();
+    this.selectedNotQualifiedReasonJob = job;
+    this.showNotQualifiedReasonModal = true;
+  }
+
+  closeNotQualifiedReasonModal() {
+    this.showNotQualifiedReasonModal = false;
+    this.selectedNotQualifiedReasonJob = null;
   }
 
   cancelEditingStatus() {

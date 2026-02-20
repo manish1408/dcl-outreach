@@ -153,13 +153,20 @@
                 <div *ngIf="editingStatusJobId !== job.id" 
                      class="d-flex align-items-center gap-1"
                      style="cursor: pointer;"
-                     (click)="startEditingStatus(job, $event)"
+                     (click)="onStatusCellClick(job, $event)"
                      title="Click to edit">
                   <span *ngIf="job.leadScrapingStatus" class="badge" [ngClass]="getLeadScrapingStatusBadgeClass(job.leadScrapingStatus)">
                     {{ job.leadScrapingStatus }}
                   </span>
                   <span *ngIf="!job.leadScrapingStatus" class="text-muted">-</span>
                   <i class="fas fa-edit text-muted" style="font-size: 0.75rem; opacity: 0.6;"></i>
+                  <button *ngIf="job.leadScrapingStatus === 'Not Qualified'"
+                          type="button"
+                          class="btn btn-sm p-0 border-0 bg-transparent text-info"
+                          (click)="openNotQualifiedReasonModal(job, $event)"
+                          title="View reason">
+                    <i class="fas fa-info-circle" style="font-size: 0.85rem;"></i>
+                  </button>
                 </div>
               </td>
               <td>{{ job.updatedAt | date:'dd-MM-yyyy hh:mm a' }}</td>
@@ -423,3 +430,37 @@
   </div>
 </div>
 <div class="modal-backdrop fade" [class.show]="showJobDetails" *ngIf="showJobDetails" (click)="closeJobDetails()"></div>
+
+<!-- Not Qualified Reason Modal -->
+<div class="modal fade" [class.show]="showNotQualifiedReasonModal" [style.display]="showNotQualifiedReasonModal ? 'block' : 'none'" tabindex="-1"
+  *ngIf="showNotQualifiedReasonModal && selectedNotQualifiedReasonJob">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Not Qualified Reason</h5>
+        <button type="button" class="btn-close" (click)="closeNotQualifiedReasonModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-2">
+          <strong>Job Title:</strong> {{ selectedNotQualifiedReasonJob.title }}
+        </div>
+        <div class="mb-2" *ngIf="selectedNotQualifiedReasonJob.companyName">
+          <strong>Company:</strong> {{ selectedNotQualifiedReasonJob.companyName }}
+        </div>
+        <div class="mb-3" *ngIf="selectedNotQualifiedReasonJob.companyCampaignClassification && selectedNotQualifiedReasonJob.companyCampaignClassification.reason">
+          <strong>Reason:</strong> {{ selectedNotQualifiedReasonJob.companyCampaignClassification.reason }}
+        </div>
+        <div class="mb-3" *ngIf="selectedNotQualifiedReasonJob.campaignType">
+          <strong>Campaign Type:</strong> {{ selectedNotQualifiedReasonJob.campaignType }}
+        </div>
+        <div *ngIf="selectedNotQualifiedReasonJob.companyCampaignClassificationReason">
+          <strong>Classification Rule:</strong> {{ selectedNotQualifiedReasonJob.companyCampaignClassificationReason }}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeNotQualifiedReasonModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showNotQualifiedReasonModal" *ngIf="showNotQualifiedReasonModal" (click)="closeNotQualifiedReasonModal()"></div>
