@@ -30,9 +30,32 @@
           </div>
         </div>
         <div class="ms-auto">
-          <button class="btn btn-danger" (click)="deleteAllJobs()" [disabled]="deletingAll || jobs.length === 0">
-            <i class="fas fa-trash-alt"></i> {{ deletingAll ? 'Deleting...' : 'Delete All' }}
-          </button>
+          <div class="btn-group">
+            <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" [disabled]="(deletingAll || deletingSelected) || jobs.length === 0">
+              <i class="fas fa-trash-alt"></i> Delete
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" 
+                   (click)="$event.preventDefault(); deleteSelectedJobs()" 
+                   [class.disabled]="deletingSelected || selectedJobIds.size === 0"
+                   [style.pointer-events]="(deletingSelected || selectedJobIds.size === 0) ? 'none' : 'auto'"
+                   [style.opacity]="(deletingSelected || selectedJobIds.size === 0) ? '0.6' : '1'">
+                  <i class="fas fa-check-square me-2"></i> {{ deletingSelected ? 'Deleting...' : 'Delete Selected' }} ({{ selectedJobIds.size }})
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-danger" 
+                   (click)="$event.preventDefault(); deleteAllJobs()" 
+                   [class.disabled]="deletingAll || jobs.length === 0"
+                   [style.pointer-events]="(deletingAll || jobs.length === 0) ? 'none' : 'auto'"
+                   [style.opacity]="(deletingAll || jobs.length === 0) ? '0.6' : '1'">
+                  <i class="fas fa-trash-alt me-2"></i> {{ deletingAll ? 'Deleting...' : 'Delete All' }}
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -45,27 +68,25 @@
         <table class="table table-hover">
           <thead>
             <tr>
+              <th style="width: 50px;">
+                <input type="checkbox" [checked]="isAllSelected()" (change)="toggleSelectAll($event)" title="Select All">
+              </th>
               <th (click)="sortBy('companyName')" class="cursor-pointer">
                 Company
                 <i class="fas ms-1" [ngClass]="getSortIcon('companyName')"></i>
               </th>
               <th (click)="sortBy('title')" class="cursor-pointer">
-                Job Title
+                Job Title / Role
                 <i class="fas ms-1" [ngClass]="getSortIcon('title')"></i>
-              </th>
-              <th (click)="sortBy('primaryRoleTitle')" class="cursor-pointer">
-                Role
-                <i class="fas ms-1" [ngClass]="getSortIcon('primaryRoleTitle')"></i>
               </th>
               <th nowrap="true" (click)="sortBy('companySize')" class="cursor-pointer">
                 Company Size
                 <i class="fas ms-1" [ngClass]="getSortIcon('companySize')"></i>
               </th>
-              <th>Website</th>
-              <th>LinkedIn</th>
+              <th>Links</th>
               <th>Team</th>
               <th (click)="sortBy('leadScrapingStatus')" class="cursor-pointer">
-                Lead Scraping Status
+                Status
                 <i class="fas ms-1" [ngClass]="getSortIcon('leadScrapingStatus')"></i>
               </th>
               <th (click)="sortBy('updatedAt')" class="cursor-pointer">
@@ -78,6 +99,9 @@
           <tbody>
             <tr *ngFor="let job of jobs">
               <td>
+                <input type="checkbox" [checked]="isJobSelected(job)" (change)="toggleJobSelection(job, $event)" title="Select job">
+              </td>
+              <td>
                 <div class="d-flex align-items-center gap-2">
                   <img *ngIf="job.companyProfileUrl" 
                        [src]="job.companyProfileUrl" 
@@ -88,12 +112,14 @@
                 </div>
               </td>
               <td>
-                <div class="text-truncate job-title-cell" [title]="job.title">
-                  {{ job.title }}
+                <div class="d-flex flex-column gap-1">
+                  <div class="text-truncate job-title-cell" [title]="job.title">
+                    {{ job.title }}
+                  </div>
+                  <div *ngIf="job.primaryRoleTitle">
+                    <span class="badge bg-info">{{ job.primaryRoleTitle }}</span>
+                  </div>
                 </div>
-              </td>
-              <td>
-                <span class="badge bg-info">{{ job.primaryRoleTitle }}</span>
               </td>
               <td>
                 <span *ngIf="job.companySize" class="badge bg-light text-dark">{{ formatCompanySize(job.companySize)
@@ -101,16 +127,20 @@
                 <span *ngIf="!job.companySize" class="text-muted">-</span>
               </td>
               <td>
-                <a *ngIf="job.companyUrl" [href]="job.companyUrl" target="_blank" rel="noopener noreferrer" class="text-primary">
-                  <i class="fas fa-external-link-alt"></i>
-                </a>
-                <span *ngIf="!job.companyUrl" class="text-muted">-</span>
-              </td>
-              <td>
-                <a *ngIf="job.companyLinkedInUrl" [href]="job.companyLinkedInUrl" target="_blank" rel="noopener noreferrer" class="text-primary">
-                  <i class="fab fa-linkedin"></i>
-                </a>
-                <span *ngIf="!job.companyLinkedInUrl" class="text-muted">-</span>
+                <div class="d-flex flex-column gap-1">
+                  <div>
+                    <a *ngIf="job.companyUrl" [href]="job.companyUrl" target="_blank" rel="noopener noreferrer" class="text-primary">
+                      <i class="fas fa-external-link-alt me-1"></i>Website
+                    </a>
+                    <span *ngIf="!job.companyUrl" class="text-muted">-</span>
+                  </div>
+                  <div>
+                    <a *ngIf="job.companyLinkedInUrl" [href]="job.companyLinkedInUrl" target="_blank" rel="noopener noreferrer" class="text-primary">
+                      <i class="fab fa-linkedin me-1"></i>LinkedIn
+                    </a>
+                    <span *ngIf="!job.companyLinkedInUrl" class="text-muted">-</span>
+                  </div>
+                </div>
               </td>
               <td>
                 <div class="d-flex flex-wrap gap-1">
@@ -179,7 +209,7 @@
               </td>
             </tr>
              <tr *ngIf="jobs.length === 0 && !loading">
-               <td colspan="10" class="text-center py-4">
+               <td colspan="9" class="text-center py-4">
                  <p class="text-muted">No jobs found</p>
                </td>
              </tr>

@@ -53,4 +53,10 @@ export class WellfoundJobsService {
       params: userId ? params : undefined
     });
   }
+
+  deleteJobs(jobIds: string[]): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/batch`, {
+      body: { jobIds }
+    });
+  }
 }

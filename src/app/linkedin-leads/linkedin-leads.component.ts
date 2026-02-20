@@ -13,6 +13,7 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   loadingMore: boolean = false;
   deletingAll: boolean = false;
+  deletingSelected: boolean = false;
   leads: any[] = [];
   filters: any = {
     page: 1,
@@ -35,6 +36,21 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
   constructor(
     private linkedinLeadsService: LinkedInLeadsService
   ) {
+  }
+
+  private getLeadId(lead: any): string {
+    return lead?._id ? lead._id : lead?.id;
+  }
+
+  private normalizeLeadId(lead: any): any {
+    const leadId = this.getLeadId(lead);
+    if (!leadId) {
+      return lead;
+    }
+    return {
+      ...lead,
+      _id: leadId
+    };
   }
 
   trimName(name: string): string {
@@ -192,7 +208,7 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           if (response.success) {
-            this.leads = response.data.leads;
+            this.leads = (response.data.leads || []).map((lead: any) => this.normalizeLeadId(lead));
             this.total = response.data.total;
             this.hasMore = response.data.hasMore;
           }
@@ -234,7 +250,8 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           if (response.success) {
-            this.leads = [...this.leads, ...response.data.leads];
+            const nextLeads = (response.data.leads || []).map((lead: any) => this.normalizeLeadId(lead));
+            this.leads = [...this.leads, ...nextLeads];
             this.total = response.data.total;
             this.hasMore = response.data.hasMore;
           }
@@ -502,22 +519,35 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
   }
 
   toggleLeadSelection(lead: any, event: any) {
+    const leadId = this.getLeadId(lead);
+    if (!leadId) {
+      return;
+    }
+
     if (event.target.checked) {
-      this.selectedLeads.add(lead._id);
+      this.selectedLeads.add(leadId);
     } else {
-      this.selectedLeads.delete(lead._id);
+      this.selectedLeads.delete(leadId);
     }
   }
 
   isLeadSelected(lead: any): boolean {
-    return this.selectedLeads.has(lead._id);
+    const leadId = this.getLeadId(lead);
+    if (!leadId) {
+      return false;
+    }
+    return this.selectedLeads.has(leadId);
   }
 
   toggleSelectAll(event: any) {
     if (event.target.checked) {
       this.leads.forEach(lead => {
+        const leadId = this.getLeadId(lead);
+        if (!leadId) {
+          return;
+        }
         if (!lead.isApproved) {
-          this.selectedLeads.add(lead._id);
+          this.selectedLeads.add(leadId);
         }
       });
     } else {
@@ -530,7 +560,13 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
     if (unapprovedLeads.length === 0) {
       return false;
     }
-    return unapprovedLeads.every(lead => this.selectedLeads.has(lead._id));
+    return unapprovedLeads.every(lead => {
+      const leadId = this.getLeadId(lead);
+      if (!leadId) {
+        return false;
+      }
+      return this.selectedLeads.has(leadId);
+    });
   }
 
   approveAllSelected() {
@@ -550,7 +586,7 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
     }).then((result) => {
       if (result.isConfirmed) {
         this.approvingAll = true;
-        const leadIds = Array.from(this.selectedLeads);
+        const leadIds = Array.from(this.selectedLeads).filter((leadId: string) => !!leadId);
         
         this.linkedinLeadsService.approveBatchLeads(leadIds)
           .pipe(
@@ -570,7 +606,8 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
                 }
                 
                 this.leads.forEach(lead => {
-                  if (approvedLeadIds.has(lead._id)) {
+                  const leadId = this.getLeadId(lead);
+                  if (leadId && approvedLeadIds.has(leadId)) {
                     lead.isApproved = true;
                     lead.isCampaignPushed = true;
                   }
@@ -608,6 +645,84 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
             },
             error: (error) => {
               const errorMessage = error.error?.error || error.message || 'Failed to approve leads';
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: errorMessage
+              });
+            }
+          });
+      }
+    });
+  }
+
+  deleteSelectedLeads() {
+    const selectedCount = this.selectedLeads.size;
+    if (selectedCount === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Selection',
+        text: 'Please select at least one lead to delete'
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: 'Delete Selected Leads?',
+      text: `Are you sure you want to delete ${selectedCount} selected lead(s)? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete selected',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deletingSelected = true;
+        const leadIds = Array.from(this.selectedLeads).filter((leadId: string) => !!leadId);
+        if (leadIds.length === 0) {
+          this.deletingSelected = false;
+          Swal.fire({
+            icon: 'warning',
+            title: 'No Valid Selection',
+            text: 'Selected leads do not contain valid IDs'
+          });
+          return;
+        }
+        this.linkedinLeadsService.deleteBatchLeads(leadIds)
+          .pipe(
+            finalize(() => this.deletingSelected = false),
+            takeUntil(this.destroy$)
+          )
+          .subscribe({
+            next: (response) => {
+              if (response.success) {
+                const deletedCount = response.data?.deleted !== undefined ? response.data.deleted : 0;
+                const failedCount = response.data?.failed !== undefined ? response.data.failed : 0;
+
+                let message = `Successfully deleted ${deletedCount} lead(s)`;
+                if (failedCount > 0) {
+                  message += `. ${failedCount} lead(s) failed to delete.`;
+                }
+
+                Swal.fire({
+                  icon: failedCount > 0 ? 'warning' : 'success',
+                  title: failedCount > 0 ? 'Partial Success' : 'Deleted',
+                  text: message
+                });
+
+                this.selectedLeads.clear();
+                this.loadLeads();
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: response.error || 'Failed to delete selected leads'
+                });
+              }
+            },
+            error: (error) => {
+              const errorMessage = error.error?.error || error.error?.message || 'Failed to delete selected leads';
               Swal.fire({
                 icon: 'error',
                 title: 'Error',

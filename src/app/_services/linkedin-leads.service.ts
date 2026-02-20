@@ -54,6 +54,10 @@ export class LinkedInLeadsService {
     });
   }
 
+  deleteBatchLeads(leadIds: string[]): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/delete-batch`, { leadIds });
+  }
+
   approveLead(leadId: string): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${leadId}/approve`, {});
   }

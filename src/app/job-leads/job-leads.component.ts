@@ -28,7 +28,19 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
   editingStatusJobId: string | null = null;
   selectedStatusForEdit: string = '';
   leadScrapingStatusOptions: string[] = ['Not Scraped', 'Scraped', 'Found', 'Reviewed', 'Needs Review'];
+  selectedJobIds: Set<string> = new Set<string>();
+  deletingSelected: boolean = false;
   private destroy$ = new Subject<void>();
+
+  private resolveJobId(job: any): string {
+    if (job && job.id) {
+      return job.id;
+    }
+    if (job && job._id) {
+      return job._id;
+    }
+    return '';
+  }
 
   constructor(
     private wellfoundJobsService: WellfoundJobsService
@@ -153,6 +165,7 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
   loadJobs() {
     this.filters.page = 1;
     this.jobs = [];
+    this.selectedJobIds.clear();
     this.loading = true;
     window.scrollTo(0, 0);
     this.wellfoundJobsService.getJobs(this.filters)
@@ -353,6 +366,8 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
     if (!status) return 'bg-secondary';
     
     const statusLower = status.toLowerCase();
+    if (statusLower.includes('error')) return 'bg-danger';
+    if (statusLower === 'not found') return 'bg-warning';
     if (statusLower === 'not scraped') return 'bg-secondary';
     if (statusLower === 'scraped') return 'bg-info';
     if (statusLower === 'found') return 'bg-primary';
@@ -450,5 +465,96 @@ export class JobLeadsComponent implements OnInit, OnDestroy {
           });
         }
       });
+  }
+
+  toggleJobSelection(job: any, event: any) {
+    const jobId = this.resolveJobId(job);
+    if (!jobId) {
+      return;
+    }
+
+    if (event.target.checked) {
+      this.selectedJobIds.add(jobId);
+    } else {
+      this.selectedJobIds.delete(jobId);
+    }
+  }
+
+  isJobSelected(job: any): boolean {
+    const jobId = this.resolveJobId(job);
+    if (!jobId) {
+      return false;
+    }
+    return this.selectedJobIds.has(jobId);
+  }
+
+  toggleSelectAll(event: any) {
+    if (event.target.checked) {
+      this.jobs.forEach(job => {
+        const jobId = this.resolveJobId(job);
+        if (jobId) {
+          this.selectedJobIds.add(jobId);
+        }
+      });
+    } else {
+      this.selectedJobIds.clear();
+    }
+  }
+
+  isAllSelected(): boolean {
+    const selectableJobIds = this.jobs
+      .map(job => this.resolveJobId(job))
+      .filter(jobId => jobId !== '');
+
+    if (selectableJobIds.length === 0) {
+      return false;
+    }
+    return selectableJobIds.every(jobId => this.selectedJobIds.has(jobId));
+  }
+
+  deleteSelectedJobs() {
+    const selectedCount = this.selectedJobIds.size;
+    if (selectedCount === 0) {
+      this.showToast('warning', 'Please select at least one job to delete');
+      return;
+    }
+
+    this.deletingSelected = true;
+    const jobIds = Array.from(this.selectedJobIds);
+    this.wellfoundJobsService.deleteJobs(jobIds)
+      .pipe(
+        finalize(() => this.deletingSelected = false),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.showToast(
+              'success',
+              response.data?.message || `Successfully deleted ${response.data?.deletedCount || selectedCount} job(s)`
+            );
+            this.selectedJobIds.clear();
+            this.loadJobs();
+          } else {
+            this.showToast('error', response.error || 'Failed to delete selected jobs');
+          }
+        },
+        error: (error) => {
+          const errorMessage = error.error?.error || error.error?.message || 'Failed to delete selected jobs';
+          this.showToast('error', errorMessage);
+        }
+      });
+  }
+
+  private showToast(icon: 'success' | 'error' | 'warning' | 'info' | 'question', title: string) {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon,
+      title,
+      showConfirmButton: false,
+      timer: 2500,
+      timerProgressBar: true
+    });
   }
 }

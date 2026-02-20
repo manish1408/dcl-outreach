@@ -33,9 +33,32 @@
           <button class="btn btn-success" (click)="approveAllSelected()" [disabled]="approvingAll || selectedLeads.size === 0">
             <i class="fas fa-check"></i> {{ approvingAll ? 'Approving...' : 'Approve All' }}
           </button>
-          <button class="btn btn-danger" (click)="deleteAllLeads()" [disabled]="deletingAll || leads.length === 0">
-            <i class="fas fa-trash-alt"></i> {{ deletingAll ? 'Deleting...' : 'Delete All' }}
-          </button>
+          <div class="btn-group">
+            <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" [disabled]="(deletingAll || deletingSelected) || leads.length === 0">
+              <i class="fas fa-trash-alt"></i> Delete
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" 
+                   (click)="$event.preventDefault(); deleteSelectedLeads()" 
+                   [class.disabled]="deletingSelected || selectedLeads.size === 0"
+                   [style.pointer-events]="(deletingSelected || selectedLeads.size === 0) ? 'none' : 'auto'"
+                   [style.opacity]="(deletingSelected || selectedLeads.size === 0) ? '0.6' : '1'">
+                  <i class="fas fa-check-square me-2"></i> {{ deletingSelected ? 'Deleting...' : 'Delete Selected' }} ({{ selectedLeads.size }})
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-danger" 
+                   (click)="$event.preventDefault(); deleteAllLeads()" 
+                   [class.disabled]="deletingAll || leads.length === 0"
+                   [style.pointer-events]="(deletingAll || leads.length === 0) ? 'none' : 'auto'"
+                   [style.opacity]="(deletingAll || leads.length === 0) ? '0.6' : '1'">
+                  <i class="fas fa-trash-alt me-2"></i> {{ deletingAll ? 'Deleting...' : 'Delete All' }}
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
