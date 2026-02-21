@@ -130,13 +130,13 @@
                 <div class="d-flex flex-column gap-1">
                   <div>
                     <a *ngIf="job.companyUrl" [href]="job.companyUrl" target="_blank" rel="noopener noreferrer" class="text-primary">
-                      <i class="fas fa-external-link-alt me-1"></i>Website
+                      <i class="fas fa-external-link-alt me-1"></i>
                     </a>
                     <span *ngIf="!job.companyUrl" class="text-muted">-</span>
                   </div>
                   <div>
                     <a *ngIf="job.companyLinkedInUrl" [href]="job.companyLinkedInUrl" target="_blank" rel="noopener noreferrer" class="text-primary">
-                      <i class="fab fa-linkedin me-1"></i>LinkedIn
+                      <i class="fab fa-linkedin me-1"></i>
                     </a>
                     <span *ngIf="!job.companyLinkedInUrl" class="text-muted">-</span>
                   </div>
@@ -187,15 +187,18 @@
                   </button>
                 </div>
                 <div *ngIf="editingStatusJobId !== job.id" 
-                     class="d-flex align-items-center gap-1"
+                     class="d-flex flex-column align-items-start gap-1"
                      style="cursor: pointer;"
                      (click)="startEditingStatus(job, $event)"
                      title="Click to edit">
-                  <span *ngIf="job.leadScrapingStatus" class="badge" [ngClass]="getLeadScrapingStatusBadgeClass(job.leadScrapingStatus)">
-                    {{ job.leadScrapingStatus }}
-                  </span>
-                  <span *ngIf="!job.leadScrapingStatus" class="text-muted">-</span>
-                  <i class="fas fa-edit text-muted" style="font-size: 0.75rem; opacity: 0.6;"></i>
+                  <div class="d-flex align-items-center gap-1">
+                    <span *ngIf="job.leadScrapingStatus" class="badge" [ngClass]="getLeadScrapingStatusBadgeClass(job.leadScrapingStatus)">
+                      {{ job.leadScrapingStatus }}
+                    </span>
+                    <span *ngIf="!job.leadScrapingStatus && !job.qualificationStatus" class="text-muted">-</span>
+                    <i class="fas fa-edit text-muted" style="font-size: 0.75rem; opacity: 0.6;"></i>
+                  </div>
+                  <span *ngIf="job.qualificationStatus && job.qualificationStatus !== 'pending'" class="badge bg-dark text-white">{{ job.qualificationStatus }}</span>
                 </div>
               </td>
               <td>{{ job.updatedAt | date:'dd-MM-yyyy hh:mm a' }}</td>
@@ -288,6 +291,14 @@
                 <i class="fas fa-file-alt me-2"></i>Job Description
               </h6>
               <div class="job-description" [innerHTML]="formatDescription(selectedJob.description)"></div>
+            </div>
+
+            <!-- LinkedIn Description -->
+            <div class="info-card mb-3" *ngIf="selectedJob.linkedinDescription">
+              <h6 class="section-title mb-3">
+                <i class="fab fa-linkedin me-2"></i>LinkedIn Description
+              </h6>
+              <div class="job-description" [innerHTML]="formatDescription(selectedJob.linkedinDescription)"></div>
             </div>
 
             <!-- Company Founders -->
