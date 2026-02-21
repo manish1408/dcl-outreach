@@ -407,6 +407,14 @@
                 <div class="detail-label">Total Raised</div>
                 <div class="detail-value">{{ formatCurrency(selectedJob.companyTotalRaised) }}</div>
               </div>
+              <div class="detail-item mb-2" *ngIf="selectedJob.companyCampaignClassification">
+                <div class="detail-label">Company Campaign Classification</div>
+                <div class="detail-value">{{ selectedJob.companyCampaignClassification.reason }}</div>
+              </div>
+              <div class="detail-item mb-2" *ngIf="selectedJob.companyCampaignClassificationReason">
+                <div class="detail-label">Company Campaign Classification Reason</div>
+                <div class="detail-value">{{ selectedJob.companyCampaignClassificationReason }}</div>
+              </div>
             </div>
 
             <!-- Company Badges -->
