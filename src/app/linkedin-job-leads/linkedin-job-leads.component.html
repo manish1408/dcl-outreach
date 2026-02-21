@@ -47,10 +47,9 @@
             <tr>
               <th>Company</th>
               <th (click)="sortBy('title')" class="cursor-pointer">
-                Job Title
+                Job Title / Location
                 <i class="fas ms-1" [ngClass]="getSortIcon('title')"></i>
               </th>
-              <th>Location</th>
               <th (click)="sortBy('listedDate')" class="cursor-pointer">
                 Listed Date
                 <i class="fas ms-1" [ngClass]="getSortIcon('listedDate')"></i>
@@ -85,13 +84,13 @@
                 </div>
               </td>
               <td>
-                <div class="text-truncate job-title-cell" [title]="job.title">
-                  {{ job.title }}
+                <div class="d-flex flex-column">
+                  <div class="text-truncate job-title-cell" [title]="job.title">
+                    {{ job.title }}
+                  </div>
+                  <small *ngIf="job.locationDetails" class="text-muted">{{ job.locationDetails }}</small>
+                  <small *ngIf="!job.locationDetails" class="text-muted">-</small>
                 </div>
-              </td>
-              <td>
-                <span *ngIf="job.locationDetails">{{ job.locationDetails }}</span>
-                <span *ngIf="!job.locationDetails" class="text-muted">-</span>
               </td>
               <td>
                 <span *ngIf="job.listedDate">{{ formatDate(job.listedDate) }}</span>
