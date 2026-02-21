@@ -462,49 +462,37 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
   }
 
   approveLead(lead: any) {
-    Swal.fire({
-      title: 'Approve Lead?',
-      text: `Are you sure you want to approve ${lead.name}?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#28a745',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Yes, approve'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.linkedinLeadsService.approveLead(lead._id)
-          .pipe(
-            takeUntil(this.destroy$)
-          )
-          .subscribe({
-            next: (response) => {
-              if (response.success && response.data) {
-                Object.assign(lead, response.data);
-                this.selectedLeads.delete(lead._id);
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Approved',
-                  text: 'Lead approved and pushed to campaign successfully'
-                });
-              } else {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: response.error || 'Failed to approve lead'
-                });
-              }
-            },
-            error: (error) => {
-              const errorMessage = error.error?.error || error.message || 'Failed to approve lead';
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: errorMessage
-              });
-            }
+    this.linkedinLeadsService.approveLead(lead._id)
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            Object.assign(lead, response.data);
+            this.selectedLeads.delete(lead._id);
+            Swal.fire({
+              icon: 'success',
+              title: 'Approved',
+              text: 'Lead approved and pushed to campaign successfully'
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: response.error || 'Failed to approve lead'
+            });
+          }
+        },
+        error: (error) => {
+          const errorMessage = error.error?.error || error.message || 'Failed to approve lead';
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: errorMessage
           });
-      }
-    });
+        }
+      });
   }
 
   toggleLeadSelection(lead: any, event: any) {

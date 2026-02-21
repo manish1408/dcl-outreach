@@ -145,7 +145,7 @@
               <td>
                 <div class="d-flex flex-column gap-1">
                   <div *ngIf="!lead.isApproved">
-                    <button class="btn btn-sm btn-success" (click)="approveLead(lead)" title="Approve">
+                    <button class="btn btn-sm btn-primary" (click)="approveLead(lead)" title="Approve">
                       <i class="fas fa-check"></i> Approve
                     </button>
                   </div>
@@ -260,7 +260,7 @@
           <div class="col-12 mb-3">
             <strong>Campaign Status:</strong>
             <div *ngIf="!selectedLead.isApproved" class="mt-2">
-              <button class="btn btn-sm btn-success" (click)="approveLead(selectedLead)" title="Approve">
+              <button class="btn btn-sm btn-outline-success border-2" (click)="approveLead(selectedLead)" title="Approve">
                 <i class="fas fa-check"></i> Approve
               </button>
             </div>
