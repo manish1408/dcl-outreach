@@ -471,11 +471,11 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
           if (response.success && response.data) {
             Object.assign(lead, response.data);
             this.selectedLeads.delete(lead._id);
-            Swal.fire({
-              icon: 'success',
-              title: 'Approved',
-              text: 'Lead approved and pushed to campaign successfully'
-            });
+            // Swal.fire({
+            //   icon: 'success',
+            //   title: 'Approved',
+            //   text: 'Lead approved and pushed to campaign successfully'
+            // });
           } else {
             Swal.fire({
               icon: 'error',
