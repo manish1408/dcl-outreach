@@ -20,8 +20,15 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
     limit: 20,
     sortBy: 'updatedAt',
     sortOrder: 'desc',
-    search: ''
+    search: '',
+    campaignName: ''
   };
+  campaignNameOptions: string[] = [
+    'Partnership Campaign',
+    'Founding Engineer',
+    'AI Developer Hiring',
+    'Developer outsourcing'
+  ];
   total: number = 0;
   hasMore: boolean = false;
   showLeadDetails: boolean = false;
@@ -188,6 +195,9 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
     if (this.filters.search) {
       filters.name = this.filters.search;
     }
+    if (this.filters.campaignName) {
+      filters.campaignName = this.filters.campaignName;
+    }
 
     this.linkedinLeadsService.getLeads(filters)
       .pipe(
@@ -230,7 +240,10 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
     if (this.filters.search) {
       filters.name = this.filters.search;
     }
-    
+    if (this.filters.campaignName) {
+      filters.campaignName = this.filters.campaignName;
+    }
+
     this.linkedinLeadsService.getLeads(filters)
       .pipe(
         finalize(() => this.loadingMore = false),
@@ -373,7 +386,8 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
       limit: 20,
       sortBy: 'updatedAt',
       sortOrder: 'desc',
-      search: ''
+      search: '',
+      campaignName: ''
     };
     this.loadLeads();
   }
