@@ -164,8 +164,14 @@
                       Campaign: {{ lead.isCampaignPushed ? 'Pushed' : 'Not Pushed' }}
                     </span>
                   </div>
-                  <div *ngIf="lead.lemlistCampaignName">
-                    <span class="badge bg-dark">{{ lead.lemlistCampaignName }}</span>
+                  <div class="d-flex align-items-center gap-1">
+                    <span>{{ lead.lemlistCampaignName ? lead.lemlistCampaignName : '—' }}</span>
+                    <button type="button" class="edit-campaign-icon btn btn-sm p-0 border-0 bg-transparent"
+                      (click)="openEditCampaign(lead)"
+                      [attr.aria-label]="'Edit campaign for ' + lead.company"
+                      title="Edit campaign by company">
+                      <i class="fas fa-pencil-alt"></i>
+                    </button>
                   </div>
                 </div>
               </td>
@@ -326,3 +332,37 @@
   </div>
 </div>
 <div class="modal-backdrop fade" [class.show]="showLeadDetails" *ngIf="showLeadDetails" (click)="closeLeadDetails()"></div>
+
+<!-- Edit Campaign Modal -->
+<div class="modal fade" [class.show]="showEditCampaign" [style.display]="showEditCampaign ? 'block' : 'none'" tabindex="-1"
+  *ngIf="showEditCampaign && editCampaignLead">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Update Campaign by Company</h5>
+        <button type="button" class="btn-close" (click)="closeEditCampaign()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small mb-2">This will update the LemList campaign for all leads from this company.</p>
+        <div class="mb-3">
+          <label class="form-label">Company</label>
+          <input type="text" class="form-control" [value]="editCampaignLead.company" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Campaign Name</label>
+          <select class="form-select" [(ngModel)]="editCampaignName">
+            <option value="">Select campaign</option>
+            <option *ngFor="let opt of campaignNameOptions" [value]="opt">{{ opt }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeEditCampaign()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="submitEditCampaign()" [disabled]="updatingCampaign || !editCampaignName.trim()">
+          {{ updatingCampaign ? 'Updating...' : 'Update' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showEditCampaign" *ngIf="showEditCampaign" (click)="closeEditCampaign()"></div>

@@ -33,6 +33,10 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
   hasMore: boolean = false;
   showLeadDetails: boolean = false;
   selectedLead: any = null;
+  showEditCampaign: boolean = false;
+  editCampaignLead: any = null;
+  editCampaignName: string = '';
+  updatingCampaign: boolean = false;
   selectedLeads: Set<string> = new Set();
   approvingAll: boolean = false;
   editingStatusLeadId: string | null = null;
@@ -277,6 +281,62 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
   closeLeadDetails() {
     this.showLeadDetails = false;
     this.selectedLead = null;
+  }
+
+  openEditCampaign(lead: any) {
+    this.editCampaignLead = lead;
+    this.editCampaignName = lead.lemlistCampaignName ? lead.lemlistCampaignName : '';
+    this.showEditCampaign = true;
+  }
+
+  closeEditCampaign() {
+    this.showEditCampaign = false;
+    this.editCampaignLead = null;
+    this.editCampaignName = '';
+  }
+
+  submitEditCampaign() {
+    if (!this.editCampaignLead || !this.editCampaignLead.company || !this.editCampaignName.trim()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Validation',
+        text: 'Company and campaign name are required'
+      });
+      return;
+    }
+
+    this.updatingCampaign = true;
+    this.linkedinLeadsService.updateCampaignByCompany(this.editCampaignLead.company, this.editCampaignName.trim())
+      .pipe(
+        finalize(() => this.updatingCampaign = false),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (res) => {
+          if (res.success && res.data) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Updated',
+              text: `${res.data.updatedCount} lead(s) updated`
+            });
+            this.closeEditCampaign();
+            this.loadLeads();
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: res.error ? res.error : 'Update failed'
+            });
+          }
+        },
+        error: (err) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: err.error?.error ? err.error.error : 'Update failed'
+          });
+        }
+      });
   }
 
   deleteLead(leadId: string) {

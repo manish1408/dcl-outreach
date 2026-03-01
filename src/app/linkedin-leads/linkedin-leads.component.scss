@@ -65,6 +65,17 @@
   padding: 0.35em 0.65em;
 }
 
+.edit-campaign-icon {
+  margin-left: 4px;
+  padding: 2px;
+  vertical-align: middle;
+  cursor: pointer;
+
+  i {
+    font-size: 14px;
+  }
+}
+
 .job-description {
   font-size: 0.875rem;
   line-height: 1.6;

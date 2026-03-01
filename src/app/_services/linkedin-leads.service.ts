@@ -65,4 +65,11 @@ export class LinkedInLeadsService {
   approveBatchLeads(leadIds: string[]): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/approve-batch`, { leadIds });
   }
+
+  updateCampaignByCompany(company: string, lemlistCampaignName: string): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/update-campaign-by-company`, {
+      company,
+      lemlistCampaignName
+    });
+  }
 }
