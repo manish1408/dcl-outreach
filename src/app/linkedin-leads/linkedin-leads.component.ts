@@ -29,7 +29,9 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
     'Founding Engineer (Manish)',
     'AI Developer Hiring',
     'Developer outsourcing',
-    'Application Development (Shraddha)'
+    'Application Development (Shraddha)',
+    'Application Development (Mayank)'
+
   ];
   total: number = 0;
   hasMore: boolean = false;
