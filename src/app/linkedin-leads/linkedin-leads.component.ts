@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { LinkedInLeadsService } from '../_services/linkedin-leads.service';
+import { ToastrService } from 'ngx-toastr';
 import { finalize, takeUntil } from 'rxjs';
 import { Subject } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -25,9 +26,10 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
   };
   campaignNameOptions: string[] = [
     'Partnership Campaign',
-    'Founding Engineer',
+    'Founding Engineer (Manish)',
     'AI Developer Hiring',
-    'Developer outsourcing'
+    'Developer outsourcing',
+    'Application Development (Shraddha)'
   ];
   total: number = 0;
   hasMore: boolean = false;
@@ -45,7 +47,8 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private linkedinLeadsService: LinkedInLeadsService
+    private linkedinLeadsService: LinkedInLeadsService,
+    private toastr: ToastrService
   ) {
   }
 
@@ -314,13 +317,15 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           if (res.success && res.data) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Updated',
-              text: `${res.data.updatedCount} lead(s) updated`
+            const company = this.editCampaignLead.company;
+            const campaignName = this.editCampaignName.trim();
+            this.leads.forEach((lead) => {
+              if (lead.company === company) {
+                lead.lemlistCampaignName = campaignName;
+              }
             });
+            this.toastr.success(`${res.data.updatedCount} lead(s) updated`);
             this.closeEditCampaign();
-            this.loadLeads();
           } else {
             Swal.fire({
               icon: 'error',
@@ -340,43 +345,21 @@ export class LinkedInLeadsComponent implements OnInit, OnDestroy {
   }
 
   deleteLead(leadId: string) {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'This action cannot be undone',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loading = true;
-        this.linkedinLeadsService.deleteLead(leadId)
-          .pipe(
-            finalize(() => this.loading = false),
-            takeUntil(this.destroy$)
-          )
-          .subscribe({
-            next: (response) => {
-              if (response.success) {
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Deleted',
-                  text: 'Lead deleted successfully'
-                });
-                this.loadLeads();
-              }
-            },
-            error: (error) => {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Failed to delete lead'
-              });
-            }
-          });
-      }
-    });
+    this.linkedinLeadsService.deleteLead(leadId)
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.leads = this.leads.filter((l) => this.getLeadId(l) !== leadId);
+            this.total = this.total - 1;
+          }
+        },
+        error: (error) => {
+          this.toastr.error('Failed to delete lead');
+        }
+      });
   }
 
   deleteAllLeads() {
