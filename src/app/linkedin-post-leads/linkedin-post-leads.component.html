@@ -1,0 +1,252 @@
+<div *ngIf="loading" class="d-flex justify-content-center">
+  <div class="spinner-border text-dark" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<ng-container *ngIf="!loading">
+  <!-- Filters -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="d-flex flex-wrap align-items-end gap-2">
+        <div style="min-width: 200px;">
+          <input type="text" class="form-control" [(ngModel)]="filters.name" (keyup.enter)="applyFilters()"
+            placeholder="Search by name...">
+        </div>
+        <div style="min-width: 120px;">
+          <select class="form-select" [(ngModel)]="filters.hasComment" (ngModelChange)="applyFilters()">
+            <option value="">Any comment</option>
+            <option value="true">Has comment</option>
+            <option value="false">No comment</option>
+          </select>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary" (click)="applyFilters()">
+            <i class="fas fa-search"></i> Search
+          </button>
+          <button class="btn btn-outline-secondary" (click)="resetFilters()">Reset</button>
+          <div class="d-flex align-items-center px-3">
+            <span class="text-muted">Total: <strong>{{ total }}</strong></span>
+          </div>
+        </div>
+        <div class="ms-auto d-flex gap-2">
+          <button class="btn btn-primary" (click)="openScrapeModal()">
+            <i class="fas fa-download me-1"></i> Start Scrape
+          </button>
+          <button class="btn btn-outline-danger" (click)="deleteSelectedLeads()"
+            [disabled]="deletingSelected || selectedLeads.size === 0">
+            {{ deletingSelected ? 'Deleting...' : 'Delete Selected' }} ({{ selectedLeads.size }})
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leads Table -->
+  <div class="row">
+    <div class="col-12">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th style="width: 50px;">
+                <input type="checkbox" [checked]="isAllSelected()" (change)="toggleSelectAll($event)" title="Select All">
+              </th>
+              <th>Profile</th>
+              <th>LinkedIn</th>
+              <th (click)="sortBy('name')" class="cursor-pointer">
+                Name
+                <i class="fas ms-1" [ngClass]="getSortIcon('name')"></i>
+              </th>
+              <th (click)="sortBy('headline')" class="cursor-pointer">
+                Headline
+                <i class="fas ms-1" [ngClass]="getSortIcon('headline')"></i>
+              </th>
+              <th>Reaction</th>
+              <th>Comment</th>
+              <th>Source</th>
+              <th (click)="sortBy('status')" class="cursor-pointer">
+                Status
+                <i class="fas ms-1" [ngClass]="getSortIcon('status')"></i>
+              </th>
+              <th (click)="sortBy('scrapedAt')" class="cursor-pointer">
+                Scraped
+                <i class="fas ms-1" [ngClass]="getSortIcon('scrapedAt')"></i>
+              </th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let lead of leads">
+              <td>
+                <input type="checkbox" [checked]="isLeadSelected(lead)" (change)="toggleLeadSelection(lead, $event)">
+              </td>
+              <td>
+                <img *ngIf="getProfilePicture(lead)" [src]="getProfilePicture(lead)" [alt]="lead.name" class="rounded"
+                  style="width: 32px; height: 32px; object-fit: cover;">
+                <span *ngIf="!getProfilePicture(lead)" class="text-muted">-</span>
+              </td>
+              <td>
+                <a *ngIf="lead.profileUrl" [href]="lead.profileUrl" target="_blank" rel="noopener noreferrer"
+                  class="text-primary text-decoration-none">
+                  <i class="fab fa-linkedin"></i>
+                </a>
+                <span *ngIf="!lead.profileUrl" class="text-muted">-</span>
+              </td>
+              <td>{{ lead.name }}</td>
+              <td>
+                <div [title]="lead.headline">{{ trimHeadline(lead.headline) }}</div>
+              </td>
+              <td>
+                <span *ngIf="lead.hasReaction" class="badge bg-primary">{{ lead.reactionType }}</span>
+                <span *ngIf="!lead.hasReaction" class="text-muted">-</span>
+              </td>
+              <td>
+                <span *ngIf="lead.hasComment" class="badge bg-info" [title]="lead.commentText">Comment</span>
+                <span *ngIf="!lead.hasComment" class="text-muted">-</span>
+              </td>
+              <td>{{ lead.sourceType }}</td>
+              <td>
+                <div *ngIf="editingStatusLeadId === lead._id">
+                  <select class="form-select form-select-sm" [(ngModel)]="selectedStatusForEdit">
+                    <option *ngFor="let opt of statusOptions" [value]="opt">{{ opt }}</option>
+                  </select>
+                  <div class="btn-group btn-group-sm mt-1">
+                    <button class="btn btn-primary btn-sm" (click)="updateLeadStatus(lead)">Save</button>
+                    <button class="btn btn-outline-secondary btn-sm" (click)="cancelEditingStatus()">Cancel</button>
+                  </div>
+                </div>
+                <span *ngIf="editingStatusLeadId !== lead._id" (click)="startEditingStatus(lead, $event)"
+                  class="badge cursor-pointer" [ngClass]="getStatusBadgeClass(lead.status)">
+                  {{ lead.status }}
+                </span>
+              </td>
+              <td>{{ lead.scrapedAt | date:'dd-MM-yyyy hh:mm a' }}</td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="viewLeadDetails(lead)" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteLead(lead._id)" title="Delete">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="leads.length === 0 && !loading">
+              <td colspan="11" class="text-center py-4">
+                <p class="text-muted">No leads found</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="row mt-3" *ngIf="leads.length > 0">
+        <div class="col-12 text-center">
+          <div *ngIf="loadingMore" class="py-3">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+            <span class="ms-2 text-muted">Loading more leads...</span>
+          </div>
+          <div *ngIf="!hasMore && !loadingMore" class="py-3">
+            <p class="text-muted mb-0">No more leads to load</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Lead Details Modal -->
+<div class="modal fade" [class.show]="showLeadDetails" [style.display]="showLeadDetails ? 'block' : 'none'" tabindex="-1"
+  *ngIf="showLeadDetails && selectedLead">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Lead Details</h5>
+        <button type="button" class="btn-close" (click)="closeLeadDetails()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12 mb-3">
+            <div class="d-flex align-items-center">
+              <img *ngIf="getProfilePicture(selectedLead)" [src]="getProfilePicture(selectedLead)" [alt]="selectedLead.name"
+                class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
+              <div>
+                <h4>{{ selectedLead.name }}</h4>
+                <p class="text-muted mb-0" *ngIf="selectedLead.headline">{{ selectedLead.headline }}</p>
+                <a *ngIf="selectedLead.profileUrl" [href]="selectedLead.profileUrl" target="_blank" rel="noopener noreferrer"
+                  class="btn btn-outline-primary btn-sm mt-2">
+                  <i class="fab fa-linkedin"></i> LinkedIn Profile
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.postUrl">
+            <strong>Post URL:</strong>
+            <a [href]="selectedLead.postUrl" target="_blank" rel="noopener noreferrer" class="ms-2">{{ selectedLead.postUrl }}</a>
+          </div>
+          <div class="col-12 col-md-6 mb-3">
+            <strong>Source Type:</strong> {{ selectedLead.sourceType }}
+          </div>
+          <div class="col-12 col-md-6 mb-3">
+            <strong>Reaction:</strong>
+            <span *ngIf="selectedLead.hasReaction" class="badge bg-primary ms-2">{{ selectedLead.reactionType }}</span>
+            <span *ngIf="!selectedLead.hasReaction" class="text-muted ms-2">None</span>
+          </div>
+          <div class="col-12 col-md-6 mb-3">
+            <strong>Status:</strong>
+            <span class="badge ms-2" [ngClass]="getStatusBadgeClass(selectedLead.status)">{{ selectedLead.status }}</span>
+          </div>
+          <div class="col-12 mb-3" *ngIf="selectedLead.hasComment && selectedLead.commentText">
+            <strong>Comment:</strong>
+            <div class="mt-2 p-3 bg-light rounded">{{ selectedLead.commentText }}</div>
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.commentPostedAt">
+            <strong>Comment Posted:</strong> {{ selectedLead.commentPostedAt.date }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.scrapedAt">
+            <strong>Scraped At:</strong> {{ selectedLead.scrapedAt | date:'medium' }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.createdAt">
+            <strong>Created:</strong> {{ selectedLead.createdAt | date:'medium' }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.updatedAt">
+            <strong>Updated:</strong> {{ selectedLead.updatedAt | date:'medium' }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeLeadDetails()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showLeadDetails" *ngIf="showLeadDetails" (click)="closeLeadDetails()"></div>
+
+<!-- Start Scrape Modal -->
+<div class="modal fade" [class.show]="showScrapeModal" [style.display]="showScrapeModal ? 'block' : 'none'" tabindex="-1"
+  *ngIf="showScrapeModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Start Scrape</h5>
+        <button type="button" class="btn-close" (click)="closeScrapeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label">LinkedIn Post URL</label>
+        <input type="text" class="form-control"
+          [(ngModel)]="scrapePostUrl" placeholder="https://www.linkedin.com/posts/..."
+          (keyup.enter)="startScrape()">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeScrapeModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="startScrape()" [disabled]="scraping || !scrapePostUrl.trim()">
+          <span *ngIf="scraping">
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span> Scraping...
+          </span>
+          <span *ngIf="!scraping"><i class="fas fa-download me-1"></i> Scrape</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showScrapeModal" *ngIf="showScrapeModal" (click)="closeScrapeModal()"></div>
