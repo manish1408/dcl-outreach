@@ -163,8 +163,20 @@ export class LinkedInPostLeadsComponent implements OnInit, OnDestroy {
   }
 
   viewLeadDetails(lead: any) {
-    this.selectedLead = lead;
     this.showLeadDetails = true;
+    this.selectedLead = lead;
+    const leadId = lead._id;
+    if (leadId) {
+      this.linkedinPostLeadsService.get(leadId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success && response.data) {
+              this.selectedLead = response.data;
+            }
+          }
+        });
+    }
   }
 
   closeLeadDetails() {
@@ -221,6 +233,7 @@ export class LinkedInPostLeadsComponent implements OnInit, OnDestroy {
     if (s === 'pending') return 'bg-warning';
     if (s === 'contacted') return 'bg-info';
     if (s === 'converted') return 'bg-success';
+    if (s === 'qualified') return 'bg-success';
     return 'bg-secondary';
   }
 

@@ -165,24 +165,34 @@
       </div>
       <div class="modal-body">
         <div class="row">
-          <div class="col-12 mb-3">
-            <div class="d-flex align-items-center">
+          <div class="col-12 mb-4">
+            <div class="d-flex align-items-start">
               <img *ngIf="getProfilePicture(selectedLead)" [src]="getProfilePicture(selectedLead)" [alt]="selectedLead.name"
                 class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
-              <div>
+              <div class="flex-grow-1">
                 <h4>{{ selectedLead.name }}</h4>
-                <p class="text-muted mb-0" *ngIf="selectedLead.headline">{{ selectedLead.headline }}</p>
-                <a *ngIf="selectedLead.profileUrl" [href]="selectedLead.profileUrl" target="_blank" rel="noopener noreferrer"
-                  class="btn btn-outline-primary btn-sm mt-2">
-                  <i class="fab fa-linkedin"></i> LinkedIn Profile
-                </a>
+                <p class="text-muted mb-1" *ngIf="selectedLead.headline">{{ selectedLead.headline }}</p>
+                <p class="text-muted mb-1" *ngIf="selectedLead.headlineRole">{{ selectedLead.headlineRole }}</p>
+                <span *ngIf="selectedLead.openToWork" class="badge bg-success me-2">Open to Work</span>
+                <span *ngIf="selectedLead.location?.full" class="text-muted">{{ selectedLead.location.full }}</span>
+                <div class="mt-2">
+                  <a *ngIf="selectedLead.profileUrl" [href]="selectedLead.profileUrl" target="_blank" rel="noopener noreferrer"
+                    class="btn btn-outline-primary btn-sm">
+                    <i class="fab fa-linkedin"></i> LinkedIn Profile
+                  </a>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.postUrl">
-            <strong>Post URL:</strong>
-            <a [href]="selectedLead.postUrl" target="_blank" rel="noopener noreferrer" class="ms-2">{{ selectedLead.postUrl }}</a>
+          <div class="col-12"><hr></div>
+
+          <div class="col-12 col-md-6 mb-3">
+            <strong>Status:</strong>
+            <span class="badge ms-2" [ngClass]="getStatusBadgeClass(selectedLead.status)">{{ selectedLead.status }}</span>
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.processingStatus">
+            <strong>Processing Status:</strong> {{ selectedLead.processingStatus }}
           </div>
           <div class="col-12 col-md-6 mb-3">
             <strong>Source Type:</strong> {{ selectedLead.sourceType }}
@@ -192,19 +202,86 @@
             <span *ngIf="selectedLead.hasReaction" class="badge bg-primary ms-2">{{ selectedLead.reactionType }}</span>
             <span *ngIf="!selectedLead.hasReaction" class="text-muted ms-2">None</span>
           </div>
-          <div class="col-12 col-md-6 mb-3">
-            <strong>Status:</strong>
-            <span class="badge ms-2" [ngClass]="getStatusBadgeClass(selectedLead.status)">{{ selectedLead.status }}</span>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.followerCount !== null && selectedLead.followerCount !== undefined">
+            <strong>Followers:</strong> {{ selectedLead.followerCount }}
           </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.connectionCount !== null && selectedLead.connectionCount !== undefined">
+            <strong>Connections:</strong> {{ selectedLead.connectionCount }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.industry">
+            <strong>Industry:</strong> {{ selectedLead.industry }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.currentCompany">
+            <strong>Current Company:</strong> {{ selectedLead.currentCompany }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.email">
+            <strong>Email:</strong> {{ selectedLead.email }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.publicIdentifier">
+            <strong>Public Identifier:</strong> {{ selectedLead.publicIdentifier }}
+          </div>
+
           <div class="col-12 mb-3" *ngIf="selectedLead.hasComment && selectedLead.commentText">
             <strong>Comment:</strong>
             <div class="mt-2 p-3 bg-light rounded">{{ selectedLead.commentText }}</div>
           </div>
-          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.commentPostedAt">
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.commentPostedAt?.date">
             <strong>Comment Posted:</strong> {{ selectedLead.commentPostedAt.date }}
           </div>
+
+          <div class="col-12 mb-3" *ngIf="selectedLead.about">
+            <strong>About:</strong>
+            <div class="mt-2 p-3 bg-light rounded" style="white-space: pre-wrap;">{{ selectedLead.about }}</div>
+          </div>
+
+          <div class="col-12 mb-3" *ngIf="selectedLead.postUrl">
+            <strong>Post URL:</strong>
+            <a [href]="selectedLead.postUrl" target="_blank" rel="noopener noreferrer" class="ms-2 d-block text-break">{{ selectedLead.postUrl }}</a>
+          </div>
+
+          <div class="col-12 mb-3" *ngIf="selectedLead.experience && selectedLead.experience.length > 0">
+            <strong>Experience:</strong>
+            <div class="mt-2">
+              <div *ngFor="let exp of selectedLead.experience" class="p-3 mb-2 bg-light rounded">
+                <div class="fw-bold">{{ exp.title }} at {{ exp.company }}</div>
+                <div class="text-muted small" *ngIf="exp.location">{{ exp.location }}</div>
+                <div class="text-muted small" *ngIf="exp.duration">{{ exp.duration }}</div>
+                <div class="text-muted small" *ngIf="exp.employment_type">{{ exp.employment_type }}</div>
+                <div class="mt-2" *ngIf="exp.description">{{ exp.description }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 mb-3" *ngIf="selectedLead.education && selectedLead.education.length > 0">
+            <strong>Education:</strong>
+            <div class="mt-2">
+              <div *ngFor="let edu of selectedLead.education" class="p-3 mb-2 bg-light rounded">
+                <div class="fw-bold">{{ edu.school }}</div>
+                <div class="text-muted small" *ngIf="edu.degree">{{ edu.degree }}</div>
+                <div class="text-muted small" *ngIf="edu.duration">{{ edu.duration }}</div>
+                <div class="mt-2" *ngIf="edu.description">{{ edu.description }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 mb-3" *ngIf="selectedLead.certifications && selectedLead.certifications.length > 0">
+            <strong>Certifications:</strong>
+            <div class="mt-2">
+              <div *ngFor="let cert of selectedLead.certifications" class="p-3 mb-2 bg-light rounded">
+                <div class="fw-bold">{{ cert.name }}</div>
+                <div class="text-muted small" *ngIf="cert.issuer">{{ cert.issuer }}</div>
+                <div class="text-muted small" *ngIf="cert.issued_date">{{ cert.issued_date }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12"><hr></div>
+
           <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.scrapedAt">
             <strong>Scraped At:</strong> {{ selectedLead.scrapedAt | date:'medium' }}
+          </div>
+          <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.profileDetailFetchedAt">
+            <strong>Profile Detail Fetched:</strong> {{ selectedLead.profileDetailFetchedAt | date:'medium' }}
           </div>
           <div class="col-12 col-md-6 mb-3" *ngIf="selectedLead.createdAt">
             <strong>Created:</strong> {{ selectedLead.createdAt | date:'medium' }}
